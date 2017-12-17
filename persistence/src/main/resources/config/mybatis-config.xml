@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <properties resource="db.properties"/>
+  <typeAliases>
+    <typeAlias type="java.sql.Timestamp"/>
+    <package name="com.gilab.wjj.persistence.model"/>
+    <package name="com.gilab.wjj.persistence.handler"/>
+    <package name="org.apache.ibatis.type"/>
+  </typeAliases>
+
+  <plugins>
+    <plugin interceptor="com.github.pagehelper.PageInterceptor">
+      <property name="helperDialect" value="mysql"/>
+      <property name="reasonable" value="true"/>
+      <property name="autoRuntimeDialect" value="true"/>
+    </plugin>
+  </plugins>
+
+  <environments default="prod">
+    <environment id="prod">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <databaseIdProvider type="DB_VENDOR">
+    <property name="MySql" value="MySQL"/>
+    <property name="MySQL" value="MySQL"/>
+    <property name="H2" value="H2"/>
+  </databaseIdProvider>
+  <mappers>
+    <mapper resource="config/mapper/UserMapper.xml"/>
+    <mapper resource="config/mapper/ContractMapper.xml"/>
+    <mapper resource="config/mapper/MerchantMapper.xml"/>
+    <mapper resource="config/mapper/BuildingMapper.xml"/>
+    <mapper resource="config/mapper/ProposalMapper.xml"/>
+    <mapper resource="config/mapper/BasicLedgerMapper.xml"/>
+    <mapper resource="config/mapper/AddedLedgerMapper.xml"/>
+  </mappers>
+
+</configuration>
