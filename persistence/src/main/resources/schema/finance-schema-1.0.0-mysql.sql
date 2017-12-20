@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS finance_user, finance_permission;
 DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status;
-DROP TABLE IF EXISTS finance_merchants, finance_building;
+DROP TABLE IF EXISTS finance_merchants;
 DROP TABLE IF EXISTS finance_leaseback_proposal, finance_proposal_history;
 DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger;
 
@@ -40,37 +40,58 @@ VALUES
 
 CREATE TABLE finance_contract (
   id               BIGINT             NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-  contractNo       VARCHAR(100)       NOT NULL ,
+  region           VARCHAR(100)       NOT NULL ,
+  contractNo       VARCHAR(100)        ,
+  contractVersion  VARCHAR(20)        NOT NULL ,
+  subscriptionDate DATETIME(3)        NOT NULL ,
+  signer           VARCHAR(200)       NOT NULL ,
   signingMode      SMALLINT           NOT NULL ,
   signingDate      DATETIME(3)        NOT NULL ,
-  buildingId       BIGINT             NOT NULL ,
-  signerId         BIGINT             NOT NULL ,
+  buildingInfo     VARCHAR(100)       NOT NULL ,
+  buildingSize     DOUBLE             NOT NULL ,
+  originalPrice    INT                NOT NULL ,
+  totalPrice       INT                NOT NULL ,
+  signTotalPrice   INT                NOT NULL ,
   leasebackPrice   INT                NOT NULL ,
+  backPremium      INT                NOT NULL ,
   paybackDate      DATETIME(3)        NOT NULL ,
-  beneficiary      VARCHAR(200)       NOT NULL ,
+  payStartDate     DATETIME(3)        NOT NULL ,
+  contractTerDate  DATETIME(3)        NOT NULL ,
+  beneficiary      BIGINT             NOT NULL ,
   proposalId       INT                NOT NULL ,
   contractStatus   SMALLINT           NOT NULL ,
+  tariff           DOUBLE              ,
+  taxAmount        INT                 ,
   logs             TEXT               NOT NULL ,
   createTime       DATETIME(3) not null default current_timestamp(3),
   lastUpdateTime   DATETIME(3) on update current_timestamp(3)
 ) charset=utf8;
 
 CREATE INDEX idx_finance_contract_no ON finance_contract (contractNo);
-CREATE INDEX idx_finance_contract_signer ON finance_contract (signerId);
+CREATE INDEX idx_finance_contract_signer ON finance_contract (signer);
 
 CREATE TABLE finance_contract_history (
-  hisId            BIGINT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  contractId               BIGINT             NOT NULL ,
-  contractNo       VARCHAR(100)       NOT NULL ,
+  id               BIGINT             NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+  region           VARCHAR(100)       NOT NULL ,
+  contractNo       VARCHAR(100)        ,
+  contractVersion  VARCHAR(20)        NOT NULL ,
+  subscriptionDate DATETIME(3)        NOT NULL ,
+  signer           VARCHAR(200)       NOT NULL ,
   signingMode      SMALLINT           NOT NULL ,
   signingDate      DATETIME(3)        NOT NULL ,
-  buildingId       BIGINT             NOT NULL ,
-  signerId         BIGINT             NOT NULL ,
+  buildingInfo     VARCHAR(100)       NOT NULL ,
+  buildingSize     DOUBLE             NOT NULL ,
+  originalPrice    INT                NOT NULL ,
+  totalPrice       INT                NOT NULL ,
+  signTotalPrice   INT                NOT NULL ,
   leasebackPrice   INT                NOT NULL ,
+  backPremium      INT                NOT NULL ,
   paybackDate      DATETIME(3)        NOT NULL ,
-  beneficiary      VARCHAR(200)       NOT NULL ,
+  beneficiary      BIGINT             NOT NULL ,
   proposalId       INT                NOT NULL ,
   contractStatus   SMALLINT           NOT NULL ,
+  tariff           DOUBLE              ,
+  taxAmount        INT                 ,
   logs             TEXT               NOT NULL ,
   effectiveStartTime DATETIME(3)      DEFAULT current_timestamp(3),
   effectiveEndTime   DATETIME(3)      DEFAULT '2099-12-31 23:59:59.999'
@@ -119,6 +140,7 @@ CREATE TABLE finance_merchants (
 
 CREATE UNIQUE INDEX idx_finance_merchants ON finance_merchants (merchantName, merchantPhone, bankAccount);
 
+/*
 CREATE TABLE finance_building (
   id                BIGINT                NOT NULL   AUTO_INCREMENT  PRIMARY KEY ,
   buildingNo        SMALLINT              NOT NULL ,
@@ -130,12 +152,15 @@ CREATE TABLE finance_building (
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;
 
+
 CREATE INDEX idx_finance_building_owner ON finance_building (ownerId);
+ */
 
 CREATE TABLE finance_leaseback_proposal (
-  id               SMALLINT              NOT NULL  AUTO_INCREMENT  PRIMARY KEY ,
+  id               BIGINT              NOT NULL  AUTO_INCREMENT  PRIMARY KEY ,
+  proposalName     VARCHAR(100)          NOT NULL ,
   leasebackLife    SMALLINT              NOT NULL ,
-  MarketCulLife    SMALLINT              NOT NULL ,
+  marketCulLife    SMALLINT              NOT NULL ,
   leasebackStages  SMALLINT              NOT NULL ,
   conf             TEXT                  NOT NULL ,
   proposalDes      VARCHAR(200),
@@ -143,7 +168,7 @@ CREATE TABLE finance_leaseback_proposal (
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;
 
-INSERT INTO finance_leaseback_proposal (leasebackLife, MarketCulLife, leasebackStages, conf, proposalDes)
+INSERT INTO finance_leaseback_proposal (leasebackLife, marketCulLife, leasebackStages, conf, proposalDes)
 VALUES
   (15, 3, 3, '{"first":{"year":2, "proportion":0.065}, "second":{"year":5, "proportion":0.07}, "third":{"year":5, "proportion":0.075}}','etl'),
   (5, 3, 1, '{"first":{"year":2, "proportion":0.065}}', 'etl');
