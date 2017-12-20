@@ -16,6 +16,7 @@ CREATE TABLE finance_user (
   lastUpdateTime   DATETIME(3) on update current_timestamp(3)
 ) charset=utf8;
 
+
 CREATE INDEX idx_finance_user_username ON finance_user (username);
 CREATE INDEX idx_finance_user_permissions ON finance_user (permissions);
 
