@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>合同查询</title>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/default/easyui.css"></link>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/icon.css"></link>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript">
+
+	$(function(){
+		$("#dg").datagrid({
+			//双击事件
+			onDblClickRow: function (index, row) {
+				$("#saveAndAddNextBuuton").hide();
+				$("#dlg4").dialog("open").dialog("setTitle","台账");
+				$("#fm4").form("load",row);
+				$("#sellingPrice").val("￥"+row.sellingPrice);
+				$("#price").numberbox("setValue",row.price);
+				$("#num").numberbox("setValue",row.num);
+				$("#num").focus();
+				$("#action").val("modify");
+				$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
+			}
+		});
+	})
+
+    function formatAmount(val,row){
+		return "￥"+(row.inventoryQuantity*row.purchasingPrice).toFixed(2);
+	}
+    
+    function formatGoodsTypeName(val,row){
+		return row.type.name;
+	}
+    
+    function formatLastPurchasingPrice(val,row){
+		return "￥"+val;	
+	}
+	
+    function formatPurchasingPrice(val,row){
+		return "￥"+val;	
+	}
+	
+	function formatSellingPrice(val,row){
+		return "￥"+val;	
+	}
+	 
+	function chooseGoodsType(){
+		$("#dlg2").dialog("open").dialog("setTitle","选择合同状态");
+		$("#typeTree").tree({
+			url:'/admin/goodsType/loadTreeInfo',
+			onLoadSuccess:function(node, data){
+				var rootNode = $("#typeTree").tree('getRoot'); 
+				$("#typeTree").tree('expand',rootNode.target);
+			}
+		});
+	}
+	
+	function saveGoodsTypeChoose(){
+		var node = $('#typeTree').tree('getSelected'); // 获取选中节点
+		$("#typeId").val(node.id);
+		$("#typeName").val(node.text);
+		$("#dlg2").dialog("close");
+	}
+	
+	function closeGoodsTypeChooseDialog(){
+		$("#dlg2").dialog("close");
+	}
+	
+	function searchStock(){
+//		$("#dg").datagrid('load',{
+//			"type.id":$("#typeId").val(),
+//			"codeOrName":$("#codeOrName").val()
+//		});
+		$.ajax({
+			url: '/test/contractsearch',
+			type: 'POST',
+			data: "{\"signer\":\""+$("#signer").val()+"\"}",
+			contentType: 'application/json',
+			success: function (data) {
+				if (data.length > 0) {
+					for(var i = 0; i<=data.length;i++) {
+						$('#dg').datagrid('appendRow', {
+							id:data[i].id,
+							contractNo:data[i].contractNo,
+							contractVersion:data[i].contractVersion,
+							buildingInfo:data[i].buildingInfo,
+							buildingSize:data[i].buildingSize,
+							merchantName:data[i].merchantName,
+							subscriptionDate:getMoth(data[i].subscriptionDate),
+							signingDate:getMoth(data[i].signingDate),
+							region:data[i].region,
+							signer:data[i].signer,
+							signingMode:data[i].signingMode,
+							originalPrice:data[i].originalPrice,
+							totalPrice:data[i].totalPrice,
+							signTotalPrice:data[i].signTotalPrice,
+							leasebackPrice:data[i].leasebackPrice,
+							backPremium:data[i].backPremium,
+							payStartDate:getMoth(data[i].payStartDate),
+							contractTerDate:getMoth(data[i].contractTerDate),
+							paybackDate:getMoth(data[i].paybackDate),
+							beneficiary:data[i].beneficiary,
+							proposalId:data[i].proposalId,
+							contractStatus:data[i].contractStatus,
+							tariff:data[i].tariff,
+							taxAmount:data[i].taxAmount
+						});
+					}
+				} else {
+					alert("datasizeis0");
+				}
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
+			}
+		})
+	}
+
+	function getMoth(str){
+		var oDate = new Date(str),
+				oYear = oDate.getFullYear(),
+				oMonth = oDate.getMonth()+1,
+				oDay = oDate.getDate(),
+				oHours = oDate.getHours(),
+				oMinutes = oDate.getMinutes(),
+				oSeconds = oDate.getSeconds();
+				oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
+		return oTime;
+	};
+
+	function updateContract(){
+		var contractinfo = $('#fm4').serializeArray();
+		var contractobj = {};
+		$.each(contractinfo,function(i,v){
+			contractobj[v.name] = v.value;
+		})
+
+		$.messager.alert("jsoninfo",JSON.stringify(contractobj));
+	}
+//	function openSaleListGoodsModifyDialog(){
+//		$("#saveAndAddNextBuuton").hide();
+//		var selectedRows=$("#dg").datagrid("getSelections");
+//		if(selectedRows.length!=1){
+//			$.messager.alert("系统提示","请选择一个商品！");
+//			return;
+//		}
+//		var row=selectedRows[0];
+//		$("#dlg4").dialog("open").dialog("setTitle","修改销售单商品");
+//		$("#fm4").form("load",row);
+//		$("#sellingPrice").val("￥"+row.sellingPrice);
+//		$("#price").numberbox("setValue",row.price);
+//		$("#num").numberbox("setValue",row.num);
+//		$("#num").focus();
+//		$("#action").val("modify");
+//		$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
+//	}
+
+</script>
+</head>
+<body style="margin: 1px">
+<table id="dg" title="合同查询" class="easyui-datagrid"
+   fitColumns="true" pagination="true" rownumbers="true" pageSize=20
+   url="/admin/goods/listInventory" fit="true" toolbar="#tb">
+   <thead>
+   	<tr>
+		<th hidden="true" field="id" width="30" align="center">合同ID</th>
+		<th field="contractNo" width="30" align="center">合同编号</th>
+		<th field="contractVersion" width="20" align="center">合同版本</th>
+		<th field="buildingInfo" width="50" align="center" >楼层房号</th>
+		<th field="buildingSize" width="50" align="center" >建筑面积</th>
+		<th field="signer" width="50" align="center" >商户姓名</th>
+		<th field="subscriptionDate" width="50" align="center">认购日期</th>
+		<th field="signingDate" width="50" align="center" >签约日期</th>
+		<th hidden="true" field="region" width="40" align="center" >所在区域</th>
+		<th hidden="true" field="signingMode" width="40" align="center" >签约方式</th>
+		<th hidden="true" field="originalPrice" width="40" align="center" >销售原价</th>
+		<th hidden="true" field="totalPrice" width="40" align="center" >总价</th>
+		<th hidden="true" field="signTotalPrice" width="40" align="center" >签约总价</th>
+		<th hidden="true" field="leasebackPrice" width="40" align="center" >反租基价</th>
+		<th hidden="true" field="backPremium" width="40" align="center" >反租溢价</th>
+		<th hidden="true" field="payStartDate" width="40" align="center" >记租起始时日期</th>
+		<th hidden="true" field="contractTerDate" width="40" align="center" >合同期</th>
+		<th hidden="true" field="paybackDate" width="40" align="center" >回款时间</th>
+		<th hidden="true" field="beneficiary" width="40" align="center" >受益人信息</th>
+		<th hidden="true" field="proposalId" width="40" align="center" >方案</th>
+		<th hidden="true" field="contractStatus" width="40" align="center" >合同状态</th>
+		<th hidden="true" field="tariff" width="40" align="center" >税率</th>
+		<th hidden="true" field="taxAmount" width="40" align="center" >个税金额</th>
+
+
+	</tr>
+   </thead>
+ </table>
+ 
+ <div id="tb">
+ 	<div style="padding: 5px">
+ 		&nbsp;签约人&nbsp;
+ 		<!--<input type="hidden" id="typeId"/>-->
+ 		<input type="text" id="signer" name="signer" style="width: 90px;"/>
+		&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" size="20"/>
+		<!--<input type="text" id="typeName"  style="width: 90px;" readonly="readonly" onclick="chooseGoodsType()"/>-->
+		<!--&nbsp;签约人：&nbsp;<input type="text" id="codeOrName" size="20" onkeydown="if(event.keyCode==13) searchStock()"/>-->
+ 		<a href="javascript:searchStock()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+
+ 	</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+ </div>
+ 
+ 
+  <div id="dlg2" class="easyui-dialog" style="width:180px;height:300px;padding: 10px 10px;top: 52px;left: 80px"
+   closed="true" buttons="#dlg-buttons2">
+   
+   	<ul id="typeTree" class="easyui-tree"></ul>
+   
+  </div>
+ 
+ <div id="dlg-buttons2">
+ 	<a href="javascript:saveGoodsTypeChoose()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
+ 	<a href="javascript:closeGoodsTypeChooseDialog()" class="easyui-linkbutton" iconCls="icon-cancel" plain="true">关闭</a>
+ </div>
+
+<div id="dlg4" class="easyui-dialog" style="width:650px;height:400px;padding: 5px 5px"
+	 closed="true" buttons="#dlg-buttons4" data-options="onClose:function(){resetValue()}">
+
+	<fieldset style="border-color: #E7F0FF">
+		<legend>台账信息</legend>
+		<form id="fm4" name="fm4" method="post">
+			<table cellspacing="8px">
+				<tr>
+					<td >合同编号：</td>
+					<td><input type="text" name="contractNo" size="10" readonly="readonly" disabled="false"/>
+					</td>
+					<td >商户姓名：</td>
+					<td><input type="text" name="signer" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >受益人：</td>
+					<td><input type="text" name="beneficiary" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td>合同版本：</td>
+					<td><input type="text" name="contractVersion" size="10"  readonly="readonly" disabled="true"/></td>
+					<td>合同状态：</td>
+					<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="true"/></td>
+					<td >所在区域：</td>
+					<td><input type="text" name="region" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td>楼层房号：</td>
+					<td><input type="text"  name="buildingInfo" size="10" readonly="readonly" disabled="true"/></td>
+					<td>楼层面积：</td>
+					<td><input type="text"name="buildingSize" size="10" readonly="readonly" disabled="false"/></td>
+					<td >签约方式：</td>
+					<td><input type="text" name="signingMode" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td>认购日期：</td>
+					<td><input type="text"  name="subscriptionDate" size="10" readonly="readonly" disabled="true"/></td>
+					<td>签约日期：</td>
+					<td><input type="text"  name="signingDate" size="10" readonly="readonly" disabled="true"/></td>
+					<td >销售原价：</td>
+					<td><input type="text" name="originalPrice" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td >总价：</td>
+					<td><input type="text" name="totalPrice" size="10"  readonly="readonly" /></td>
+					<td >签约总价：</td>
+					<td><input type="text" name="signTotalPrice" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >反租溢价：</td>
+					<td><input type="text" name="backPremium" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td >记租起始时日期：</td>
+					<td><input type="text" name="payStartDate" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >合同期：</td>
+					<td><input type="text" name="contractTerDate" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >回款时间：</td>
+					<td><input type="text" name="paybackDate" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td >方案：</td>
+					<td><input type="text" name="proposalId" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >合同状态：</td>
+					<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >税率：</td>
+					<td><input type="text" name="tariff" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+				<tr>
+					<td >个税金额：</td>
+					<td><input type="text" name="taxAmount" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >合同ID：</td>
+					<td><input type="text" name="id" size="10"  readonly="readonly" disabled="false"/></td>
+					<td >受益人：</td>
+					<td><input type="text" name="beneficiary" size="10"  readonly="readonly" disabled="false"/></td>
+				</tr>
+			</table>
+		</form>
+	</fieldset>
+	<div style="padding-left: 12px;padding-top: 10px">
+		<form id="fm5" method="post">
+			<table cellspacing="8px" align="center">
+				<tr>
+					<td>
+						<input type="hidden" id="action"/>
+						<input type="hidden" id="rowIndex"/>
+					</td>
+					<td><a href="javascript:editContract()" class="easyui-linkbutton"  iconCls="icon-edit">编辑</a></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:updateContract()" class="easyui-linkbutton"  iconCls="icon-save">保存</a></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+
+</body>
+</html>
