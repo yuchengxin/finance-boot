@@ -4,6 +4,7 @@ import com.gilab.wjj.core.BasicRentAgent;
 import com.gilab.wjj.core.ContractAgent;
 import com.gilab.wjj.front.utils.RestUtils;
 import com.gilab.wjj.persistence.model.BasicRentMonthResult;
+import com.gilab.wjj.persistence.model.BasicRentPeriodResult;
 import com.gilab.wjj.persistence.model.BasicRentResult;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +67,9 @@ public class BasicRentController {
     })
     @ResponseBody
     @RequestMapping(value = "/cal_period_basic_rent", method = { RequestMethod.GET }, produces = "application/json")
-    public BasicRentResult calPeriodBasicRent(final HttpServletResponse response,
-                                               @RequestParam final long contractId,
-                                              @RequestParam final int period) throws IOException {
+    public BasicRentPeriodResult calPeriodBasicRent(final HttpServletResponse response,
+                                                    @RequestParam final long contractId,
+                                                    @RequestParam final int period) throws IOException {
         //TODO
         //登录判断
 
