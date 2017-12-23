@@ -28,7 +28,19 @@
         bankAccount,
         merchantAddress
         from finance_merchants
-        where id = #{id,typeHandler=LongTypeHandler}
+        where
+        <if test="namePattern != null">
+            and merchantName regexp #{namePattern}
+        </if>
+        <if test="merchantPhone != null">
+            and merchantPhone = #{merchantPhone}
+        </if>
+        <if test="merchantIdNo != null">
+            and merchantIdNo = #{merchantIdNo}
+        </if>
+        <if test="bankAccount != null">
+            and bankAccount = #{bankAccount}
+        </if>
     </select>
 
     <!-- insert section -->

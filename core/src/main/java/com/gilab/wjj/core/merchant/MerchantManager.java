@@ -8,6 +8,8 @@ import com.gilab.wjj.persistence.model.SimpleReqResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by yuankui on 12/20/17.
  * <p>
@@ -32,8 +34,8 @@ public class MerchantManager implements MerchantAgent {
     }
 
     @Override
-    public ReqResult<Merchant> getMerchantWithFilter() {
-        return null;
+    public List<Merchant> getMerchantWithFilter(String merchantName, String merchantPhone, String merchantIdNo, String bankAccount) {
+        return merchantDao.getMerchantWithFilter(merchantName, merchantPhone, merchantIdNo, bankAccount);
     }
 
     @Override

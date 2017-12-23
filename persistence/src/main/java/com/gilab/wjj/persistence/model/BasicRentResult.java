@@ -22,6 +22,8 @@ public class BasicRentResult {
         this.result = result;
     }
 
+    public BasicRentResult(){}
+
     public long getContractId() {
         return contractId;
     }

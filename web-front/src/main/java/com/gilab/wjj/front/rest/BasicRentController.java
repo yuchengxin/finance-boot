@@ -43,7 +43,7 @@ public class BasicRentController {
     @ResponseBody
     @RequestMapping(value = "/cal_basic_rent/{contractId}", method = { RequestMethod.GET }, produces = "application/json")
     public BasicRentResult calBasicRentDetails(final HttpServletResponse response,
-                                          @RequestBody long contractId) throws IOException {
+                                          @PathVariable long contractId) throws IOException {
         //TODO
         //登录判断
 

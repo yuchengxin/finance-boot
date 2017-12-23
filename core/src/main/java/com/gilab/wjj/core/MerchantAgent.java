@@ -4,6 +4,8 @@ import com.gilab.wjj.persistence.model.Merchant;
 import com.gilab.wjj.persistence.model.ReqResult;
 import com.gilab.wjj.persistence.model.SimpleReqResult;
 
+import java.util.List;
+
 /**
  * Created by yuankui on 12/20/17.
  * <p>
@@ -15,7 +17,7 @@ public interface MerchantAgent extends Agent {
 
     ReqResult<Merchant> getMerchant(long merchantId);
 
-    ReqResult<Merchant> getMerchantWithFilter();
+    List<Merchant> getMerchantWithFilter(String merchantName, String merchantPhone, String merchantIdNo, String bankAccount);
 
     ReqResult<Merchant> createMerchant(Merchant merchant);
 
