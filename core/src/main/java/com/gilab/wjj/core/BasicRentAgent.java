@@ -1,9 +1,6 @@
 package com.gilab.wjj.core;
 
-import com.gilab.wjj.persistence.model.BasicRentMonthResult;
-import com.gilab.wjj.persistence.model.BasicRentResult;
-import com.gilab.wjj.persistence.model.Contract;
-import com.gilab.wjj.persistence.model.ReqResult;
+import com.gilab.wjj.persistence.model.*;
 
 /**
  * Created by yuankui on 12/20/17.
@@ -18,5 +15,5 @@ public interface BasicRentAgent extends Agent {
 
      ReqResult<BasicRentMonthResult> calBasicRentMonth(long contractId, long date);
 
-     ReqResult<BasicRentResult> calBasicRentPeriod(long contractId, int period);
+     ReqResult<BasicRentPeriodResult> calBasicRentPeriod(long contractId, int period);
 }

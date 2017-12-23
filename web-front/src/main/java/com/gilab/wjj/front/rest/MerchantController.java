@@ -62,7 +62,7 @@ public class MerchantController {
             @ApiResponse(code = 500, message = "服务器错误")
     })
     @ResponseBody
-    @RequestMapping(value = "/merchants", method = { RequestMethod.PUT }, produces = "application/json")
+    @RequestMapping(value = "/merchants{merchantId}", method = { RequestMethod.GET }, produces = "application/json")
     public Merchant getMerchant(final HttpServletResponse response,
                                    @PathVariable final long merchantId) throws IOException {
         //TODO
@@ -88,7 +88,7 @@ public class MerchantController {
             @ApiResponse(code = 500, message = "服务器错误")
     })
     @ResponseBody
-    @RequestMapping(value = "/merchants", method = { RequestMethod.PUT }, produces = "application/json")
+    @RequestMapping(value = "/merchants", method = { RequestMethod.GET }, produces = "application/json")
     public List<Merchant> getMerchantWithFilter(final HttpServletResponse response,
                                                @RequestParam final String merchantName,
                                                 @RequestParam final String merchantPhone,

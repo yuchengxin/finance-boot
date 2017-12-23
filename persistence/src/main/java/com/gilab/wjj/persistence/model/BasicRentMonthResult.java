@@ -13,17 +13,13 @@ public class BasicRentMonthResult {
     private String merchantName;
     private long contractId;
     private long proposalId;
-    private String calDtail;
-    private long date;
-    private double result;
+    private BasicResult monthResult;
 
-    public BasicRentMonthResult(String merchantName, long contractId, long proposalId, String calDtail, long date, double result) {
+    public BasicRentMonthResult(String merchantName, long contractId, long proposalId, BasicResult monthResult) {
         this.merchantName = merchantName;
         this.contractId = contractId;
         this.proposalId = proposalId;
-        this.calDtail = calDtail;
-        this.date = date;
-        this.result = result;
+        this.monthResult = monthResult;
     }
 
     public BasicRentMonthResult(){}
@@ -52,28 +48,12 @@ public class BasicRentMonthResult {
         this.proposalId = proposalId;
     }
 
-    public String getCalDtail() {
-        return calDtail;
+    public BasicResult getMonthResult() {
+        return monthResult;
     }
 
-    public void setCalDtail(String calDtail) {
-        this.calDtail = calDtail;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
-    public void setDate(long date) {
-        this.date = date;
-    }
-
-    public double getResult() {
-        return result;
-    }
-
-    public void setResult(double result) {
-        this.result = result;
+    public void setMonthResult(BasicResult monthResult) {
+        this.monthResult = monthResult;
     }
 
     @Override
@@ -82,9 +62,7 @@ public class BasicRentMonthResult {
                 "merchantName='" + merchantName + '\'' +
                 ", contractId=" + contractId +
                 ", proposalId=" + proposalId +
-                ", calDtail='" + calDtail + '\'' +
-                ", date='" + DateUtils.datetimeString(date, "yyyy-MM-dd") + '\'' +
-                ", result=" + result +
+                ", monthResult=" + monthResult +
                 '}';
     }
 
@@ -92,9 +70,7 @@ public class BasicRentMonthResult {
         private String merchantName;
         private long contractId;
         private long proposalId;
-        private String calDtail;
-        private long date;
-        private double result;
+        private BasicResult monthResult;
 
         public Builder merchantName(String merchantName){
             this.merchantName = merchantName;
@@ -111,23 +87,13 @@ public class BasicRentMonthResult {
             return this;
         }
 
-        public Builder calDtail(String calDtail){
-            this.calDtail = calDtail;
-            return this;
-        }
-
-        public Builder date(long date){
-            this.date = date;
-            return this;
-        }
-
-        public Builder result(double result){
-            this.result = result;
+        public Builder monthResult(BasicResult monthResult){
+            this.monthResult = monthResult;
             return this;
         }
 
         public BasicRentMonthResult build(){
-            return new BasicRentMonthResult(merchantName, contractId, proposalId, calDtail, date, result);
+            return new BasicRentMonthResult(merchantName, contractId, proposalId, monthResult);
         }
     }
 }
