@@ -4,4 +4,79 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gilab.wjj.persistence.mapper.MerchantMapper">
 
+    <!--select section -->
+    <select id="selectMerchant" resultMap="MerchantMap">
+        select
+        id,
+        merchantName,
+        merchantPhone,
+        merchantIdNo,
+        bankInfo,
+        bankAccount,
+        merchantAddress
+        from finance_merchants
+        where id = #{id,typeHandler=LongTypeHandler}
+    </select>
+
+    <select id="selectUserWithFilter" resultMap="MerchantMap">
+        select
+        id,
+        merchantName,
+        merchantPhone,
+        merchantIdNo,
+        bankInfo,
+        bankAccount,
+        merchantAddress
+        from finance_merchants
+        where id = #{id,typeHandler=LongTypeHandler}
+    </select>
+
+    <!-- insert section -->
+    <insert id="insertMerchant" useGeneratedKeys="true" keyProperty="id">
+        insert into finance_merchants (
+        merchantName,
+        merchantPhone,
+        merchantIdNo,
+        bankInfo,
+        bankAccount,
+        merchantAddress
+        )
+        values (
+        #{merchantName},
+        #{merchantPhone},
+        #{merchantIdNo},
+        #{bankInfo},
+        #{bankAccount},
+        #{merchantAddress}
+        )
+    </insert>
+
+    <!-- update section -->
+    <update id="updateMerchant" parameterType="Merchant">
+        update finance_merchants
+        set
+        merchantName = #{merchantName},
+        merchantPhone = #{merchantPhone},
+        merchantIdNo = #{merchantIdNo},
+        bankInfo =  #{bankInfo},
+        bankAccount = #{bankAccount},
+        merchantAddress = #{merchantAddress}
+        where id = #{id,typeHandler=LongTypeHandler}
+    </update>
+
+    <!-- delete section -->
+    <delete id="deleteMerchant">
+        delete from finance_merchants where id = #{id,typeHandler=LongTypeHandler}
+    </delete>
+
+    <resultMap id="MerchantMap" type="Merchant">
+        <id property="id" column="id"/>
+        <result property="merchantName" column="merchantName"/>
+        <result property="merchantPhone" column="merchantPhone"/>
+        <result property="merchantIdNo" column="merchantIdNo"/>
+        <result property="bankInfo" column="bankInfo"/>
+        <result property="bankAccount" column="bankAccount"/>
+        <result property="merchantAddress" column="merchantAddress"/>
+    </resultMap>
+
 </mapper>

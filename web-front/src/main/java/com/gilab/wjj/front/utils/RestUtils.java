@@ -1,4 +1,4 @@
-package com.gilab.wjj.utils;
+package com.gilab.wjj.front.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package com.gilab.wjj.rest;
+package com.gilab.wjj.front.rest;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,7 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @EnableSwagger2
 @Configuration
-@ComponentScan(basePackages = {"com.gilab.wjj.rest"})
+@ComponentScan(basePackages = {"com.gilab.wjj.front.rest"})
 @Profile("dev")
 public class SwaggerBootConfiguration extends WebMvcConfigurerAdapter {
 
@@ -30,8 +30,8 @@ public class SwaggerBootConfiguration extends WebMvcConfigurerAdapter {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gilab.wjj.rest"))
-                .paths(PathSelectors.regex("/api/admin/v1/.*"))
+                .apis(RequestHandlerSelectors.basePackage("com.gilab.wjj.front.rest"))
+                .paths(PathSelectors.regex("/api/v1/.*"))
                 .build();
     }
 

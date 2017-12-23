@@ -4,4 +4,181 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gilab.wjj.persistence.mapper.ContractMapper">
 
+    <!--select section -->
+    <select id="selectContract" resultMap="ContractMap">
+        select
+        id,
+        region,
+        contractNo,
+        contractVersion,
+        subscriptionDate,
+        signer,
+        signingMode,
+        signingDate,
+        buildingInfo,
+        buildingSize,
+        originalPrice,
+        totalPrice,
+        signTotalPrice,
+        leasebackPrice,
+        backPremium,
+        payStartDate,
+        contractTerDate,
+        paybackDate,
+        beneficiary,
+        proposalId,
+        contractStatus,
+        tariff,
+        taxAmount,
+        logs
+        from finance_contract
+        where id = #{id,typeHandler=LongTypeHandler}
+    </select>
+
+    <select id="selectContractWithFilter" resultMap="ContractMap">
+        select
+        id,
+        region,
+        contractNo,
+        contractVersion,
+        subscriptionDate,
+        signer,
+        signingMode,
+        signingDate,
+        buildingInfo,
+        buildingSize,
+        originalPrice,
+        totalPrice,
+        signTotalPrice,
+        leasebackPrice,
+        backPremium,
+        payStartDate,
+        contractTerDate,
+        paybackDate,
+        beneficiary,
+        proposalId,
+        contractStatus,
+        tariff,
+        taxAmount,
+        logs
+        from finance_contract
+        where id = #{id,typeHandler=LongTypeHandler}
+    </select>
+
+    <insert id="insertContract" useGeneratedKeys="true" keyProperty="id">
+        insert into finance_contract (
+        region,
+        contractNo,
+        contractVersion,
+        subscriptionDate,
+        signer,
+        signingMode,
+        signingDate,
+        buildingInfo,
+        buildingSize,
+        originalPrice,
+        totalPrice,
+        signTotalPrice,
+        leasebackPrice,
+        backPremium,
+        payStartDate,
+        contractTerDate,
+        paybackDate,
+        beneficiary,
+        proposalId,
+        contractStatus,
+        tariff,
+        taxAmount,
+        logs
+        )
+        values (
+        #{region},
+        #{contractNo},
+        #{contractVersion},
+        #{subscriptionDate,typeHandler=TimestampLongHandler},
+        #{signer,typeHandler=ListMerchant2StringHandler},
+        #{signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
+        #{signingDate,typeHandler=TimestampLongHandler},
+        #{buildingInfo},
+        #{buildingSize},
+        #{originalPrice},
+        #{totalPrice},
+        #{signTotalPrice},
+        #{leasebackPrice},
+        #{backPremium},
+        #{payStartDate,typeHandler=TimestampLongHandler},
+        #{contractTerDate,typeHandler=TimestampLongHandler},
+        #{paybackDate,typeHandler=TimestampLongHandler},
+        #{beneficiary,typeHandler=MerchantHandler},
+        #{proposalId,typeHandler=LongTypeHandler},
+        #{contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler},
+        #{tariff},
+        #{taxAmount},
+        #{logs}
+        )
+    </insert>
+
+    <!-- update section -->
+    <update id="updateContract" parameterType="Contract">
+        update finance_contract
+        set
+        region = #{region},
+        contractNo = #{contractNo},
+        contractVersion = #{contractVersion},
+        subscriptionDate = #{subscriptionDate,typeHandler=TimestampLongHandler},
+        signer = #{signer,typeHandler=ListMerchant2StringHandler},
+        signingMode = #{signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
+        signingDate = #{signingDate,typeHandler=TimestampLongHandler},
+        buildingInfo = #{buildingInfo},
+        buildingSize = #{buildingSize},
+        originalPrice = #{originalPrice},
+        totalPrice = #{totalPrice},
+        signTotalPrice = #{signTotalPrice},
+        leasebackPrice = #{leasebackPrice},
+        backPremium = #{backPremium},
+        payStartDate = #{payStartDate,typeHandler=TimestampLongHandler},
+        contractTerDate =  #{contractTerDate,typeHandler=TimestampLongHandler},
+        paybackDate = #{paybackDate,typeHandler=TimestampLongHandler},
+        beneficiary = #{beneficiary,typeHandler=MerchantHandler},
+        proposalId = #{proposalId,typeHandler=LongTypeHandler},
+        contractStatus = #{contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler},
+        tariff = #{tariff},
+        taxAmount = #{taxAmount},
+        logs = #{logs}
+        where id = #{id,typeHandler=LongTypeHandler}
+    </update>
+
+    <!-- delete section -->
+    <delete id="deleteContract">
+        delete from finance_contract where id = #{id,typeHandler=LongTypeHandler}
+    </delete>
+
+    <resultMap id="ContractMap" type="Contract">
+        <id property="id" column="id"/>
+        <result property="region" column="region"/>
+        <result property="contractNo" column="contractNo"/>
+        <result property="contractVersion" column="contractVersion"/>
+        <result property="subscriptionDate" column="subscriptionDate" typeHandler="TimestampLongHandler"/>
+        <result property="signer" column="signer" typeHandler="ListMerchant2StringHandler"/>
+        <result property="signingMode" column="signingMode" javaType="SigningMode" typeHandler="SigningModeHandler"/>
+        <result property="signingDate" column="signingDate" typeHandler="TimestampLongHandler"/>
+        <result property="buildingInfo" column="buildingInfo"/>
+        <result property="buildingSize" column="buildingSize"/>
+        <result property="originalPrice" column="originalPrice"/>
+        <result property="totalPrice" column="totalPrice"/>
+        <result property="signTotalPrice" column="signTotalPrice"/>
+        <result property="leasebackPrice" column="leasebackPrice"/>
+        <result property="backPremium" column="backPremium"/>
+        <result property="payStartDate" column="payStartDate" typeHandler="TimestampLongHandler"/>
+        <result property="contractTerDate" column="contractTerDate" typeHandler="TimestampLongHandler"/>
+        <result property="paybackDate" column="paybackDate" typeHandler="TimestampLongHandler"/>
+        <result property="beneficiary" column="beneficiary" javaType="Merchant" typeHandler="MerchantHandler"/>
+        <result property="proposalId" column="proposalId"/>
+        <result property="contractStatus" column="contractStatus" javaType="ContractStatus" typeHandler="ContractStatusHandler"/>
+        <result property="tariff" column="tariff"/>
+        <result property="taxAmount" column="taxAmount"/>
+        <result property="logs" column="logs"/>
+
+    </resultMap>
+
 </mapper>

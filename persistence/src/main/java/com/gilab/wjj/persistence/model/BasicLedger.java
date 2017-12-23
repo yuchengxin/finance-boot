@@ -105,9 +105,9 @@ public class BasicLedger implements Entity {
                 ", contractId=" + contractId +
                 ", merchantId=" + merchantId +
                 ", calFormula='" + calFormula + '\'' +
-                ", planPayDate=" + DateUtils.datetimeString(planPayDate) +
+                ", planPayDate=" + DateUtils.datetimeString(planPayDate, "yyyy-MM-dd") +
                 ", planPayCount=" + planPayCount +
-                ", actualPayDate=" + DateUtils.datetimeString(actualPayDate) +
+                ", actualPayDate=" + DateUtils.datetimeString(actualPayDate, "yyyy-MM-dd") +
                 ", actualPayCount=" + actualPayCount +
                 '}';
     }

@@ -1,8 +1,12 @@
 package com.gilab.wjj.util;
 
+import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import net.sf.json.JSONObject;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,12 +101,16 @@ public class StringUtils {
         return tokens;
     }
 
-    public static String jsonFromMap(Map<String, String> map) {
+    public static String map2String(Map<String, String> map) {
         return ConfigFactory.parseMap(map).root().render(ConfigRenderOptions.concise());
     }
 
-    public static Map<String, Object> stringToMap(String inputStr) {
+    public static Map<String, Object> string2Map(String inputStr) {
         JSONObject jb = JSONObject.fromObject(inputStr);
         return (Map<String, Object>) jb;
+    }
+
+    public static Object string2Entity(String str, Class entity){
+        return JSON.parseObject(str,entity);
     }
 }

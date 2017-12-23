@@ -1,10 +1,10 @@
-package com.gilab.wjj.rest;
+package com.gilab.wjj.admin.rest;
 
 
 import com.gilab.wjj.core.UserAgent;
 import com.gilab.wjj.persistence.model.User;
 import com.gilab.wjj.util.logback.LoggerFactory;
-import com.gilab.wjj.utils.RestUtils;
+import com.gilab.wjj.admin.utils.RestUtils;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

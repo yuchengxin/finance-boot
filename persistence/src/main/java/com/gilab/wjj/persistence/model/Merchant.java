@@ -1,5 +1,8 @@
 package com.gilab.wjj.persistence.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by yuankui on 12/17/17.
  * <p>
@@ -7,7 +10,10 @@ package com.gilab.wjj.persistence.model;
  * <p>
  * Change:
  */
-public class Merchant implements Entity{
+public class Merchant implements Entity, Cloneable{
+
+    private static final Logger logger = LoggerFactory.getLogger(User.class);
+
     private long id;
     private String merchantName;
     private String merchantPhone;
@@ -88,15 +94,26 @@ public class Merchant implements Entity{
 
     @Override
     public String toString() {
-        return "Merchant{" +
-                "id=" + id +
-                ", merchantName='" + merchantName + '\'' +
-                ", merchantPhone='" + merchantPhone + '\'' +
-                ", merchantIdNo='" + merchantIdNo + '\'' +
-                ", bankInfo='" + bankInfo + '\'' +
-                ", bankAccount='" + bankAccount + '\'' +
-                ", merchantAddress='" + merchantAddress + '\'' +
+        return "{" +
+                "id:" + id +
+                ", merchantName:'" + merchantName + '\'' +
+                ", merchantPhone:'" + merchantPhone + '\'' +
+                ", merchantIdNo:'" + merchantIdNo + '\'' +
+                ", bankInfo:'" + bankInfo + '\'' +
+                ", bankAccount:'" + bankAccount + '\'' +
+                ", merchantAddress:'" + merchantAddress + '\'' +
                 '}';
+    }
+
+    @Override
+    public Merchant clone() {
+        Merchant cloned = null;
+        try {
+            cloned = (Merchant) super.clone();
+        } catch (CloneNotSupportedException e) {
+            logger.error("Failed to clone UserBean", e);
+        }
+        return cloned;
     }
 
     public static class Builder{
