@@ -26,8 +26,8 @@ public class MerchantDaoImpl implements MerchantDao {
     }
 
     @Override
-    public List<Merchant> getMerchantWithFilter() {
-        return mapper.selectMerchantWithFilter();
+    public List<Merchant> getMerchantWithFilter(String merchantName, String merchantPhone, String merchantIdNo, String bankAccount) {
+        return mapper.selectMerchantWithFilter(merchantName, merchantPhone, merchantIdNo, bankAccount);
     }
 
     @Override

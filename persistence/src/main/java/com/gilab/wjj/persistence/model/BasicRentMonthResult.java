@@ -26,6 +26,8 @@ public class BasicRentMonthResult {
         this.result = result;
     }
 
+    public BasicRentMonthResult(){}
+
     public String getMerchantName() {
         return merchantName;
     }

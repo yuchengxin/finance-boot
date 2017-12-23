@@ -17,7 +17,10 @@ import java.util.List;
 public interface MerchantMapper {
     Merchant selectMerchant(@Param("id") long merchantId);
 
-    List<Merchant> selectMerchantWithFilter();
+    List<Merchant> selectMerchantWithFilter(@Param("merchantName") String namePattern,
+                                            @Param("merchantPhone") String merchantPhone,
+                                            @Param("merchantIdNo") String merchantIdNo,
+                                            @Param("bankAccount") String bankAccount);
 
     void insertMerchant(Merchant merchant);
 

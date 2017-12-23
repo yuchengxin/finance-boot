@@ -14,7 +14,7 @@ import java.util.List;
 public interface MerchantDao {
     Merchant getMerchant(long merchantId);
 
-    List<Merchant> getMerchantWithFilter();
+    List<Merchant> getMerchantWithFilter(String merchantName, String merchantPhone, String merchantIdNo, String bankAccount);
 
     long createMerchant(Merchant merchant);
 
