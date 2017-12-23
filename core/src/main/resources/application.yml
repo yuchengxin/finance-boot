@@ -1,0 +1,12 @@
+# added for profile
+spring.profiles.active: dev
+
+# the general settings for task_system application
+app:
+  # the application name
+  name: finance
+
+# web container config
+server.port: 8080
+
+

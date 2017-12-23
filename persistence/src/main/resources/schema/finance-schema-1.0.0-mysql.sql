@@ -16,7 +16,6 @@ CREATE TABLE finance_user (
   lastUpdateTime   DATETIME(3) on update current_timestamp(3)
 ) charset=utf8;
 
-
 CREATE INDEX idx_finance_user_username ON finance_user (username);
 CREATE INDEX idx_finance_user_permissions ON finance_user (permissions);
 
@@ -45,7 +44,7 @@ CREATE TABLE finance_contract (
   contractNo       VARCHAR(100)        ,
   contractVersion  VARCHAR(20)        NOT NULL ,
   subscriptionDate DATETIME(3)        NOT NULL ,
-  signer           VARCHAR(200)       NOT NULL ,
+  signer           VARCHAR(1000)       NOT NULL ,
   signingMode      SMALLINT           NOT NULL ,
   signingDate      DATETIME(3)        NOT NULL ,
   buildingInfo     VARCHAR(100)       NOT NULL ,
@@ -58,7 +57,7 @@ CREATE TABLE finance_contract (
   paybackDate      DATETIME(3)        NOT NULL ,
   payStartDate     DATETIME(3)        NOT NULL ,
   contractTerDate  DATETIME(3)        NOT NULL ,
-  beneficiary      BIGINT             NOT NULL ,
+  beneficiary      VARCHAR(200)       NOT NULL ,
   proposalId       INT                NOT NULL ,
   contractStatus   SMALLINT           NOT NULL ,
   tariff           DOUBLE              ,
@@ -77,7 +76,7 @@ CREATE TABLE finance_contract_history (
   contractNo       VARCHAR(100)        ,
   contractVersion  VARCHAR(20)        NOT NULL ,
   subscriptionDate DATETIME(3)        NOT NULL ,
-  signer           VARCHAR(200)       NOT NULL ,
+  signer           VARCHAR(1000)       NOT NULL ,
   signingMode      SMALLINT           NOT NULL ,
   signingDate      DATETIME(3)        NOT NULL ,
   buildingInfo     VARCHAR(100)       NOT NULL ,
@@ -88,7 +87,7 @@ CREATE TABLE finance_contract_history (
   leasebackPrice   INT                NOT NULL ,
   backPremium      INT                NOT NULL ,
   paybackDate      DATETIME(3)        NOT NULL ,
-  beneficiary      BIGINT             NOT NULL ,
+  beneficiary      VARCHAR(200)       NOT NULL ,
   proposalId       INT                NOT NULL ,
   contractStatus   SMALLINT           NOT NULL ,
   tariff           DOUBLE              ,
@@ -169,10 +168,10 @@ CREATE TABLE finance_leaseback_proposal (
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;
 
-INSERT INTO finance_leaseback_proposal (leasebackLife, marketCulLife, leasebackStages, conf, proposalDes)
+INSERT INTO finance_leaseback_proposal (proposalName, leasebackLife, marketCulLife, leasebackStages, conf, proposalDes)
 VALUES
-  (15, 3, 3, '{"first":{"year":2, "proportion":0.065}, "second":{"year":5, "proportion":0.07}, "third":{"year":5, "proportion":0.075}}','etl'),
-  (5, 3, 1, '{"first":{"year":2, "proportion":0.065}}', 'etl');
+  ('v1', 15, 3, 3, '[{"period":1, "duration":2, "proportion":0.065}, {"period":2, "duration":5, "proportion":0.07}, {"period":3, "duration":5, "proportion":0.075}]','etl'),
+  ('v2', 5, 3, 1, '[{"period":1, "duration":2, "proportion":0.065}]', 'etl');
 
 CREATE TABLE finance_proposal_history (
   hisId            INT                   NOT NULL  AUTO_INCREMENT  PRIMARY KEY ,

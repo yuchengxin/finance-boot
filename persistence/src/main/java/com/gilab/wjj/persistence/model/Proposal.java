@@ -1,5 +1,10 @@
 package com.gilab.wjj.persistence.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 /**
  * Created by yuankui on 12/17/17.
  * <p>
@@ -7,19 +12,25 @@ package com.gilab.wjj.persistence.model;
  * <p>
  * Change:
  */
-public class Proposal implements Entity {
-    private int id;
+public class Proposal implements Entity, Cloneable {
+
+    private static final Logger logger = LoggerFactory.getLogger(User.class);
+
+    private long id;
+    private String proposalName;
     private int leasebackLife;
     private int marketCulLife;
     private int leasebackStages;
-    private String conf;
+    private List<PeriodCalStandard> conf;
     private String proposalDes;
 
     public Proposal() {
     }
 
-    public Proposal(int id, int leasebackLife, int marketCulLife, int leasebackStages, String conf, String proposalDes) {
+    public Proposal(long id, String proposalName, int leasebackLife, int marketCulLife, int leasebackStages,
+                    List<PeriodCalStandard> conf, String proposalDes) {
         this.id = id;
+        this.proposalName = proposalName;
         this.leasebackLife = leasebackLife;
         this.marketCulLife = marketCulLife;
         this.leasebackStages = leasebackStages;
@@ -27,8 +38,20 @@ public class Proposal implements Entity {
         this.proposalDes = proposalDes;
     }
 
-    public void setId(int id) {
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public String getProposalName() {
+        return proposalName;
+    }
+
+    public void setProposalName(String proposalName) {
+        this.proposalName = proposalName;
     }
 
     public int getLeasebackLife() {
@@ -47,20 +70,12 @@ public class Proposal implements Entity {
         this.marketCulLife = marketCulLife;
     }
 
-    public int getleasebackStages() {
+    public int getLeasebackStages() {
         return leasebackStages;
     }
 
-    public void setleasebackStages(int leasebackStages) {
+    public void setLeasebackStages(int leasebackStages) {
         this.leasebackStages = leasebackStages;
-    }
-
-    public String getConf() {
-        return conf;
-    }
-
-    public void setConf(String conf) {
-        this.conf = conf;
     }
 
     public String getProposalDes() {
@@ -69,6 +84,14 @@ public class Proposal implements Entity {
 
     public void setProposalDes(String proposalDes) {
         this.proposalDes = proposalDes;
+    }
+
+    public List<PeriodCalStandard> getConf() {
+        return conf;
+    }
+
+    public void setConf(List<PeriodCalStandard> conf) {
+        this.conf = conf;
     }
 
     @Override
@@ -80,6 +103,7 @@ public class Proposal implements Entity {
     public String toString() {
         return "Proposal{" +
                 "id=" + id +
+                ", proposalName='" + proposalName + '\'' +
                 ", leasebackLife=" + leasebackLife +
                 ", marketCulLife=" + marketCulLife +
                 ", leasebackStages=" + leasebackStages +
@@ -88,16 +112,33 @@ public class Proposal implements Entity {
                 '}';
     }
 
+    @Override
+    public Proposal clone() {
+        Proposal cloned = null;
+        try {
+            cloned = (Proposal) super.clone();
+        } catch (CloneNotSupportedException e) {
+            logger.error("Failed to clone UserBean", e);
+        }
+        return cloned;
+    }
+
     public static class Builder{
-        private int id;
+        private long id;
+        private String proposalName;
         private int leasebackLife;
         private int marketCulLife;
         private int leasebackStages;
-        private String conf;
+        private List<PeriodCalStandard> conf;
         private String proposalDes;
 
-        public Builder id(int id){
+        public Builder id(long id){
             this.id = id;
+            return this;
+        }
+
+        public Builder proposalName(String proposalName){
+            this.proposalName = proposalName;
             return this;
         }
 
@@ -116,7 +157,7 @@ public class Proposal implements Entity {
             return this;
         }
 
-        public Builder conf(String conf){
+        public Builder conf(List<PeriodCalStandard> conf){
             this.conf = conf;
             return this;
         }
@@ -127,7 +168,7 @@ public class Proposal implements Entity {
         }
 
         public Proposal build(){
-            return new Proposal(id, leasebackLife, marketCulLife, leasebackStages, conf, proposalDes);
+            return new Proposal(id, proposalName, leasebackLife, marketCulLife, leasebackStages, conf, proposalDes);
         }
     }
 }

@@ -4,4 +4,78 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gilab.wjj.persistence.mapper.ProposalMapper">
 
+    <!--select section -->
+    <select id="selectProposal" resultMap="ProposalMap">
+        select
+        id,
+        proposalName,
+        leasebackLife,
+        marketCulLife,
+        leasebackStages,
+        conf,
+        proposalDes
+        from finance_leaseback_proposal
+        where id = #{id,typeHandler=LongTypeHandler}
+    </select>
+
+    <select id="selectProposalWithFilter" resultMap="ProposalMap">
+        select
+        id,
+        proposalName,
+        leasebackLife,
+        marketCulLife,
+        leasebackStages,
+        conf,
+        proposalDes
+        from finance_leaseback_proposal
+    </select>
+
+    <!-- insert section -->
+    <insert id="insertProposal" useGeneratedKeys="true" keyProperty="id">
+        insert into finance_leaseback_proposal (
+        proposalName,
+        leasebackLife,
+        marketCulLife,
+        leasebackStages,
+        conf,
+        proposalDes
+        )
+        values (
+        #{proposalName},
+        #{leasebackLife},
+        #{marketCulLife},
+        #{leasebackStages},
+        #{conf,typeHandler=ListPeriodCalStandard2StringHandler},
+        #{proposalDes}
+        )
+    </insert>
+
+    <!-- update section -->
+    <update id="updateProposal" parameterType="Proposal">
+        update finance_leaseback_proposal
+        set
+        proposalName = #{proposalName},
+        leasebackLife = #{leasebackLife},
+        marketCulLife = #{marketCulLife},
+        leasebackStages =  #{leasebackStages},
+        conf = #{conf,typeHandler=ListPeriodCalStandard2StringHandler},
+        proposalDes = #{proposalDes}
+        where id = #{id,typeHandler=LongTypeHandler}
+    </update>
+
+    <!-- delete section -->
+    <delete id="deleteProposal">
+        delete from finance_leaseback_proposal where id = #{id,typeHandler=LongTypeHandler}
+    </delete>
+
+    <resultMap id="ProposalMap" type="Proposal">
+        <id property="id" column="id"/>
+        <result property="proposalName" column="proposalName"/>
+        <result property="leasebackLife" column="leasebackLife"/>
+        <result property="marketCulLife" column="marketCulLife"/>
+        <result property="leasebackStages" column="leasebackStages"/>
+        <result property="conf" column="conf" typeHandler="ListPeriodCalStandard2StringHandler"/>
+        <result property="proposalDes" column="proposalDes"/>
+    </resultMap>
+
 </mapper>

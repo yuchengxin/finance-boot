@@ -29,6 +29,7 @@ public enum FinanceErrMsg implements ErrMsg {
     CLIENT_FAILURE(70016, "Client failure"),
     AUTHORIZATION_FAILURE(70017, "Authorization failure"),
     LICENSE_ERROR(70018, "License error"),
+    NAMED_INPUT_ILLEGAL(70019, "the input is illegal"),
 
     NAMED_METHOD_NOT_SUPPORTED(71000, "Method[{0}] is not supported i current version", true),
     NAMED_CONFIG_MISSING(71001, "Configuration[{0}] is missing", true),
@@ -49,6 +50,7 @@ public enum FinanceErrMsg implements ErrMsg {
     NAMED_CLIENT_FAILURE(71016, "Client failure: {0}", true),
     NAMED_AUTHORIZATION_FAILURE(71017, "Authorization failure: {0}", true),
     NAMED_LICENSE_ERROR(71018, "License error: {0}", true);
+
 
     private MsgPrefix prefix = MsgPrefix.COMMON;
     private int errCode;
