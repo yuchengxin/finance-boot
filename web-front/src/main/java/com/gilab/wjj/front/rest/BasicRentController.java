@@ -6,6 +6,7 @@ import com.gilab.wjj.front.utils.RestUtils;
 import com.gilab.wjj.persistence.model.BasicRentMonthResult;
 import com.gilab.wjj.persistence.model.BasicRentPeriodResult;
 import com.gilab.wjj.persistence.model.BasicRentResult;
+import com.gilab.wjj.persistence.model.BasicRentYearResult;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -101,5 +102,30 @@ public class BasicRentController {
         //TODO
         //权限判断
         return RestUtils.getOrSendError(response, basicRentMgr.calBasicRentMonth(contractId, date));
+    }
+
+    @ApiOperation(value = "计算某一年基本租金", notes = "某一年基本返租租金明细的计算", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contractId", value = "合同id", required = true, dataType = "long", paramType = "query"),
+            @ApiImplicitParam(name = "year", value = "年份", required = true, dataType = "int", paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/cal_year_basic_rent", method = { RequestMethod.GET }, produces = "application/json")
+    public BasicRentYearResult calMonthBasicRent(final HttpServletResponse response,
+                                                 @RequestParam final long contractId,
+                                                 @RequestParam final int year) throws IOException {
+        //TODO
+        //登录判断
+
+        //TODO
+        //权限判断
+        return RestUtils.getOrSendError(response, basicRentMgr.calBasicRentYear(contractId, year));
     }
 }

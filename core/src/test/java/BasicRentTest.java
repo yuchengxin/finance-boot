@@ -38,7 +38,7 @@ public class BasicRentTest {
     @Autowired
     private BasicRentManager basicRentMgr;
 
-//    @Ignore
+    @Ignore
     @Test
     public void testBasicRentCalculation(){
         List<Merchant> signer = new ArrayList<>();
@@ -98,8 +98,11 @@ public class BasicRentTest {
                 .build();
         Contract newContract = contractMgr.createContract(contract).getResult();
 
-        BasicRentMonthResult monthResult = basicRentMgr.calBasicRentMonth(newContract.getId(), DateUtils.parseDatetime("2023-11-30")).getResult();
+        BasicRentMonthResult monthResult = basicRentMgr.calBasicRentMonth(newContract.getId(), DateUtils.parseDatetime("2030-11-5")).getResult();
         System.out.println(monthResult);
+
+        BasicRentYearResult yearResult = basicRentMgr.calBasicRentYear(newContract.getId(), 2030).getResult();
+        System.out.println(yearResult);
 
         BasicRentPeriodResult periodResult = basicRentMgr.calBasicRentPeriod(newContract.getId(), 3).getResult();
         System.out.println(periodResult);
