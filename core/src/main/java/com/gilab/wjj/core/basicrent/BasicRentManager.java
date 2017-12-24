@@ -4,7 +4,6 @@ import com.gilab.wjj.core.BasicRentAgent;
 import com.gilab.wjj.exception.FinanceErrMsg;
 import com.gilab.wjj.exception.FinanceRuntimeException;
 import com.gilab.wjj.persistence.dao.ContractDao;
-import com.gilab.wjj.persistence.dao.MerchantDao;
 import com.gilab.wjj.persistence.dao.ProposalDao;
 import com.gilab.wjj.persistence.model.*;
 import com.gilab.wjj.util.DateUtils;
@@ -50,11 +49,16 @@ public class BasicRentManager implements BasicRentAgent {
         for(int i = 1; i <= proposal.getLeasebackStages(); i++){
             allResult.addAll(calBasicRentPeriodAmount(contract, i));
         }
+        double total = 0;
+        for(PeriodCalStandard p : proposal.getConf()){
+            total += calAnnualRent(contract, p) * p.getDuration();
+        }
         BasicRentResult result = new BasicRentResult.Builder()
                 .contractId(contractId)
                 .merchantName(getMerchantFromContract(contract))
                 .proposalId(proposal.getId())
                 .result(allResult)
+                .total(total)
                 .build();
         return ReqResult.success(result, "Finished calculated.");
     }
@@ -66,6 +70,7 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find contract[d%]", contractId);
             return ReqResult.fail("Cannot find contract[%d]", contractId);
         }
+        date = formatDate(contract, date);
         if(!isDateLegal(contract, date)){
             logger.error("date is illegal");
             return ReqResult.fail("date:{} is illegal", date);
@@ -95,6 +100,66 @@ public class BasicRentManager implements BasicRentAgent {
     }
 
     @Override
+    public ReqResult<BasicRentYearResult> calBasicRentYear(long contractId, int year) {
+        Contract contract = contractDao.getContract(contractId);
+        if(contract == null) {
+            logger.error("can't find contract[d%]", contractId);
+            return ReqResult.fail("Cannot find contract[%d]", contractId);
+        }
+        Calendar calendar=Calendar.getInstance();
+        long startTime = contract.getPayStartDate();
+        calendar.setTimeInMillis(startTime);
+        int startYear = calendar.get(Calendar.YEAR);
+        int everyMonth = calendar.get(Calendar.MONTH) + 1;
+        long endTime = contract.getContractTerDate();
+        calendar.setTimeInMillis(endTime);
+        int endYear = calendar.get(Calendar.YEAR);
+        if(year < startYear || year > endYear){
+            logger.error("date is illegal");
+            return ReqResult.fail("date:{} is illegal", year);
+        }
+        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
+        if(proposal == null){
+            logger.error("can't find proposal[d%]", contract.getProposalId());
+            return ReqResult.fail("Cannot find contract[%d]'s proposal", contractId);
+        }
+        int start = 0;
+        int end = 12;
+        if(year == startYear){
+            start = everyMonth;
+        }else if(year == endYear){
+            end = everyMonth;
+        }
+        List<BasicResult> yearResult = new ArrayList<>();
+        double yearTotal = 0;
+        for(int i = start; i < end; i++){
+            long date = DateUtils.convertJodaTime(startTime).plusYears(year - startYear).plusMonths(i + 1 - everyMonth).getMillis();
+            PeriodCalStandard period = getPeriod(contract, date);
+            if(period == null){
+                logger.error("period is illegal");
+                throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "period is illegal");
+            }
+            double amount = calBasicRentMonthAmount(contract, period, date);
+            yearTotal += amount;
+            BasicResult basic = new BasicResult.Builder()
+                    .calDtail(period.toString())
+                    .date(date)
+                    .amount(amount)
+                    .build();
+            yearResult.add(basic);
+        }
+        BasicRentYearResult basicRentYearResult = new BasicRentYearResult.Builder()
+                .contractId(contractId)
+                .merchantName(getMerchantFromContract(contract))
+                .proposalId(proposal.getId())
+                .year(year)
+                .yearResult(yearResult)
+                .yearTotal(yearTotal)
+                .build();
+        return ReqResult.success(basicRentYearResult, "Finished calculated year basic rent.");
+    }
+
+    @Override
     public ReqResult<BasicRentPeriodResult> calBasicRentPeriod(long contractId, int period) {
         Contract contract = contractDao.getContract(contractId);
         if(contract == null) {
@@ -106,12 +171,14 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find proposal[d%]", contract.getProposalId());
             return ReqResult.fail("Cannot find contract[%d]'s proposal", contractId);
         }
+        double periodTotal = calAnnualRent(contract, proposal.getPeriodInfo(period)) * proposal.getPeriodInfo(period).getDuration();
         BasicRentPeriodResult periodResult =  new BasicRentPeriodResult.Builder()
                 .contractId(contractId)
                 .merchantName(getMerchantFromContract(contract))
                 .period(period)
                 .proposalId(proposal.getId())
                 .periodResult(calBasicRentPeriodAmount(contract, period))
+                .periodTotal(periodTotal)
                 .build();
         return ReqResult.success(periodResult, "Finished calculated period basic rent.");
     }
@@ -127,14 +194,8 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("period is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Period is illegal");
         }
-        PeriodCalStandard actualPeriod = null;
+        PeriodCalStandard actualPeriod = proposal.getPeriodInfo(period);
         List<BasicResult> resultDetails = new ArrayList<>();
-        for(PeriodCalStandard p : proposal.getConf()){
-            if(p.getPeriod() == period){
-                actualPeriod = p;
-                break;
-            }
-        }
         if(actualPeriod == null){
             logger.error("period is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Period is illegal");
@@ -174,13 +235,16 @@ public class BasicRentManager implements BasicRentAgent {
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
         }
         Double result = null;
-        double annualRent;
-        annualRent = Math.rint(contract.getLeasebackPrice() * period.getProportion());
+        double annualRent = calAnnualRent(contract, period);
         if(isDateSameMonth(date, contract.getPayStartDate())){
             result = annualRent - Math.rint(annualRent/12)*11;
         }else
             result = Math.rint(annualRent/12);
         return result;
+    }
+
+    private double calAnnualRent(Contract contract, PeriodCalStandard period){
+        return Math.rint(contract.getLeasebackPrice() * period.getProportion());
     }
 
     private PeriodCalStandard getPeriod(Contract contract, long date){
@@ -197,11 +261,23 @@ public class BasicRentManager implements BasicRentAgent {
         return null;
     }
 
+    private long formatDate(Contract contract, long date){
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTimeInMillis(date);
+        int year =  calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        long startTime = contract.getPayStartDate();
+        calendar.setTimeInMillis(startTime);
+        int startYear = calendar.get(Calendar.YEAR);
+        int startMonth = calendar.get(Calendar.MONTH);
+        return DateUtils.convertJodaTime(startTime).plusYears(year - startYear).plusMonths(month - startMonth).getMillis();
+    }
+
     private String getMerchantFromContract(Contract contract){
         List<Merchant> merchants = contract.getSigner();
         String str ="";
         for (Merchant m : merchants){
-            str += m.getMerchantName()+",";
+            str += (m.getMerchantName() + ",");
         }
         return str.substring(0, str.length()-1);
     }
@@ -209,7 +285,7 @@ public class BasicRentManager implements BasicRentAgent {
     private boolean isDateLegal(Contract contract, long date){
         long startTime = contract.getPayStartDate();
         long endTime = contract.getContractTerDate();
-        return date >= startTime && date <= endTime;
+        return date >= DateUtils.convertJodaTime(startTime).plusMonths(1).getMillis() && date <= endTime;
     }
 
     private boolean isDateSameMonth(long dateA, long dateB){

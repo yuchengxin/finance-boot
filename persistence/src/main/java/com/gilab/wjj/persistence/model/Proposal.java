@@ -123,6 +123,15 @@ public class Proposal implements Entity, Cloneable {
         return cloned;
     }
 
+    public PeriodCalStandard getPeriodInfo(int period){
+        for(PeriodCalStandard p: conf){
+            if(p.getPeriod() == period){
+                return p;
+            }
+        }
+        return null;
+    }
+
     public static class Builder{
         private long id;
         private String proposalName;

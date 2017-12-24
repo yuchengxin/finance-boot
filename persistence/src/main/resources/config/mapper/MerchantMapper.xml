@@ -18,7 +18,7 @@
         where id = #{id,typeHandler=LongTypeHandler}
     </select>
 
-    <select id="selectUserWithFilter" resultMap="MerchantMap">
+    <select id="selectMerchantWithFilter" resultMap="MerchantMap">
         select
         id,
         merchantName,
@@ -28,18 +28,20 @@
         bankAccount,
         merchantAddress
         from finance_merchants
-        where
+        where 1 = 1
         <if test="namePattern != null">
-            and merchantName regexp #{namePattern}
+            <if test="_databaseId == 'MySQL'">
+               and merchantName regexp #{namePattern}
+            </if>
         </if>
         <if test="merchantPhone != null">
-            and merchantPhone = #{merchantPhone}
+             and merchantPhone = #{merchantPhone}
         </if>
         <if test="merchantIdNo != null">
-            and merchantIdNo = #{merchantIdNo}
+             and merchantIdNo = #{merchantIdNo}
         </if>
         <if test="bankAccount != null">
-            and bankAccount = #{bankAccount}
+             and bankAccount = #{bankAccount}
         </if>
     </select>
 

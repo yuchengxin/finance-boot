@@ -1,9 +1,7 @@
 package com.gilab.wjj.front.rest;
 
-import com.gilab.wjj.core.ContractAgent;
 import com.gilab.wjj.core.MerchantAgent;
 import com.gilab.wjj.front.utils.RestUtils;
-import com.gilab.wjj.persistence.model.Contract;
 import com.gilab.wjj.persistence.model.Merchant;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,10 +88,10 @@ public class MerchantController {
     @ResponseBody
     @RequestMapping(value = "/merchants", method = { RequestMethod.GET }, produces = "application/json")
     public List<Merchant> getMerchantWithFilter(final HttpServletResponse response,
-                                               @RequestParam final String merchantName,
-                                                @RequestParam final String merchantPhone,
-                                                @RequestParam final String merchantIdNo,
-                                                @RequestParam final String bankAccount) throws IOException {
+                                               @RequestParam(name = "merchantName", required = false) final String merchantName,
+                                                @RequestParam(name = "merchantPhone", required = false) final String merchantPhone,
+                                                @RequestParam(name = "merchantIdNo", required = false) final String merchantIdNo,
+                                                @RequestParam(name = "bankAccount", required = false) final String bankAccount) throws IOException {
         //TODO
         //登录判断
 
