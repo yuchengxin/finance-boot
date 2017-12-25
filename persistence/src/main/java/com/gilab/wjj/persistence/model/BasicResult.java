@@ -10,11 +10,11 @@ import com.gilab.wjj.util.DateUtils;
  * Change:
  */
 public class BasicResult {
-    private String calDtail;
+    private PeriodCalStandard calDtail;
     private long date;
     private double amount;
 
-    public BasicResult(String calDtail, long date, double amount) {
+    public BasicResult(PeriodCalStandard calDtail, long date, double amount) {
         this.calDtail = calDtail;
         this.date = date;
         this.amount = amount;
@@ -22,11 +22,11 @@ public class BasicResult {
 
     public BasicResult(){}
 
-    public String getCalDtail() {
+    public PeriodCalStandard getCalDtail() {
         return calDtail;
     }
 
-    public void setCalDtail(String calDtail) {
+    public void setCalDtail(PeriodCalStandard calDtail) {
         this.calDtail = calDtail;
     }
 
@@ -56,11 +56,11 @@ public class BasicResult {
     }
 
     public static class Builder{
-        private String calDtail;
+        private PeriodCalStandard calDtail;
         private long date;
         private double amount;
 
-        public Builder calDtail(String calDtail){
+        public Builder calDtail(PeriodCalStandard calDtail){
             this.calDtail = calDtail;
             return this;
         }

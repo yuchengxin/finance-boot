@@ -86,7 +86,7 @@ public class BasicRentManager implements BasicRentAgent {
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "date is illegal");
         }
         BasicResult basic = new BasicResult.Builder()
-                .calDtail(period.toString())
+                .calDtail(period)
                 .date(date)
                 .amount(calBasicRentMonthAmount(contract, period, date))
                 .build();
@@ -142,7 +142,7 @@ public class BasicRentManager implements BasicRentAgent {
             double amount = calBasicRentMonthAmount(contract, period, date);
             yearTotal += amount;
             BasicResult basic = new BasicResult.Builder()
-                    .calDtail(period.toString())
+                    .calDtail(period)
                     .date(date)
                     .amount(amount)
                     .build();
@@ -206,7 +206,7 @@ public class BasicRentManager implements BasicRentAgent {
             Double amount = calBasicRentMonthAmount(contract, actualPeriod, date);
             for(int j = 1; j < 12; j++){
                 BasicResult result = new BasicResult.Builder()
-                        .calDtail(actualPeriod.toString())
+                        .calDtail(actualPeriod)
                         .date(DateUtils.convertJodaTime(date).plusMonths(j-1).getMillis())
                         .amount(amount)
                         .build();
@@ -215,7 +215,7 @@ public class BasicRentManager implements BasicRentAgent {
             long yearEndTime = DateUtils.convertJodaTime(date).plusMonths(11).getMillis();
             Double yearEndAmount = calBasicRentMonthAmount(contract, actualPeriod, yearEndTime);
             BasicResult yearEndResult = new BasicResult.Builder()
-                    .calDtail(actualPeriod.toString())
+                    .calDtail(actualPeriod)
                     .date(yearEndTime)
                     .amount(yearEndAmount)
                     .build();

@@ -174,6 +174,19 @@ public class ExcelUtils<E> {
         out.close();
     }
 
+    public static <T> File writeToFile(List<T> list, ExcelDataFormatter edf) throws Exception {
+        Workbook wb = getWorkBook(list, edf);
+
+        String prefix = "Contract_" + UUID.randomUUID().toString();
+        File schemeFile = File.createTempFile(prefix, ".xlsx");
+        schemeFile.deleteOnExit();
+
+        FileOutputStream out = new FileOutputStream(schemeFile);
+        wb.write(out);
+        out.close();
+        return schemeFile;
+    }
+
     /**
      * 获得Workbook对象
      *
@@ -200,14 +213,14 @@ public class ExcelUtils<E> {
         Field[] fields = getClassFieldsAndSuperClassFields(list.get(0).getClass());
 
         XSSFCellStyle titleStyle = (XSSFCellStyle) wb.createCellStyle();
-        titleStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+//        titleStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
         // 设置前景色
         titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(159, 213, 183)));
-        titleStyle.setAlignment(CellStyle.ALIGN_CENTER);
+//        titleStyle.setAlignment(CellStyle.ALIGN_CENTER);
 
         Font font = wb.createFont();
         font.setColor(HSSFColor.BROWN.index);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+//        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
         // 设置字体
         titleStyle.setFont(font);
 

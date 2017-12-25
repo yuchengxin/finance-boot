@@ -5,7 +5,9 @@ import com.gilab.wjj.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yuankui on 12/17/17.
@@ -310,6 +312,55 @@ public class Contract implements Entity, Cloneable {
             logger.error("Failed to clone UserBean", e);
         }
         return cloned;
+    }
+
+    public BasicRentInfo contract2BasicRentInfo(){
+        Map<String, String> signerInfo = splitMerchant(signer);
+        return new BasicRentInfo.Builder()
+                .region(region)
+                .contractNo(contractNo)
+                .contractVersion(contractVersion)
+                .subscriptionDate(DateUtils.convertUtilDate(subscriptionDate))
+                .signer(signerInfo.get("name"))
+                .phone(signerInfo.get("phone"))
+                .merchantIdNo(signerInfo.get("IdNo"))
+                .signingDate(DateUtils.convertUtilDate(signingDate))
+                .signingMode(signingMode.getDescription())
+                .buildingInfo(buildingInfo)
+                .buildingSize(buildingSize)
+                .originalPrice(originalPrice)
+                .totalPrice(totalPrice)
+                .signTotalPrice(signTotalPrice)
+                .leasebackPrice(leasebackPrice)
+                .backPremium(backPremium)
+                .payStartDate(DateUtils.convertUtilDate(paybackDate))
+                .contractTerDate(DateUtils.convertUtilDate(contractTerDate))
+                .paybackDate(DateUtils.convertUtilDate(paybackDate))
+                .beneficiary(beneficiary.getMerchantName())
+                .beneficiaryIdNo(beneficiary.getMerchantIdNo())
+                .beneficiaryAddress(beneficiary.getMerchantAddress())
+                .bankInfo(beneficiary.getBankInfo())
+                .bankAccount(beneficiary.getBankAccount())
+                .contractStatus(contractStatus.getDescription())
+                .tariff(tariff)
+                .taxAmount(taxAmount)
+                .build();
+    }
+
+    private Map<String, String> splitMerchant(List<Merchant> merchants){
+        StringBuilder merchantNames = new StringBuilder();
+        StringBuilder merchantPhones = new StringBuilder();
+        StringBuilder merchantIdNos = new StringBuilder();
+        for (Merchant m : merchants){
+            merchantNames.append(m.getMerchantName()).append(",");
+            merchantPhones.append(m.getMerchantPhone()).append(",");
+            merchantIdNos.append(m.getMerchantIdNo()).append(",");
+        }
+        Map<String, String> map = new HashMap<>();
+        map.put("name", merchantNames.substring(0, merchantNames.length() - 1));
+        map.put("phone", merchantPhones.substring(0, merchantPhones.length() - 1));
+        map.put("IdNo", merchantIdNos.substring(0, merchantIdNos.length() - 1));
+        return map;
     }
 
     public static class Builder{

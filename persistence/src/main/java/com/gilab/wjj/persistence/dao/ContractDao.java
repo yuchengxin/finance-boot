@@ -1,6 +1,8 @@
 package com.gilab.wjj.persistence.dao;
 
 import com.gilab.wjj.persistence.model.Contract;
+import com.gilab.wjj.persistence.model.ContractStatus;
+import com.gilab.wjj.persistence.model.SigningMode;
 
 import java.util.List;
 
@@ -14,7 +16,9 @@ import java.util.List;
 public interface ContractDao {
     Contract getContract(long contractId);
 
-    List<Contract> getContractWithFilter();
+    List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion,
+                                         Double buildingStartSize, Double buildingEndSize, SigningMode signingMode,
+                                         ContractStatus status);
 
     long createContract(Contract contract);
 

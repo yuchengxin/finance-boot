@@ -11,8 +11,8 @@ import java.util.Map;
  * Change:
  */
 public enum SigningMode implements IntEnum<SigningMode> {
-    MORTGAGE(1, "pay with mortgage"),
-    DISPOSABLE(2, "disposable payment");
+    MORTGAGE(1, "按揭贷款"),
+    DISPOSABLE(2, "一次性");
 
 
     private int value;

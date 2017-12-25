@@ -354,4 +354,176 @@ public class BasicRentInfo {
                 ", taxAmount=" + taxAmount +
                 '}';
     }
+
+    public static class Builder{
+        private String region;
+        private String contractNo;
+        private String contractVersion;
+        private Date subscriptionDate;
+        private Date signingDate;
+        private String buildingInfo;
+        private Double buildingSize;
+        private String signer;
+        private String phone;
+        private String merchantIdNo;
+        private Integer originalPrice;
+        private Integer totalPrice;
+        private Integer signTotalPrice;
+        private String contractStatus;
+        private String signingMode;
+        private Date paybackDate;
+        private Date payStartDate;
+        private Date contractTerDate;
+        private Integer leasebackPrice;
+        private Integer backPremium;
+        private String beneficiary;
+        private String beneficiaryIdNo;
+        private String bankInfo;
+        private String bankAccount;
+        private String beneficiaryAddress;
+        private Double tariff;
+        private Integer taxAmount;
+
+        public Builder region(String region){
+            this.region = region;
+            return this;
+        }
+
+        public Builder contractNo(String contractNo){
+            this.contractNo = contractNo;
+            return this;
+        }
+
+        public Builder contractVersion(String contractVersion){
+            this.contractVersion = contractVersion;
+            return this;
+        }
+
+        public Builder subscriptionDate(Date subscriptionDate){
+            this.subscriptionDate = subscriptionDate;
+            return this;
+        }
+
+        public Builder signingMode(String signingMode){
+            this.signingMode = signingMode;
+            return this;
+        }
+
+        public Builder signingDate(Date signingDate){
+            this.signingDate = signingDate;
+            return this;
+        }
+
+        public Builder buildingInfo(String buildingInfo){
+            this.buildingInfo = buildingInfo;
+            return this;
+        }
+
+        public Builder buildingSize(double buildingSize){
+            this.buildingSize = buildingSize;
+            return this;
+        }
+
+        public Builder signer(String signer){
+            this.signer = signer;
+            return this;
+        }
+
+        public Builder phone(String phone){
+            this.phone = phone;
+            return this;
+        }
+
+        public Builder merchantIdNo(String merchantIdNo){
+            this.merchantIdNo = merchantIdNo;
+            return this;
+        }
+
+        public Builder originalPrice(int originalPrice){
+            this.originalPrice = originalPrice;
+            return this;
+        }
+
+        public Builder totalPrice(int totalPrice){
+            this.totalPrice = totalPrice;
+            return this;
+        }
+
+        public Builder signTotalPrice(int signTotalPrice){
+            this.signTotalPrice = signTotalPrice;
+            return this;
+        }
+
+        public Builder leasebackPrice(int leasebackPrice){
+            this.leasebackPrice = leasebackPrice;
+            return this;
+        }
+
+        public Builder backPremium(int backPremium){
+            this.backPremium = backPremium;
+            return this;
+        }
+
+        public Builder payStartDate(Date payStartDate){
+            this.payStartDate = payStartDate;
+            return this;
+        }
+
+        public Builder contractTerDate(Date contractTerDate){
+            this.contractTerDate = contractTerDate;
+            return this;
+        }
+
+        public Builder paybackDate(Date paybackDate){
+            this.paybackDate = paybackDate;
+            return this;
+        }
+
+        public Builder beneficiary(String beneficiary){
+            this.beneficiary = beneficiary;
+            return this;
+        }
+
+        public Builder beneficiaryIdNo(String beneficiaryIdNo){
+            this.beneficiaryIdNo = beneficiaryIdNo;
+            return this;
+        }
+
+        public Builder bankInfo(String bankInfo){
+            this.bankInfo = bankInfo;
+            return this;
+        }
+
+        public Builder bankAccount(String bankAccount){
+            this.bankAccount = bankAccount;
+            return this;
+        }
+
+        public Builder beneficiaryAddress(String beneficiaryAddress){
+            this.beneficiaryAddress = beneficiaryAddress;
+            return this;
+        }
+
+        public Builder contractStatus(String  contractStatus){
+            this.contractStatus = contractStatus;
+            return this;
+        }
+
+        public Builder tariff(Double tariff){
+            this.tariff = tariff;
+            return this;
+        }
+
+        public Builder taxAmount(Integer taxAmount){
+            this.taxAmount = taxAmount;
+            return this;
+        }
+
+        public BasicRentInfo build(){
+            return new BasicRentInfo(region, contractNo, contractVersion, subscriptionDate, signingDate, buildingInfo, buildingSize,
+                    signer, phone, merchantIdNo, originalPrice, totalPrice, signTotalPrice, contractStatus, signingMode,
+                    paybackDate, payStartDate, contractTerDate, leasebackPrice, backPremium, beneficiary, beneficiaryIdNo, bankInfo,
+                    bankAccount, beneficiaryAddress, tariff, taxAmount);
+        }
+    }
 }

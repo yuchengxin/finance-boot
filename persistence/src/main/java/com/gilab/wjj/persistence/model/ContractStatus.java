@@ -12,11 +12,11 @@ import java.util.Map;
  */
 public enum ContractStatus implements IntEnum<ContractStatus> {
 
-    UNSIGNED(1, "has not signed"),
-    PENDINGRENTAL(2, "Market cultivation period, did not begin to return rent"),
-    RENTAL(3, "has already begun to return rent"),
-    NORMALEND(4, "the contract ended normally"),
-    ABNORMALEND(5, "the contract ended abnormally");
+    UNSIGNED(1, "未签约"),
+    PENDINGRENTAL(2, "已签约，市场培育期"),
+    RENTAL(3, "已签约，返租期"),
+    NORMALEND(4, "正常结束"),
+    ABNORMALEND(5, "非正常结束");
 
 
     private int value;

@@ -1,6 +1,8 @@
 package com.gilab.wjj.persistence.mapper;
 
 import com.gilab.wjj.persistence.model.Contract;
+import com.gilab.wjj.persistence.model.ContractStatus;
+import com.gilab.wjj.persistence.model.SigningMode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,7 +19,13 @@ import java.util.List;
 public interface ContractMapper {
     Contract selectContract(@Param("id") long contractId);
 
-    List<Contract> selectContractWithFilter();
+    List<Contract> selectContractWithFilter(@Param("filterStartTime") Long filterStartTime,
+                                            @Param("filterEndTime") Long filterEndTime,
+                                            @Param("contractVersion") String contractVersion,
+                                            @Param("buildingStartSize") Double buildingStartSize,
+                                            @Param("buildingEndSize") Double buildingEndSize,
+                                            @Param("signingMode") SigningMode signingMode,
+                                            @Param("status") ContractStatus status);
 
     void insertContract(Contract contract);
 
