@@ -3,6 +3,8 @@ package com.gilab.wjj.persistence.spring;
 import com.gilab.wjj.persistence.dao.ContractDao;
 import com.gilab.wjj.persistence.mapper.ContractMapper;
 import com.gilab.wjj.persistence.model.Contract;
+import com.gilab.wjj.persistence.model.ContractStatus;
+import com.gilab.wjj.persistence.model.SigningMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -26,8 +28,11 @@ public class ContractDaoImpl implements ContractDao {
     }
 
     @Override
-    public List<Contract> getContractWithFilter() {
-        return mapper.selectContractWithFilter();
+    public List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion,
+                                                Double buildingStartSize, Double buildingEndSize, SigningMode signingMode,
+                                                ContractStatus status) {
+        return mapper.selectContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingStartSize, buildingEndSize,
+                signingMode, status);
     }
 
     @Override

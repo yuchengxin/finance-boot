@@ -39,7 +39,7 @@ public class ExcelUtilsTest {
         map.put("false", "假");
         edf.set("locked", map);
 
-        ExcelUtils.writeToFile(list,edf, "/home/yuankui/tmp/test2.xlsx");
+        ExcelUtils.writeToFile(list, edf, "/home/yuankui/tmp/test2.xlsx");
 
     }
 
