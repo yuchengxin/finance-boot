@@ -128,4 +128,31 @@ public class BasicRentController {
         //权限判断
         return RestUtils.getOrSendError(response, basicRentMgr.calBasicRentYear(contractId, year));
     }
+
+    @ApiOperation(value = "计算器", notes = "输入回款时间,返租基价和方案来进行预计算", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "paybackDate", value = "回款时间", required = true, dataType = "long", paramType = "query"),
+            @ApiImplicitParam(name = "leasebackPrice", value = "返租基价", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "proposalId", value = "返租基价", required = true, dataType = "long", paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/pre_cal_basic_rent", method = { RequestMethod.GET }, produces = "application/json")
+    public BasicRentResult preCalBasicRentDetail(final HttpServletResponse response,
+                                             @RequestParam final long paybackDate,
+                                             @RequestParam final int leasebackPrice,
+                                             @RequestParam final long proposalId) throws IOException {
+        //TODO
+        //登录判断
+
+        //TODO
+        //权限判断
+        return RestUtils.getOrSendError(response, basicRentMgr.preCalBasicRentDetail(paybackDate, leasebackPrice, proposalId));
+    }
 }

@@ -1,13 +1,17 @@
 package com.gilab.wjj;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
+import javax.servlet.Filter;
 import java.io.IOException;
 
 /**
@@ -25,6 +29,22 @@ public class FinanceBootApplication implements Runnable {
 
 	public void setAppArgs(String[] appArgs) {
 		this.appArgs = appArgs;
+	}
+
+	// 用于处理编码问题
+	@Bean
+	public Filter characterEncodingFilter() {
+		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+		characterEncodingFilter.setEncoding("UTF-8");
+		characterEncodingFilter.setForceEncoding(true);
+		return characterEncodingFilter;
+	}
+
+	//文件下载
+	@Bean
+	public HttpMessageConverters restFileDownloadSupport() {
+		ByteArrayHttpMessageConverter arrayHttpMessageConverter = new ByteArrayHttpMessageConverter();
+		return new HttpMessageConverters(arrayHttpMessageConverter);
 	}
 
 	@Bean

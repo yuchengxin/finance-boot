@@ -18,4 +18,6 @@ public interface BasicRentAgent extends Agent {
      ReqResult<BasicRentYearResult> calBasicRentYear(long contractId, int year);
 
      ReqResult<BasicRentPeriodResult> calBasicRentPeriod(long contractId, int period);
+
+     ReqResult<BasicRentResult> preCalBasicRentDetail(long paybackDate, int leasebackPrice, long proposalId);
 }
