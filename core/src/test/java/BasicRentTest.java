@@ -38,7 +38,7 @@ public class BasicRentTest {
     @Autowired
     private BasicRentManager basicRentMgr;
 
-    @Ignore
+//    @Ignore
     @Test
     public void testBasicRentCalculation(){
         List<Merchant> signer = new ArrayList<>();
@@ -98,16 +98,16 @@ public class BasicRentTest {
                 .build();
         Contract newContract = contractMgr.createContract(contract).getResult();
 
-        BasicRentMonthResult monthResult = basicRentMgr.calBasicRentMonth(newContract.getId(), DateUtils.parseDatetime("2030-11-5")).getResult();
+        BasicRentMonthResult monthResult = basicRentMgr.calBasicRentMonth(newContract.getId(), DateUtils.parseDatetime("2018-12-1")).getResult();
         System.out.println(monthResult);
 
-        BasicRentYearResult yearResult = basicRentMgr.calBasicRentYear(newContract.getId(), 2030).getResult();
-        System.out.println(yearResult);
-
-        BasicRentPeriodResult periodResult = basicRentMgr.calBasicRentPeriod(newContract.getId(), 3).getResult();
-        System.out.println(periodResult);
-
-        BasicRentResult allResult = basicRentMgr.calBasicRentDetail(newContract.getId()).getResult();
-        System.out.println(allResult);
+//        BasicRentYearResult yearResult = basicRentMgr.calBasicRentYear(newContract.getId(), 2025).getResult();
+//        System.out.println(yearResult);
+//
+//        BasicRentPeriodResult periodResult = basicRentMgr.calBasicRentPeriod(newContract.getId(), 3).getResult();
+//        System.out.println(periodResult);
+//
+//        BasicRentResult allResult = basicRentMgr.calBasicRentDetail(newContract.getId()).getResult();
+//        System.out.println(allResult);
     }
 }

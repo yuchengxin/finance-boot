@@ -40,8 +40,10 @@ public class ContractManager implements ContractAgent {
     }
 
     @Override
-    public List<Contract> getContractWithFilter(String contractNo, String phone, String signer, String merchantIdNo) {
-        return null;
+    public List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion, Double buildingStartSize,
+                                                Double buildingEndSize, SigningMode signMode, ContractStatus contractStatus) {
+        return contractDao.getContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingStartSize, buildingEndSize,
+                signMode, contractStatus);
     }
 
     @Override

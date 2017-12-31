@@ -14,16 +14,19 @@ public class BasicRentPeriodResult {
     private long contractId;
     private long proposalId;
     private int period;
+    private PeriodSumPayment periodSumPayment;
     private List<BasicResult> periodResult;
     private double periodTotal;
 
-    public BasicRentPeriodResult(String merchantName, long contractId, long proposalId, int period, List<BasicResult> periodResult, double periodTotal) {
+    public BasicRentPeriodResult(String merchantName, long contractId, long proposalId, int period,
+                                 List<BasicResult> periodResult, double periodTotal, PeriodSumPayment periodSumPayment) {
         this.merchantName = merchantName;
         this.contractId = contractId;
         this.proposalId = proposalId;
         this.period = period;
         this.periodResult = periodResult;
         this.periodTotal = periodTotal;
+        this.periodSumPayment = periodSumPayment;
     }
 
     public String getMerchantName() {
@@ -74,6 +77,14 @@ public class BasicRentPeriodResult {
         this.periodTotal = periodTotal;
     }
 
+    public PeriodSumPayment getPeriodSumPayment() {
+        return periodSumPayment;
+    }
+
+    public void setPeriodSumPayment(PeriodSumPayment periodSumPayment) {
+        this.periodSumPayment = periodSumPayment;
+    }
+
     @Override
     public String toString() {
         return "BasicRentPeriodResult{" +
@@ -83,6 +94,7 @@ public class BasicRentPeriodResult {
                 ", period=" + period +
                 ", periodResult=" + periodResult +
                 ", periodTotal=" + periodTotal +
+                ", periodSumPayment=" + periodSumPayment +
                 '}';
     }
 
@@ -93,6 +105,7 @@ public class BasicRentPeriodResult {
         private int period;
         private List<BasicResult> periodResult;
         private double periodTotal;
+        private PeriodSumPayment periodSumPayment;
 
         public Builder merchantName(String merchantName){
             this.merchantName = merchantName;
@@ -125,8 +138,13 @@ public class BasicRentPeriodResult {
             return this;
         }
 
+        public Builder periodSumPayment(PeriodSumPayment periodSumPayment){
+            this.periodSumPayment = periodSumPayment;
+            return this;
+        }
+
         public BasicRentPeriodResult build(){
-            return new BasicRentPeriodResult(merchantName, contractId, proposalId, period, periodResult, periodTotal);
+            return new BasicRentPeriodResult(merchantName, contractId, proposalId, period, periodResult, periodTotal, periodSumPayment);
         }
     }
 }

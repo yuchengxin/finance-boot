@@ -45,18 +45,30 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find proposal[d%]", contract.getProposalId());
             return ReqResult.fail("Cannot find contract[%d]'s proposal", contractId);
         }
-        List<BasicResult> allResult = new ArrayList<>();
-        for(int i = 1; i <= proposal.getLeasebackStages(); i++){
-            allResult.addAll(calBasicRentPeriodAmount(contract, i));
-        }
         double total = 0;
-        for(PeriodCalStandard p : proposal.getConf()){
-            total += calAnnualRent(contract, p) * p.getDuration();
+        List<BasicResult> allResult = new ArrayList<>();
+        List<PeriodSumPayment> periodSumPayments = new ArrayList<>();
+        for(int i = 1; i <= proposal.getLeasebackStages(); i++){
+            List<BasicResult> periodResultAmount = calBasicRentPeriodAmount(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, i);
+            allResult.addAll(periodResultAmount);
+            PeriodCalStandard p = proposal.getPeriodInfo(i);
+            double periodTotal =  calAnnualRent(contract.getLeasebackPrice(), p) * p.getDuration();
+            total += periodTotal;
+            PeriodSumPayment periodSumPayment = new PeriodSumPayment.Builder()
+                    .period(p)
+                    .rentStartPayTime(periodStartTime(contract.getPayStartDate(), proposal, p.getPeriod()))
+                    .rentEndPayTime(periodEndTime(contract.getPayStartDate(), proposal, p.getPeriod()))
+                    .elevenMonthAmount(periodResultAmount.get(0).getAmount())
+                    .lastMonthAmount(periodResultAmount.get(11).getAmount())
+                    .periodTotal(periodTotal)
+                    .build();
+            periodSumPayments.add(periodSumPayment);
         }
         BasicRentResult result = new BasicRentResult.Builder()
                 .contractId(contractId)
                 .merchantName(getMerchantFromContract(contract))
                 .proposalId(proposal.getId())
+                .periodSumPayments(periodSumPayments)
                 .result(allResult)
                 .total(total)
                 .build();
@@ -71,16 +83,16 @@ public class BasicRentManager implements BasicRentAgent {
             return ReqResult.fail("Cannot find contract[%d]", contractId);
         }
         date = formatDate(contract, date);
-        if(!isDateLegal(contract, date)){
+        if(!isDateLegal(contract.getPayStartDate(), contract.getContractTerDate(), date)){
             logger.error("date is illegal");
-            return ReqResult.fail("date:{} is illegal", date);
+            return ReqResult.fail("date:{%d} is illegal", date);
         }
         Proposal proposal = proposalDao.getProposal(contract.getProposalId());
         if(proposal == null){
             logger.error("can't find proposal[d%]", contract.getProposalId());
             return ReqResult.fail("Cannot find contract[%d]'s proposal", contractId);
         }
-        PeriodCalStandard period = getPeriod(contract, date);
+        PeriodCalStandard period = getPeriod(contract.getPayStartDate(), proposal, date);
         if(period == null){
             logger.error("date is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "date is illegal");
@@ -88,7 +100,7 @@ public class BasicRentManager implements BasicRentAgent {
         BasicResult basic = new BasicResult.Builder()
                 .calDtail(period)
                 .date(date)
-                .amount(calBasicRentMonthAmount(contract, period, date))
+                .amount(calBasicRentMonthAmount(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, date))
                 .build();
         BasicRentMonthResult monthResult = new BasicRentMonthResult.Builder()
                         .merchantName(getMerchantFromContract(contract))
@@ -134,12 +146,12 @@ public class BasicRentManager implements BasicRentAgent {
         double yearTotal = 0;
         for(int i = start; i < end; i++){
             long date = DateUtils.convertJodaTime(startTime).plusYears(year - startYear).plusMonths(i + 1 - everyMonth).getMillis();
-            PeriodCalStandard period = getPeriod(contract, date);
+            PeriodCalStandard period = getPeriod(contract.getPayStartDate(), proposal, date);
             if(period == null){
                 logger.error("period is illegal");
                 throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "period is illegal");
             }
-            double amount = calBasicRentMonthAmount(contract, period, date);
+            double amount = calBasicRentMonthAmount(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, date);
             yearTotal += amount;
             BasicResult basic = new BasicResult.Builder()
                     .calDtail(period)
@@ -171,25 +183,67 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find proposal[d%]", contract.getProposalId());
             return ReqResult.fail("Cannot find contract[%d]'s proposal", contractId);
         }
-        double periodTotal = calAnnualRent(contract, proposal.getPeriodInfo(period)) * proposal.getPeriodInfo(period).getDuration();
+        List<BasicResult> periodResultAmount = calBasicRentPeriodAmount(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, period);
+        double periodTotal = calAnnualRent(contract.getLeasebackPrice(), proposal.getPeriodInfo(period)) * proposal.getPeriodInfo(period).getDuration();
+        PeriodSumPayment periodSumPayment = new PeriodSumPayment.Builder()
+                .period(proposal.getPeriodInfo(period))
+                .rentStartPayTime(periodStartTime(contract.getPayStartDate(), proposal, period))
+                .rentEndPayTime(periodEndTime(contract.getPayStartDate(), proposal, period))
+                .elevenMonthAmount(periodResultAmount.get(0).getAmount())
+                .lastMonthAmount(periodResultAmount.get(11).getAmount())
+                .periodTotal(periodTotal)
+                .build();
         BasicRentPeriodResult periodResult =  new BasicRentPeriodResult.Builder()
                 .contractId(contractId)
                 .merchantName(getMerchantFromContract(contract))
                 .period(period)
                 .proposalId(proposal.getId())
-                .periodResult(calBasicRentPeriodAmount(contract, period))
+                .periodSumPayment(periodSumPayment)
+                .periodResult(periodResultAmount)
                 .periodTotal(periodTotal)
                 .build();
         return ReqResult.success(periodResult, "Finished calculated period basic rent.");
     }
 
-
-    private List<BasicResult>  calBasicRentPeriodAmount(Contract contract, int period) {
-        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
+    @Override
+    public ReqResult<BasicRentResult> preCalBasicRentDetail(long paybackDate, int leasebackPrice, long proposalId) {
+        Proposal proposal = proposalDao.getProposal(proposalId);
         if(proposal == null){
-            logger.error("can't find proposal[d%]", contract.getProposalId());
+            logger.error("can't find proposal[d%]", proposalId);
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
         }
+        long payStartTime = DateUtils.convertJodaTime(paybackDate).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
+
+        double total = 0;
+        List<BasicResult> allResult = new ArrayList<>();
+        List<PeriodSumPayment> periodSumPayments = new ArrayList<>();
+        for(int i = 1; i <= proposal.getLeasebackStages(); i++){
+            List<BasicResult> periodResultAmount = calBasicRentPeriodAmount(payStartTime, leasebackPrice, proposal, i);
+            allResult.addAll(periodResultAmount);
+            PeriodCalStandard p = proposal.getPeriodInfo(i);
+            double periodTotal =  calAnnualRent(leasebackPrice, p) * p.getDuration();
+            total += periodTotal;
+            PeriodSumPayment periodSumPayment = new PeriodSumPayment.Builder()
+                    .period(p)
+                    .rentStartPayTime(periodStartTime(payStartTime, proposal, p.getPeriod()))
+                    .rentEndPayTime(periodEndTime(payStartTime, proposal, p.getPeriod()))
+                    .elevenMonthAmount(periodResultAmount.get(0).getAmount())
+                    .lastMonthAmount(periodResultAmount.get(11).getAmount())
+                    .periodTotal(periodTotal)
+                    .build();
+            periodSumPayments.add(periodSumPayment);
+        }
+        BasicRentResult result = new BasicRentResult.Builder()
+                .proposalId(proposal.getId())
+                .periodSumPayments(periodSumPayments)
+                .result(allResult)
+                .total(total)
+                .build();
+        return ReqResult.success(result, "Finished calculated.");
+
+    }
+
+    private List<BasicResult>  calBasicRentPeriodAmount(long payStartTime, int leasebackPrice, Proposal proposal, int period) {
         if(period > proposal.getLeasebackStages() || period <= 0){
             logger.error("period is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Period is illegal");
@@ -200,10 +254,10 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("period is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Period is illegal");
         }
-        long startDate = periodStartTime(contract, actualPeriod.getPeriod());
+        long startDate = periodStartTime(payStartTime, proposal, actualPeriod.getPeriod());
         for(int i = 0; i < actualPeriod.getDuration(); i++){
             long date = DateUtils.convertJodaTime(startDate).plusYears(i).plusMonths(1).getMillis();
-            Double amount = calBasicRentMonthAmount(contract, actualPeriod, date);
+            Double amount = calBasicRentMonthAmount(payStartTime, leasebackPrice, proposal, date);
             for(int j = 1; j < 12; j++){
                 BasicResult result = new BasicResult.Builder()
                         .calDtail(actualPeriod)
@@ -213,7 +267,7 @@ public class BasicRentManager implements BasicRentAgent {
                 resultDetails.add(result);
             }
             long yearEndTime = DateUtils.convertJodaTime(date).plusMonths(11).getMillis();
-            Double yearEndAmount = calBasicRentMonthAmount(contract, actualPeriod, yearEndTime);
+            Double yearEndAmount = calBasicRentMonthAmount(payStartTime, leasebackPrice, proposal, yearEndTime);
             BasicResult yearEndResult = new BasicResult.Builder()
                     .calDtail(actualPeriod)
                     .date(yearEndTime)
@@ -224,37 +278,33 @@ public class BasicRentManager implements BasicRentAgent {
         return resultDetails;
     }
 
-    private Double calBasicRentMonthAmount(Contract contract, PeriodCalStandard period, long date){
-        if(!isDateLegal(contract, date)){
+    private Double calBasicRentMonthAmount(long payStartTime, int leasebackPrice, Proposal proposal, long date){
+        if(!isDateLegal(payStartTime, calContractTerDate(payStartTime, proposal), date)){
             logger.error("date is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "date is illegal");
         }
-        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
-        if(proposal == null){
-            logger.error("can't find proposal[d%]", contract.getProposalId());
-            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
+        PeriodCalStandard actualPeriod = getPeriod(payStartTime, proposal, date);
+        if(actualPeriod == null){
+            logger.error("date is illegal");
+            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "date is illegal");
         }
-        Double result = null;
-        double annualRent = calAnnualRent(contract, period);
-        if(isDateSameMonth(date, contract.getPayStartDate())){
+        Double result;
+        double annualRent = calAnnualRent(leasebackPrice, actualPeriod);
+        if(isDateSameMonth(date, payStartTime)){
             result = annualRent - Math.rint(annualRent/12)*11;
         }else
             result = Math.rint(annualRent/12);
         return result;
     }
 
-    private double calAnnualRent(Contract contract, PeriodCalStandard period){
-        return Math.rint(contract.getLeasebackPrice() * period.getProportion());
+    private double calAnnualRent(int leasebackPrice, PeriodCalStandard period){
+        return Math.rint(leasebackPrice * period.getProportion());
     }
 
-    private PeriodCalStandard getPeriod(Contract contract, long date){
-        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
-        if(proposal == null){
-            logger.error("can't find proposal[d%]", contract.getProposalId());
-            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
-        }
+    private PeriodCalStandard getPeriod(long payStartTime, Proposal proposal, long date){
         for(PeriodCalStandard p: proposal.getConf()){
-            if(date >= periodStartTime(contract, p.getPeriod()) && date <= periodEndTime(contract, p.getPeriod())){
+            if(date >= periodStartTime(payStartTime, proposal, p.getPeriod())
+                    && date <= periodEndTime(payStartTime, proposal, p.getPeriod())){
                 return p;
             }
         }
@@ -282,10 +332,12 @@ public class BasicRentManager implements BasicRentAgent {
         return str.substring(0, str.length()-1);
     }
 
-    private boolean isDateLegal(Contract contract, long date){
-        long startTime = contract.getPayStartDate();
-        long endTime = contract.getContractTerDate();
-        return date >= DateUtils.convertJodaTime(startTime).plusMonths(1).getMillis() && date <= endTime;
+    private boolean isDateLegal(long payStartTime, long ContractTerTime, long date){
+        return date >= DateUtils.convertJodaTime(payStartTime).plusMonths(1).getMillis() && date <= ContractTerTime;
+    }
+
+    private long calContractTerDate(long payStartTime, Proposal proposal){
+        return DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife() - proposal.getMarketCulLife()).getMillis();
     }
 
     private boolean isDateSameMonth(long dateA, long dateB){
@@ -297,17 +349,12 @@ public class BasicRentManager implements BasicRentAgent {
         return monthA == monthB;
     }
 
-    private long periodStartTime(Contract contract, int period){
-        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
-        if(proposal == null){
-            logger.error("can't find proposal[d%]", contract.getProposalId());
-            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
-        }
-        if(period > proposal.getLeasebackStages()){
+    private long periodStartTime(long payStartTime, Proposal proposal, int period){
+        if(period < 0 || period > proposal.getLeasebackStages()){
             logger.error("period is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "period is illegal");
         }
-        if(period == 1) return contract.getPayStartDate();
+        if(period == 1) return payStartTime;
         int  year = 0;
         for(PeriodCalStandard p: proposal.getConf()){
             if(p.getPeriod() < period){
@@ -315,20 +362,14 @@ public class BasicRentManager implements BasicRentAgent {
             }else
                 break;
         }
-       return DateUtils.convertJodaTime(contract.getPayStartDate()).plusYears(year).getMillis();
+        return DateUtils.convertJodaTime(payStartTime).plusYears(year).getMillis();
     }
 
-    private long periodEndTime (Contract contract, int period){
-        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
-        if(proposal == null){
-            logger.error("can't find proposal[d%]", contract.getProposalId());
-            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
-        }
-        if(period > proposal.getLeasebackStages()){
+    private long periodEndTime(long payStartTime, Proposal proposal, int period){
+        if(period < 0 || period > proposal.getLeasebackStages()){
             logger.error("period is illegal");
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "period is illegal");
         }
-        if(period == proposal.getLeasebackStages()) return contract.getContractTerDate();
         int  year = 0;
         for(PeriodCalStandard p: proposal.getConf()){
             if(p.getPeriod() <= period){
@@ -336,6 +377,6 @@ public class BasicRentManager implements BasicRentAgent {
             }else
                 break;
         }
-        return DateUtils.convertJodaTime(contract.getPayStartDate()).plusYears(year).getMillis();
+        return DateUtils.convertJodaTime(payStartTime).plusYears(year).getMillis();
     }
 }

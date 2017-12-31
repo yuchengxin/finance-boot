@@ -169,9 +169,9 @@ CREATE TABLE finance_leaseback_proposal (
 ) charset=utf8;
 
 INSERT INTO finance_leaseback_proposal (proposalName, leasebackLife, marketCulLife, leasebackStages, conf, proposalDes)
-VALUES
-  ('v1', 15, 3, 3, '[{"period":1, "duration":2, "proportion":0.065}, {"period":2, "duration":5, "proportion":0.07}, {"period":3, "duration":5, "proportion":0.075}]','etl'),
+VALUES  ('v1', 15, 3, 3, '[{"period":1, "duration":2, "proportion":0.065}, {"period":2, "duration":5, "proportion":0.07}, {"period":3, "duration":5, "proportion":0.075}]','etl'),
   ('v2', 5, 3, 1, '[{"period":1, "duration":2, "proportion":0.065}]', 'etl');
+
 
 CREATE TABLE finance_proposal_history (
   hisId            INT                   NOT NULL  AUTO_INCREMENT  PRIMARY KEY ,

@@ -13,13 +13,15 @@ public class BasicRentResult {
     private long contractId;
     private String merchantName;
     private long proposalId;
+    private List<PeriodSumPayment> periodSumPayments;
     private List<BasicResult> result;
     private double total;
 
-    public BasicRentResult(long contractId, String merchantName, long proposalId, List<BasicResult> result, double total) {
+    public BasicRentResult(long contractId, String merchantName, long proposalId, List<PeriodSumPayment> periodSumPayments, List<BasicResult> result, double total) {
         this.contractId = contractId;
         this.merchantName = merchantName;
         this.proposalId = proposalId;
+        this.periodSumPayments = periodSumPayments;
         this.result = result;
         this.total = total;
     }
@@ -66,12 +68,21 @@ public class BasicRentResult {
         this.total = total;
     }
 
+    public List<PeriodSumPayment> getPeriodSumPayments() {
+        return periodSumPayments;
+    }
+
+    public void setPeriodSumPayments(List<PeriodSumPayment> periodSumPayments) {
+        this.periodSumPayments = periodSumPayments;
+    }
+
     @Override
     public String toString() {
         return "BasicRentResult{" +
                 "contractId=" + contractId +
                 ", merchantName='" + merchantName + '\'' +
                 ", proposalId=" + proposalId +
+                ", periodSumPayments=" + periodSumPayments +
                 ", result=" + result +
                 ", total=" + total +
                 '}';
@@ -81,6 +92,7 @@ public class BasicRentResult {
         private String merchantName;
         private long contractId;
         private long proposalId;
+        private List<PeriodSumPayment> periodSumPayments;
         private List<BasicResult> result;
         private double total;
 
@@ -105,13 +117,18 @@ public class BasicRentResult {
             return this;
         }
 
+        public Builder periodSumPayments(List<PeriodSumPayment> periodSumPayments){
+            this.periodSumPayments = periodSumPayments;
+            return this;
+        }
+
         public Builder total(double total){
             this.total = total;
             return this;
         }
 
         public BasicRentResult build(){
-            return new BasicRentResult(contractId, merchantName, proposalId, result, total);
+            return new BasicRentResult(contractId, merchantName, proposalId, periodSumPayments, result, total);
         }
     }
 }
