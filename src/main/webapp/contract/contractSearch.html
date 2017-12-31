@@ -23,9 +23,9 @@
 				$("#sellingPrice").val("￥"+row.sellingPrice);
 				$("#price").numberbox("setValue",row.price);
 				$("#num").numberbox("setValue",row.num);
-				$("#num").focus();
-				$("#action").val("modify");
-				$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
+//				$("#num").focus();
+//				$("#action").val("modify");
+//				$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
 			}
 		});
 	})
@@ -136,8 +136,6 @@
 		var date = new Date();
 		date.setYear(year);
 		date.setMonth(month);
-
-
 		$.ajax({
 			url: '/api/v1/cal_month_basic_rent?contractId=' + contractId + '&date='+date.getTime(),
 			type: 'GET',
@@ -158,54 +156,46 @@
 			}
 		})
 	}
-
-    function formatAmount(val,row){
-		return "￥"+(row.inventoryQuantity*row.purchasingPrice).toFixed(2);
-	}
-    
-    function formatGoodsTypeName(val,row){
-		return row.type.name;
-	}
-    
-    function formatLastPurchasingPrice(val,row){
-		return "￥"+val;	
-	}
-	
-    function formatPurchasingPrice(val,row){
-		return "￥"+val;	
-	}
-	
-	function formatSellingPrice(val,row){
-		return "￥"+val;	
-	}
-	 
-	function chooseGoodsType(){
-		$("#dlg2").dialog("open").dialog("setTitle","选择合同状态");
-		$("#typeTree").tree({
-			url:'/admin/goodsType/loadTreeInfo',
-			onLoadSuccess:function(node, data){
-				var rootNode = $("#typeTree").tree('getRoot'); 
-				$("#typeTree").tree('expand',rootNode.target);
-			}
-		});
-	}
-	
-	function saveGoodsTypeChoose(){
-		var node = $('#typeTree').tree('getSelected'); // 获取选中节点
-		$("#typeId").val(node.id);
-		$("#typeName").val(node.text);
-		$("#dlg2").dialog("close");
-	}
-	
-	function closeGoodsTypeChooseDialog(){
-		$("#dlg2").dialog("close");
-	}
-	
-	function searchContract(){
-//		$("#dg").datagrid('load',{
-//			"type.id":$("#typeId").val(),
-//			"codeOrName":$("#codeOrName").val()
+//	function chooseGoodsType(){
+//		$("#dlg2").dialog("open").dialog("setTitle","选择合同状态");
+//		$("#typeTree").tree({
+//			url:'/admin/goodsType/loadTreeInfo',
+//			onLoadSuccess:function(node, data){
+//				var rootNode = $("#typeTree").tree('getRoot');
+//				$("#typeTree").tree('expand',rootNode.target);
+//			}
 //		});
+//	}
+//
+//	function saveGoodsTypeChoose(){
+//		var node = $('#typeTree').tree('getSelected'); // 获取选中节点
+//		$("#typeId").val(node.id);
+//		$("#typeName").val(node.text);
+//		$("#dlg2").dialog("close");
+//	}
+//
+//	function closeGoodsTypeChooseDialog(){
+//		$("#dlg2").dialog("close");
+//	}
+	//	function openSaleListGoodsModifyDialog(){
+	//		$("#saveAndAddNextBuuton").hide();
+	//		var selectedRows=$("#dg").datagrid("getSelections");
+	//		if(selectedRows.length!=1){
+	//			$.messager.alert("系统提示","请选择一个商品！");
+	//			return;
+	//		}
+	//		var row=selectedRows[0];
+	//		$("#dlg4").dialog("open").dialog("setTitle","修改销售单商品");
+	//		$("#fm4").form("load",row);
+	//		$("#sellingPrice").val("￥"+row.sellingPrice);
+	//		$("#price").numberbox("setValue",row.price);
+	//		$("#num").numberbox("setValue",row.num);
+	//		$("#num").focus();
+	//		$("#action").val("modify");
+	//		$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
+	//	}
+	function searchContract(){
+		clearGrid("dg");
 		$.ajax({
 			url: '/test/contractsearch',
 			type: 'POST',
@@ -268,6 +258,12 @@
 		return oTime;
 	};
 
+	function editContract(){
+//		$("form[id='dlg4'] :text").attr("disabled","true");
+		$('#buildingSize').removeAttr("disabled");
+		$('#buildingInfo').attr("disabled",true);
+		$('#region').attr("disabled","disabled");
+	}
 	function updateContract(){
 		var contractinfo = $('#fm4').serializeArray();
 		var contractobj = {};
@@ -277,23 +273,33 @@
 
 		$.messager.alert("jsoninfo",JSON.stringify(contractobj));
 	}
-//	function openSaleListGoodsModifyDialog(){
-//		$("#saveAndAddNextBuuton").hide();
-//		var selectedRows=$("#dg").datagrid("getSelections");
-//		if(selectedRows.length!=1){
-//			$.messager.alert("系统提示","请选择一个商品！");
-//			return;
-//		}
-//		var row=selectedRows[0];
-//		$("#dlg4").dialog("open").dialog("setTitle","修改销售单商品");
-//		$("#fm4").form("load",row);
-//		$("#sellingPrice").val("￥"+row.sellingPrice);
-//		$("#price").numberbox("setValue",row.price);
-//		$("#num").numberbox("setValue",row.num);
-//		$("#num").focus();
-//		$("#action").val("modify");
-//		$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
-//	}
+
+	function download(){
+		$.ajax({
+			url: '/api/v1/download-contracts',
+			type: 'GET',
+			contentType: 'application/json',
+			success: function (data) {
+				alert("downing")
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
+			}
+		})
+
+	}
+
+	function openAddContract(){
+		$("#addcontract").dialog("open").dialog("setTitle","新增");
+	}
+
+	function addContract(){
+
+	}
+
+	function closeAddContract(){
+		$("#addcontract").dialog("close");
+	}
 
 </script>
 </head>
@@ -342,6 +348,9 @@
 		<!--&nbsp;签约人：&nbsp;<input type="text" id="codeOrName" size="20" onkeydown="if(event.keyCode==13) searchStock()"/>-->
  		<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
 
+		<a href="javascript:openAddContract()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增记录</a>
+		<a href="javascript:download()" class="easyui-linkbutton" iconCls="icon-save" plain="true">下载</a>
+
  	</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
  </div>
  
@@ -353,10 +362,10 @@
    
   </div>
  
- <div id="dlg-buttons2">
- 	<a href="javascript:saveGoodsTypeChoose()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
- 	<a href="javascript:closeGoodsTypeChooseDialog()" class="easyui-linkbutton" iconCls="icon-cancel" plain="true">关闭</a>
- </div>
+ <!--<div id="dlg-buttons2">-->
+ 	<!--<a href="javascript:saveGoodsTypeChoose()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>-->
+ 	<!--<a href="javascript:closeGoodsTypeChooseDialog()" class="easyui-linkbutton" iconCls="icon-cancel" plain="true">关闭</a>-->
+ <!--</div>-->
 
 <div id="dlg4" class="easyui-dialog" style="width:650px;height:450px;padding: 5px 5px"
 	 closed="true" buttons="#dlg-buttons4" data-options="onClose:function(){resetValue()}">
@@ -380,13 +389,13 @@
 					<td>合同状态：</td>
 					<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="true"/></td>
 					<td >所在区域：</td>
-					<td><input type="text" name="region" size="10"  readonly="readonly" disabled="false"/></td>
+					<td><input type="text" name="region" size="10"/></td>
 				</tr>
 				<tr>
 					<td>楼层房号：</td>
-					<td><input type="text"  name="buildingInfo" size="10" readonly="readonly" disabled="true"/></td>
+					<td><input type="text"  name="buildingInfo" size="10" /></td>
 					<td>楼层面积(m2)：</td>
-					<td><input type="text"name="buildingSize" size="10" readonly="readonly" disabled="false"/></td>
+					<td><input type="text"name="buildingSize" size="10"  disabled="false"/></td>
 					<td >签约方式：</td>
 					<td><input type="text" name="signingMode" size="10"  readonly="readonly" disabled="false"/></td>
 				</tr>
@@ -497,6 +506,62 @@
 
 </div>
 
+
+<div id="addcontract" class="easyui-dialog" style="width:600px;height:430px;padding: 10px 20px"
+	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
+
+	<table cellspacing="8px">
+		<tr>
+			<td><div>所在区域&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="车健" type="text" id="newMerchantName" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="车健" type="text" id="newMerchantName2" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="156792722525" type="text" id="newMmerchantPhone" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>认购日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="156792722525" type="text" id="newMmerchantPhone2" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>签约日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="360424199905202020" type="text" id="newMmerchantIdNo" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="360424199905202020" type="text" id="newMmerchantIdNo2" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>建筑面积(m2)：<input value="建设银行" type="text" id="newBankInfo" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>商户信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="建设银行" type="text" id="newBankInfo2" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>销售原价(元)&nbsp;&nbsp;：<input value="6227002035461234" type="text" id="newBankAcount" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>总价(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="6227002035461234" type="text" id="newBankAcount2" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>签约总价(元)&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>返租基价(元)：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress2" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>返租溢价(元)&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress3" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress24" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddres5s" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress26" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>签约状态&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress7" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress29" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>方案选择&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress27" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress82" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress8" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>个税金额(元)：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress28" name="name" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+	</table>
+	<div id="ac-buttons" align="center">
+		<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addContract()">保存</a>
+		<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+		<a href="javascript:closeAddContract()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+	</div>
+</div>
 
 
 

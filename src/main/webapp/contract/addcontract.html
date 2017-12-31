@@ -621,67 +621,69 @@
 </script>
 </head>
 <body class="easyui-layout" >
-	<div region="north" style="height: 270px;padding: 10px;border: 0px;padding-top: 20px" >
+	<div region="north" style="height: 370px;padding: 10px;border: 0px;padding-top: 20px" >
 		<fieldset style="border-color: #E7F0FF">
  			<legend>新增：<span id="dh"></span></legend>
  			<form id="fm6" name="fm6" method="post">
- 			<table cellspacing="15px" width="100%" height="100%">
+ 			<table cellspacing="10px" width="100%" height="100%">
 				<tr>
-					<td>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" size="10" id="contractNo" name="contractNo" value="NO501"/></td>
-					<td>所在区域：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="region" name="region" required="true" panelHeight="auto">
+					<td>所在区域：<select class="easyui-combobox"   editable="false" style="width: 86px;" id="region" name="region" required="true" panelHeight="auto">
 						<option value="22">22</option>
 						<option value="23">23</option>
 					</select></td>
-					<td>认购日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="subscriptionDate" name="subscriptionDate" required=false size="8" class="easyui-datebox" data-options="editable:false" value="2017-12-01"/></td>
-					<td>返租基价(元)：<input type="text" size="15" id="leasebackPrice" name="leasebackPrice" value="123"/></td>
-					<td>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率：<input type="text" size="15" id="tariff" name="tariff" value="0.56"/></td>
-				</tr>
-				<tr>
-					<td>签约人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" size="10" id="signer" name="signer" class="easyui-validatebox" required="true" value="签约人" onclick="openChooseMerchant()"/></td>
-					<td>
-						签约状态：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="contractStatus" name="contractStatus" required="true" panelHeight="auto">
-						<option value="1">状态一</option>
-						<option value="2">状态二</option>
-						<option value="3">状态三</option>
-						<option value="4">状态四</option>
-					</select>
-					</td>
-					<td>签约日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="signingDate" name="signingDate" required=false size="8" class="easyui-datebox" data-options="editable:false" value="2017-12-02"/></td>
-					<td>返租溢价(元)：<input type="text" size="15" id="backPremium" name="backPremium" value="456"/></td>
-					<td>个税金额(元)：<input type="text" size="15" id="taxAmount" name="taxAmount" value="789"/></td>
-				</tr>
-				<tr>
-					<td>受益人信息&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" size="10" id="beneficiary" name="beneficiary" class="easyui-validatebox" required="true" value="受益人" onclick="openChooseBenefic()"/></td>
-					<td>方案选择：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="proposalId" name="proposalId" required="true" panelHeight="auto">
-						<option value="1">方案一</option>
-						<option value="2">方案二</option>
-						<option value="3">方案三</option>
-						<option value="4">方案四</option>
-					</select></td>
-					<td>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="contractTerDate" name="contractTerDate" required=false size="8" class="easyui-datebox" data-options="editable:false" value="2017-12-03" /></td>
-					<td>签约总价(元)：<input type="text" size="15" id="signTotalPrice" name="signTotalPrice" value="987"/></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" size="10" id="buildingInfo" name="buildingInfo" value="楼层房号"/></td>
-					<td>合同版本：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="contractVersion" name="contractVersion" required="true" panelHeight="auto">
+					<td>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" size="10" id="contractNo" name="contractNo" value="NO501"/></td>
+					<td>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="contractVersion" name="contractVersion" required="true" panelHeight="auto">
 						<option value="22">1</option>
 						<option value="23">2</option>
 						<option value="23">3</option>
 						<option value="23">4</option>
 					</select></td>
-					<td>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="paybackDate" name="paybackDate" required=false size="8" class="easyui-datebox" data-options="editable:false"  value="2017-12-04"/></td>
-					<td>销售原价(元)：<input type="text" size="15" id="originalPrice" name="originalPrice" value="654"/></td>
-					<td></td>
+					<td>认购日期：<input type="text" id="subscriptionDate" name="subscriptionDate" required=false size="8" class="easyui-datebox" data-options="editable:false" value="2017-12-01"/></td>
 				</tr>
 				<tr>
+					<td>签约日期：<input type="text" id="signingDate" name="signingDate" required=false size="8" class="easyui-datebox" data-options="editable:false" value="2017-12-02"/></td>
+					<td>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" size="10" id="buildingInfo" name="buildingInfo" value="楼层房号"/></td>
 					<td>建筑面积(m2)：<input type="text" size="10" id="buildingSize" name="buildingSize" value="120"/></td>
-					<td>签约方式：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="signingMode" name="signingMode" required="true" panelHeight="auto">
+				</tr>
+				<tr>
+					<td colspan="2">商户信息：<input type="text" size="43" id="signer" name="signer" class="easyui-validatebox" required="true" value="签约人" onclick="openChooseMerchant()"/></td>
+					<td>销售原价(元)&nbsp;：<input type="text" size="10" id="originalPrice" name="originalPrice" value="654"/></td>
+					<td>总价(元)：<input type="text" size="8" id="totalPrice" name="totalPrice" value="321"/></td>
+				</tr>
+				<tr>
+					<td>签约总价(元)：<input type="text" size="5" id="signTotalPrice" name="signTotalPrice" value="987"/></td>
+					<td>返租基价(元))：<input type="text" size="10" id="leasebackPrice" name="leasebackPrice" value="123"/></td>
+					<td>返租溢价(元)&nbsp;：<input type="text" size="10" id="backPremium" name="backPremium" value="456"/></td>
+				</tr>
+				<tr>
+					<td>回款时间：<input type="text" id="paybackDate" name="paybackDate" required=false size="8" class="easyui-datebox" data-options="editable:false"  value="2017-12-04"/></td>
+					<td>记租起始日&nbsp;&nbsp;：<input type="text" id="payStartDate" name="payStartDate" required=false size="10" class="easyui-datebox" data-options="editable:false"  value="2017-12-05"/></td>
+					<td>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="contractTerDate" name="contractTerDate" required=false size="10" class="easyui-datebox" data-options="editable:false" value="2017-12-03" /></td>
+					<td>签约状态：<select class="easyui-combobox"   editable="false" style="width: 80px;" id="contractStatus" name="contractStatus" required="true" panelHeight="auto">
+						<option value="1">状态一</option>
+						<option value="2">状态二</option>
+						<option value="3">状态三</option>
+						<option value="4">状态四</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td>签约方式：<select class="easyui-combobox"   editable="false" style="width: 86px;" id="signingMode" name="signingMode" required="true" panelHeight="auto">
 						<option value="MORTGAGE">MORTGAGE</option>
 					</select></td>
-					<td>记租起始日期：<input type="text" id="payStartDate" name="payStartDate" required=false size="8" class="easyui-datebox" data-options="editable:false"  value="2017-12-05"/></td>
-					<td>总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价(元)：<input type="text" size="15" id="totalPrice" name="totalPrice" value="321"/></td>
-					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:addContract()" class="easyui-linkbutton"  iconCls="icon-ok">保存</a></td>
+					<td>方案选择&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select class="easyui-combobox"   editable="false" style="width: 100px;" id="proposalId" name="proposalId" required="true" panelHeight="auto">
+						<option value="1">方案一</option>
+						<option value="2">方案二</option>
+						<option value="3">方案三</option>
+						<option value="4">方案四</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td colspan="4">受&nbsp;益&nbsp;人&nbsp;：<input type="text" size="30" id="beneficiary" name="beneficiary" class="easyui-validatebox" required="true" value="受益人" onclick="openChooseBenefic()"/></td>
+				</tr>
+				<tr>
+					<td>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率：<input type="text" size="8" id="tariff" name="tariff" value="0.56"/></td>
+					<td>个税金额(元)：<input type="text" size="10" id="taxAmount" name="taxAmount" value="789"/></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:addContract()" class="easyui-linkbutton"  iconCls="icon-ok">保存</a></td>
 				</tr>
  			</table>
  			</form>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>统计</title>
+	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/default/easyui.css"></link>
+	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/icon.css"></link>
+	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="/static/highcharts4/js/highcharts.js"></script>
+	<script type="text/javascript" src="/static/js/date.js"></script>
+	<script type="text/javascript">
+
+
+		function download(){
+			$.ajax({
+				url: '/api/v1/download-contracts',
+				type: 'GET',
+				contentType: 'application/json',
+				success: function (data) {
+
+				},
+				error: function () {
+					alert('An error has occured!! :-(')
+				}
+			})
+
+		}
+
+	</script>
+</head>
+<body >
+<div style="height: 100px;padding: 50px;border: 0px;" >
+	<fieldset style="border-color: #E7F0FF">
+		<legend>基本租金导出</legend>
+		<div style="padding: 5px">
+			选择月份：<input id="basic_rent" class="easyui-datebox" editable=false  style="width:100px">
+			&nbsp;&nbsp;<a href="http://localhost:8181/api/v1/download-contracts" class="easyui-linkbutton" iconCls="icon-save" plain="true">下载</a>
+		</div>
+		</form>
+	</fieldset>
+</div>
+
+<div style="height: 100px;padding: 50px;border: 0px;" >
+	<fieldset style="border-color: #E7F0FF">
+		<legend>增值租金导出</legend>
+		<div style="padding: 5px">
+			选择月份：<input id="add_rent" class="easyui-datebox" editable=false  style="width:100px">
+			&nbsp;&nbsp;<a href="javascript:download()" class="easyui-linkbutton" iconCls="icon-save" plain="true">下载</a>
+			<!--&nbsp;&nbsp;<a href="http://localhost:8181/api/v1/download-contracts" class="easyui-linkbutton" iconCls="icon-save" plain="true">下载</a>-->
+		</div>
+		</form>
+	</fieldset>
+</div>
+
+</body>
+</html>
