@@ -47,7 +47,9 @@
 	$(document).ready(function() {
 		
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/addcontract.html'></iframe>";
-		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/contractSearch.html'></iframe>";
+//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/contractSearch.html'></iframe>";
+		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/calculator.html'></iframe>";
+//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/firstPage.html'></iframe>";
 		$("#tabs").tabs("add",{
 			title:"首页",
 			iconCls:"menu-25",
@@ -64,9 +66,9 @@
 				$("#tree").tree('expandAll');
 			},
 			onClick:function(node){
-				if(node.id==6050){
+				if(node.id==9050){
 					logout();
-				}else if(node.id==6040){
+				}else if(node.id==9040){
 					openPasswordModifyDialog();
 				}else　if(node.attributes.url){
 					openTab(node);
@@ -91,8 +93,9 @@
 		function logout(){
 			$.messager.confirm("系统提示","您确定要退出系统吗？",function(r){
 				if(r){
-					window.location.href='/admin/user/logout';
-				} 
+					window.location.href='/login.html';
+//					window.location.href='/admin/user/logout';
+				}
 			 });
 		}
 		

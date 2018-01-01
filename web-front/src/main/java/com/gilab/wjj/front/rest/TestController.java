@@ -1,15 +1,14 @@
-package com.gilab.wjj.admin.rest;
+package com.gilab.wjj.front.rest;
 
 
 import com.gilab.wjj.core.TestAgent;
 import com.gilab.wjj.persistence.model.MenuList;
 import com.gilab.wjj.persistence.model.User;
 import com.gilab.wjj.util.logback.LoggerFactory;
-//import com.gilab.wjj.utils.RestUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//import com.gilab.wjj.utils.RestUtils;
 
 /**
  * Created by yuankui on 10/31/17.
