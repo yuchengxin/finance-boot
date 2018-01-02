@@ -28,6 +28,21 @@
 //				$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
 			}
 		});
+
+		$("#dg3").datagrid({
+			//双击事件
+			onDblClickRow: function (index, row) {
+				chooseSelectMerchant();
+			}
+		});
+
+		$("#dg_benefic_list").datagrid({
+			//双击事件
+			onDblClickRow: function (index, row) {
+				chooseSelectBenefic();
+			}
+		});
+
 	})
 
 	function clearGrid(gridId){
@@ -268,7 +283,7 @@
 		var contractinfo = $('#fm4').serializeArray();
 		var contractobj = {};
 		$.each(contractinfo,function(i,v){
-			contractobj[v.name] = v.value;
+			contractobj[v.name.substring(1)] = v.value;
 		})
 
 		$.messager.alert("jsoninfo",JSON.stringify(contractobj));
@@ -295,10 +310,264 @@
 
 	function addContract(){
 
+		var contractinfo = $('#fm6').serializeArray();
+		var contractobj = {};
+		$.each(contractinfo,function(i,v){
+			if(v.name.indexOf('Date')>0){
+				var d = new Date(),
+						dArr = v.value.split('-');
+				d.setYear(dArr[0]);
+				d.setMonth(dArr[1] - 1);
+				d.setDate(dArr[2]);
+				contractobj[v.name.substring(1)] = d.getTime();
+			}else{
+				contractobj[v.name.substring(1)] = v.value;
+			}
+
+		})
+		contractobj['logs']='mylog';
+		//getsigner
+
+//		var jsonObj = JSON.parse(contractobj);
+		var signerList = [];
+		var item = $( '#selectedMerchants').datagrid('getRows');
+		if (item) {
+			for (var i = item.length - 1; i >= 0; i--) {
+				signerList.push(JSON.parse(item[i].selectedMechanDetail));
+			}
+		}
+		contractobj['signer']=signerList;
+		//getbeneficiary
+		var beneficList = [];
+		var item = $( '#dg_benefic_selected').datagrid('getRows');
+		if (item) {
+			for (var i = item.length - 1; i >= 0; i--) {
+				beneficList.push(JSON.parse(item[i].selectedMechanDetail));
+			}
+		}
+		contractobj['beneficiary']=beneficList[0];
+		$.messager.alert('jsoninfo',JSON.stringify(contractobj));
+		if(!$("#fm6").form("validate")){
+			return false;
+		}else {
+			$.ajax({
+				url: '/api/v1/contracts',
+//				url: '/test/addcontract',
+				type: 'PUT',
+				data: JSON.stringify(contractobj),
+				contentType: 'application/json',
+				success: function (data) {
+					window.location.reload();
+				},
+				error: function () {
+					alert('An error has occured!! :-(')
+				}
+			})
+		}
 	}
 
 	function closeAddContract(){
 		$("#addcontract").dialog("close");
+	}
+
+	function openChooseMerchant(){
+		clearGrid("dg3");
+		$("#dlg").dialog("open").dialog("setTitle","选择签约人");
+		$('#selectedMerchants').datagrid({
+			nowrap: false,
+			striped: false,
+			collapsible: false,
+			pagination: false,
+			border: true,
+			rownumbers: true
+		});
+	}
+
+	function openChooseBenefic(){
+		clearGrid("dg_benefic_list");
+		$("#dg_benefic").dialog("open").dialog("setTitle","选择受益人");
+		$('#dg_benefic_selected').datagrid({
+			nowrap: false,
+			striped: false,
+			collapsible: false,
+			pagination: false,
+			border: true,
+			rownumbers: true
+		});
+	}
+
+	function searchMerchant(name,type){
+		//清除之前搜索出来的商户信息
+		clearGrid("dg3");
+		clearGrid("dg_benefic_list");
+
+		$.ajax({
+			url: '/api/v1/merchants?merchantName='+name,
+			type: 'GET',
+			contentType: 'application/json',
+			success: function (data) {
+				if (data.length > 0) {
+					var appendID = type=='merchant'?'dg3':'dg_benefic_list';
+					for(var i = 0; i<=data.length;i++) {
+						$('#'+appendID).datagrid('appendRow', {
+							id:data[i].id,
+							merchantName: data[i].merchantName,
+							merchantPhone: data[i].merchantPhone,
+							merchantIdNo: data[i].merchantIdNo,
+							bankInfo: data[i].bankInfo,
+							bankAccount: data[i].bankAccount,
+							merchantAddress: data[i].merchantAddress
+						});
+					}
+				} else {
+					$.messager.alert("查询失败","未查询到 "+name+" 的相关信息");
+				}
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
+			}
+		})
+	}
+
+	function addMerchant(){
+
+		$.ajax({
+			url: '/api/v1/merchants',
+			type: 'PUT',
+			data: "{"+
+			"\"merchantName\":\""+$("#newMerchantName").val()+"\","+
+			"\"merchantPhone\":\""+$("#newMmerchantPhone").val()+"\","+
+			"\"merchantIdNo\":\""+$("#newMmerchantIdNo").val()+"\","+
+//			"\"bankInfo\":\""+$("#newBankInfo").val()+"\","+
+//			"\"bankAccount\":\""+$("#newBankAcount").val()+"\","+
+//			"\"merchantAddress\":\""+$("#newMerchnatAddress").val()+"\""+
+			"}",
+			contentType: 'application/json',
+			success: function (data) {
+				$.messager.alert("添加成功","添加成功");
+			},
+			error: function () {
+				$.messager.alert("添加失败","该商户已存在");
+			}
+		})
+	}
+
+	function addBenefit(){
+
+		$.ajax({
+			url: '/api/v1/merchants',
+			type: 'PUT',
+			data: "{"+
+			"\"merchantName\":\""+$("#bnewMerchantName").val()+"\","+
+			"\"merchantPhone\":\""+$("#bnewMmerchantPhone").val()+"\","+
+			"\"merchantIdNo\":\""+$("#bnewMmerchantIdNo").val()+"\","+
+			"\"bankInfo\":\""+$("#bnewBankInfo").val()+"\","+
+			"\"bankAccount\":\""+$("#bnewBankAcount").val()+"\","+
+			"\"merchantAddress\":\""+$("#bnewMerchnatAddress").val()+"\""+
+			"}",
+			contentType: 'application/json',
+			success: function (data) {
+				$.messager.alert("添加成功","添加成功");
+			},
+			error: function () {
+				$.messager.alert("添加失败","该商户已存在");
+			}
+		})
+	}
+
+	function openAddMerchant(){
+		$("#addMerchant").dialog("open").dialog("setTitle","添加签约人");
+	}
+
+	function openAddBenefit(){
+		$("#addBenefit").dialog("open").dialog("setTitle","添加受益人");
+	}
+
+	function chooseSelectMerchant(){
+//		$("#saveAndAddNextBuuton").show();
+		var selectedRows=$("#dg3").datagrid("getSelections");
+		if(selectedRows.length!=1){
+			$.messager.alert("系统提示","请选择一个商户！");
+			return;
+		}
+		var row=selectedRows[0];
+		var item = $( '#selectedMerchants').datagrid('getRows');
+		if (item) {
+			for (var i = item.length - 1; i >= 0; i--) {
+				if(item[i].id==row.id){
+					$.messager.alert("重复添加","已添加该项");
+					return;
+				}
+			}
+		}
+		$('#selectedMerchants').datagrid('appendRow', {
+			id: row.id,
+			selectedMercahnt: row.merchantName,
+//			selectedMercahnt: row.merchantName+"("+row.merchantPhone+")",
+			selectedMechanDetail: JSON.stringify(row)
+		});
+//		$("#dlg4").dialog("open").dialog("setTitle","选择商户品");
+//		$("#fm4").form("load",row);
+//		$("#sellingPrice").val("￥"+row.sellingPrice);
+//		$("#price").numberbox("setValue",row.sellingPrice);
+//		$("#num").focus();
+//		$("#action").val("add");
+
+	}
+
+	function chooseSelectBenefic(){
+//		$("#saveAndAddNextBuuton").show();
+		var selectedRows=$("#dg_benefic_list").datagrid("getSelections");
+		if(selectedRows.length!=1){
+			$.messager.alert("系统提示","请选择一个受益人！");
+			return;
+		}
+		var row=selectedRows[0];
+		var item = $( '#dg_benefic_selected').datagrid('getRows');
+		if (item) {
+			for (var i = item.length - 1; i >= 0; i--) {
+				$.messager.alert("重复添加","受益人只能有一个");
+				return;
+			}
+		}
+		$('#dg_benefic_selected').datagrid('appendRow', {
+			id: row.id,
+			selectedMercahnt: row.merchantName+"("+row.merchantPhone+")",
+			selectedMechanDetail: JSON.stringify(row)
+		});
+//		$("#dlg4").dialog("open").dialog("setTitle","选择商户品");
+//		$("#fm4").form("load",row);
+//		$("#sellingPrice").val("￥"+row.sellingPrice);
+//		$("#price").numberbox("setValue",row.sellingPrice);
+//		$("#num").focus();
+//		$("#action").val("add");
+
+	}
+
+	function updateMerchantNum(){
+		var merchantNameval = '';
+		var item = $('#selectedMerchants').datagrid('getRows');
+		for(var i = item.length-1;i>=0;i--){
+			merchantNameval += item[i].selectedMercahnt+' ';
+		}
+//		var merchantNameval = "已选" + $( '#selectedMerchants').datagrid('getRows').length + "人";
+		$("#asigner").val(merchantNameval)
+	}
+
+	function updateBeneficVal(){
+		var row =  $( '#dg_benefic_selected').datagrid('getRows');
+		var beneficVal = '';
+		if(row.length>0){
+			beneficVal = row[0].selectedMercahnt;
+		}
+		$("#abeneficiary").val(beneficVal)
+	}
+
+	function deleteSelected(gridId){
+		var selectedRows=$( '#'+gridId).datagrid("getSelections");
+		var row = selectedRows[0];
+		var index = $( '#'+gridId).datagrid("getRowIndex",row);
+		$( '#'+gridId).datagrid('deleteRow', index);
 	}
 
 </script>
@@ -349,7 +618,8 @@
  		<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
 
 		<a href="javascript:openAddContract()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增记录</a>
-		<a href="javascript:download()" class="easyui-linkbutton" iconCls="icon-save" plain="true">下载</a>
+		<!--<a href="javascript:download()" class="easyui-linkbutton" iconCls="icon-folder" plain="true">批量导入</a>-->
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批量导入：<input name="userfile1" type="file" value="">
 
  	</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
  </div>
@@ -459,15 +729,15 @@
 </div>
 
 
-<div id="bacrent" class="easyui-dialog" style="width:800px;height:420px;" closed="true">
+<div id="bacrent" class="easyui-dialog" style="width:950px;height:420px;" closed="true">
 	<div class="easyui-layout" style="width:100%;height:100%;">
 
 		<div region="north" style="height: 50px;" >
 			<div style="padding-top: 8px;padding-left: 10px;">
 				<input type="number" id="selectedId" size="1" hidden="true"/>
-				&nbsp;期：&nbsp;<input type="number" id="period" size="3" style="font-size:5px"/>
-				&nbsp;年：&nbsp;<input type="number" id="year" size="3" style="font-size:5px"/>
-				&nbsp;月：&nbsp;<input type="number" id="month" size="3" style="font-size:5px"/>
+				&nbsp;期：&nbsp;<input type="number" id="period" size="2" style="font-size:5px"/>
+				&nbsp;年：&nbsp;<input type="number" id="year" size="2" style="font-size:5px"/>
+				&nbsp;月：&nbsp;<input type="number" id="month" size="2" style="font-size:5px"/>
 				<!--<select class="easyui-combobox"   editable="false" style="width: 100px;" id="period" name="period" panelHeight="auto"></select>-->
 				<!--<select class="easyui-combobox"   editable="false" style="width: 100px;" id="year" name="year" panelHeight="auto"></select>-->
 				<!--<select class="easyui-combobox"   editable="false" style="width: 100px;" id="month" name="month" panelHeight="auto"></select>-->
@@ -507,56 +777,79 @@
 </div>
 
 
-<div id="addcontract" class="easyui-dialog" style="width:600px;height:430px;padding: 10px 20px"
+<div id="addcontract" class="easyui-dialog" style="width:650px;height:450px;padding: 10px 20px"
 	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
+	<form id="fm6" name="fm6" method="post">
+	<table cellspacing="6px">
+		<tr>
+			<td><div>所在区域&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="aregion" name="aregion"  style="width: 170px;" required="true">
+				<option value="22">22</option>
+				<option value="23">23</option>
+				</select></div></td>
+			<td><div>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="No01" type="text" id="acontractNo" name="acontractNo" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="acontractVersion" name="acontractVersion" style="width: 170px;" required="true">
+				<option value="22">1</option>
+				<option value="23">2</option>
+				<option value="23">3</option>
+				<option value="23">4</option>
+				</select></div></td>
+			<td><div>认购日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="1997-07-30" type="text" id="asubscriptionDate" name="asubscriptionDate" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>签约日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="2015-08-24" type="text" id="asigningDate" name="asigningDate" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="1层-商10" type="text" id="abuildingInfo" name="abuildingInfo" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>建筑面积(m2)：<input value="221.71" type="text" id="abuildingSize" name="abuildingSize" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>签约人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="建设银行" type="text" id="asigner" name="asigner" class="easyui-validatebox" required="true"  onclick="openChooseMerchant()"/></div></td>
+		</tr>
+		<tr>
+			<td><div>销售原价(元)&nbsp;&nbsp;：<input value="5200" type="text" id="aoriginalPrice" name="aoriginalPrice" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>总价(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="6000" type="text" id="atotalPrice" name="atotalPrice" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>签约总价(元)&nbsp;&nbsp;：<input value="5500" type="text" id="asignTotalPrice" name="asignTotalPrice" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>返租基价(元)：<input value="4877620" type="text" id="aleasebackPrice" name="aleasebackPrice" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>返租溢价(元)&nbsp;&nbsp;：<input value="123" type="text" id="abackPremium" name="abackPremium" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="2015-11-30" type="text" id="apaybackDate" name="apaybackDate" class="easyui-validatebox" required="true"/></div></td>
+		</tr>
+		<tr>
+			<td><div>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input value="2018-11-29" type="text" id="apayStartDate" name="apayStartDate" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="2030-11-29" type="text" id="acontractTerDate" name="acontractTerDate"  class="easyui-validatebox" required="true"/>
 
-	<table cellspacing="8px">
-		<tr>
-			<td><div>所在区域&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="车健" type="text" id="newMerchantName" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="车健" type="text" id="newMerchantName2" name="name" class="easyui-validatebox" required="true"/></div></td>
+				</input></div></td>
 		</tr>
 		<tr>
-			<td><div>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="156792722525" type="text" id="newMmerchantPhone" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>认购日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="156792722525" type="text" id="newMmerchantPhone2" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>签约状态&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="acontractStatus" name="acontractStatus"  style="width: 170px;" required="true">
+				<option value="1">状态一</option>
+				<option value="2">状态二</option>
+				<option value="3">状态三</option>
+				<option value="4">状态四</option>
+			</select></div></td>
+			<td><div>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="asigningMode" name="asigningMode" style="width: 170px;" required="true">
+				<option value="1">方式一</option>
+				</select></div></td>
 		</tr>
 		<tr>
-			<td><div>签约日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="360424199905202020" type="text" id="newMmerchantIdNo" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="360424199905202020" type="text" id="newMmerchantIdNo2" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>方案选择&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="aproposalId" name="aproposalId" style="width: 170px;" required="true">
+				<option value="1">方案一</option>
+				<option value="2">方案二</option>
+				<option value="3">方案三</option>
+				<option value="4">方案四</option>
+			</select></div></td>
+			<td><div>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="abeneficiary" name="abeneficiary" class="easyui-validatebox" required="true" onclick="openChooseBenefic()"/></div></td>
 		</tr>
 		<tr>
-			<td><div>建筑面积(m2)：<input value="建设银行" type="text" id="newBankInfo" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>商户信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="建设银行" type="text" id="newBankInfo2" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>销售原价(元)&nbsp;&nbsp;：<input value="6227002035461234" type="text" id="newBankAcount" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>总价(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="6227002035461234" type="text" id="newBankAcount2" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>签约总价(元)&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>返租基价(元)：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress2" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>返租溢价(元)&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress3" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress24" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddres5s" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress26" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>签约状态&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress7" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress29" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>方案选择&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress27" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress82" name="name" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress8" name="name" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>个税金额(元)：<input value="江西省九江市修水县" type="text" id="newMerchnatAddress28" name="name" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="0.01" type="text" id="atariff" name="atariff" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>个税金额(元)：<input value="4000" type="text" id="ataxAmount" name="ataxAmount" class="easyui-validatebox" required="true"/></div></td>
 		</tr>
 	</table>
-	<div id="ac-buttons" align="center">
+	</form>
+		<div id="ac-buttons" align="center">
 		<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addContract()">保存</a>
 		<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
 		<a href="javascript:closeAddContract()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
@@ -564,6 +857,151 @@
 </div>
 
 
+<div id="dlg" class="easyui-dialog" style="width:800px;height:420px;"
+	 closed="true" data-options="onClose:function(){updateMerchantNum()}" >
+	<div class="easyui-layout" style="width:100%;height:100%;">
+
+		<div region="north" style="height: 50px;" >
+			<div style="padding-top: 8px;padding-left: 40px;">
+				&nbsp;签约人搜索：&nbsp;<input type="text" id="s_codeOrName" size="30"/>
+				<a class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="searchMerchant($('#s_codeOrName').val(),'merchant')">搜索</a>
+				<a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="openAddMerchant()">添加新商户</a>
+				<!--<a href="javascript:openAddMerchant()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新增</a>-->
+			</div>
+		</div>
+		<div region="west" style="width: 200px" title="已选签约人" split="true" data-options="collapsible:false">
+			<table id="selectedMerchants" class="easyui-datagrid"
+				   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"
+				   url="/test/contractlist" fit="false" >
+				<thead>
+				<tr>
+					<th field="id" width="30" hidden=true align="center">编号</th>
+					<th field="selectedMercahnt" width="25" align="center">已选签约人</th>
+					<th field="selectedMechanDetail" width="30" hidden=true align="center">详细信息</th>
+				</tr>
+				</thead>
+			</table>
+			<!--<ul id="tree" class="easyui-tree" style="padding: 10px"></ul>-->
+			<div style="position:absolute;bottom: 10px;left: 50px">
+
+				<a id="del" href="javascript:deleteSelected('selectedMerchants')" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+			</div>
+		</div>
+		<div region="center">
+			<table id="dg3" title="签约人信息" class="easyui-datagrid"
+				   fitColumns="true" pagination="true" rownumbers="true" singleSelect="true"
+				   url="/test/contractlist" fit="true" toolbar="#tb3">
+				<thead>
+				<tr>
+					<th field="id" width="30" hidden=true align="center">编号</th>
+					<th field="merchantName" width="25" align="center">姓名</th>
+					<th field="merchantPhone" width="30" align="center">电话</th>
+					<th field="merchantIdNo" width="40" align="center">身份证</th>
+					<!--<th field="bankInfo" width="50" align="center" >开户行</th>-->
+					<!--<th field="bankAccount" width="50" align="center" formatter="formatPurchasingPrice">开户行账号</th>-->
+					<th field="merchantAddress" width="60" align="center">通讯地址</th>
+				</tr>
+				</thead>
+			</table>
+			<div>
+				<div>
+					<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="dg_benefic" class="easyui-dialog" style="width:800px;height:420px;"
+	 closed="true" data-options="onClose:function(){updateBeneficVal()}" >
+	<div class="easyui-layout" style="width:100%;height:100%;">
+
+		<div region="north" style="height: 50px;" >
+			<div style="padding-top: 8px;padding-left: 40px;">
+				&nbsp;受益人搜索：&nbsp;<input type="text" id="s_codeOrName_benefic" size="30"/>
+				<a class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="searchMerchant($('#s_codeOrName_benefic').val(),'benefic')">搜索</a>
+			</div>
+		</div>
+		<div region="west" style="width: 200px" title="已选受益人" split="true" data-options="collapsible:false">
+			<table id="dg_benefic_selected" class="easyui-datagrid"
+				   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"
+				   url="/test/contractlist" fit="false" >
+				<thead>
+				<tr>
+					<th field="id" width="30" hidden=true align="center">编号</th>
+					<th field="selectedMercahnt" width="25" align="center">已选受益人</th>
+					<th field="selectedMechanDetail" width="30" hidden=true align="center">详细信息</th>
+				</tr>
+				</thead>
+			</table>
+			<!--<ul id="tree" class="easyui-tree" style="padding: 10px"></ul>-->
+			<div style="position:absolute;bottom: 10px;left: 4px">
+				<a href="javascript:openAddBenefit()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新增</a>
+				<a id="del_benefic" href="javascript:deleteSelected('dg_benefic_selected')" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+			</div>
+		</div>
+		<div region="center">
+			<table id="dg_benefic_list" title="受益人" class="easyui-datagrid"
+				   fitColumns="true" pagination="true" rownumbers="true" singleSelect="true"
+				   url="/test/contractlist" fit="true" toolbar="#tb3">
+				<thead>
+				<tr>
+					<th field="id" width="30" hidden=true align="center">编号</th>
+					<th field="merchantName" width="25" align="center">姓名</th>
+					<th field="merchantPhone" width="30" align="center">电话</th>
+					<th field="merchantIdNo" width="40" align="center">身份证</th>
+					<!--<th field="bankInfo" width="50" align="center" >开户行</th>-->
+					<!--<th field="bankAccount" width="50" align="center" formatter="formatPurchasingPrice">开户行账号</th>-->
+					<th field="merchantAddress" width="60" align="center">通讯地址</th>
+				</tr>
+				</thead>
+			</table>
+			<div id="tb3_benefic">
+				<div>
+					<a href="javascript:chooseSelectBenefic()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+<div id="addMerchant" class="easyui-dialog" style="width:330px;height:200px;padding: 10px 20px"
+	 closed="true" buttons="#dlg-buttons1"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
+
+	<table cellspacing="8px">
+		<tr><td><div>商户姓名：&nbsp;<input value="车健" type="text" id="newMerchantName" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>商户电话：&nbsp;<input value="156792722525" type="text" id="newMmerchantPhone" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>身份证号：&nbsp;<input value="360424199905202020" type="text" id="newMmerchantIdNo" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<!--<tr><td><div>开&nbsp;户&nbsp;&nbsp;行：&nbsp;<input value="建设银行" type="text" id="newBankInfo" name="name" class="easyui-validatebox" required="true"/></div></td></tr>-->
+		<!--<tr><td><div>银行卡号：&nbsp;<input value="6227002035461234" type="text" id="newBankAcount" name="name" class="easyui-validatebox" required="true"/></div></td></tr>-->
+		<!--<tr><td><div>通讯地址：&nbsp;<input value="江西省九江市修水县" type="text" id="newMerchnatAddress" name="name" class="easyui-validatebox" required="true"/></div></td></tr>-->
+	</table>
+</div>
+
+<div id="dlg-buttons1">
+	<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addMerchant()">保存</a>
+	<a href="javascript:closeGoodsTypeDialog()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+</div>
+
+<div id="addBenefit" class="easyui-dialog" style="width:330px;height:300px;padding: 10px 20px"
+	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
+
+	<table cellspacing="8px">
+		<tr><td><div>商户姓名：&nbsp;<input value="车健" type="text" id="bnewMerchantName" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>商户电话：&nbsp;<input value="156792722525" type="text" id="bnewMmerchantPhone" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>身份证号：&nbsp;<input value="360424199905202020" type="text" id="bnewMmerchantIdNo" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>开&nbsp;户&nbsp;&nbsp;行：&nbsp;<input value="建设银行" type="text" id="bnewBankInfo" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>银行卡号：&nbsp;<input value="6227002035461234" type="text" id="bnewBankAcount" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+		<tr><td><div>通讯地址：&nbsp;<input value="江西省九江市修水县" type="text" id="bnewMerchnatAddress" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
+	</table>
+</div>
+
+<div id="dlg-buttons2">
+	<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addBenefit()">保存</a>
+	<a href="javascript:closeGoodsTypeDialog()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+</div>
 
 </body>
 </html>

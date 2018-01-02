@@ -48,8 +48,9 @@
 		
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/addcontract.html'></iframe>";
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/contractSearch.html'></iframe>";
-		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/calculator.html'></iframe>";
-//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/firstPage.html'></iframe>";
+//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/ledger/addLedger.html'></iframe>";
+//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/calculator.html'></iframe>";
+		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/firstPage.html'></iframe>";
 		$("#tabs").tabs("add",{
 			title:"首页",
 			iconCls:"menu-25",
@@ -58,10 +59,25 @@
 		});
 		
 		$("#userInfo").load("/user/loadUserInfo"); // 加载用户信息
-		
+
+		$.ajax({
+			url: '/test/menu?parentId=-1',
+			type: 'POST',
+			contentType: 'application/json',
+			success: function (data) {
+//				$.messager.alert(data);
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
+			}
+		})
+
+
 		$("#tree").tree({
 			lines:true,
 			url:'/test/menu?parentId=-1',
+			method: 'POST',
+			contentType: 'application/json',
 			onLoadSuccess:function(){
 				$("#tree").tree('expandAll');
 			},

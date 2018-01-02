@@ -65,9 +65,20 @@ public class TestController {
      * @return
      */
 //    @ResponseBody
-    @RequestMapping(value="/menu", method = { RequestMethod.POST }, produces = "application/json")
-    public String menu(@RequestParam("parentId") Integer parentId,HttpSession session){
+//    @RequestMapping(value="/menu", method = { RequestMethod.POST }, produces = "application/json")
+    @RequestMapping(value="/menu", method = { RequestMethod.POST }, produces={"text/html;charset=UTF-8;","application/json;"})
+    public  String menu(@RequestParam("parentId") Integer parentId,HttpSession session){
         JsonArray jsonArray = getAllMenuByParentId(parentId);
+        ArrayList<MenuList> menuLists = new ArrayList<>();
+        for(int i = 0; i < jsonArray.size(); i++){
+            MenuList menuList = new MenuList();
+            menuList.setId(jsonArray.get(i).getAsJsonObject().get("id").getAsInt());
+            menuList.setName(jsonArray.get(i).getAsJsonObject().get("text").getAsString());
+            menuLists.add(menuList);
+        }
+        ArrayList<JsonObject> res = new ArrayList<>();
+        res.add(jsonArray.get(0).getAsJsonObject());
+//        return jsonArray.toString();
         return jsonArray.toString();
     }
 

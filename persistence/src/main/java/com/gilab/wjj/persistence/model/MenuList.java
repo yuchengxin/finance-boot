@@ -20,6 +20,8 @@ public class MenuList {
 
     private Integer pId;//父节点Id
 
+    private MenuList children;//父节点Id
+
     public static Logger getLogger() {
         return logger;
     }
