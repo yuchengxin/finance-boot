@@ -50,4 +50,14 @@ public class ContractDaoImpl implements ContractDao {
     public void deleteContract(long contractId) {
         mapper.deleteContract(contractId);
     }
+
+    @Override
+    public void batchUpdateContractStatus(List<Contract> contracts) {
+        mapper.batchUpdateContractStatus(contracts);
+    }
+
+    @Override
+    public void batchCreateContracts(List<Contract> contracts) {
+        mapper.batchInsertContracts(contracts);
+    }
 }

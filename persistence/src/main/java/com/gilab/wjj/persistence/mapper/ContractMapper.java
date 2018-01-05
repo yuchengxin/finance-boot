@@ -29,7 +29,11 @@ public interface ContractMapper {
 
     void insertContract(Contract contract);
 
+    void batchInsertContracts(List<Contract> contracts);
+
     void updateContract(Contract contract);
+
+    void batchUpdateContractStatus(List<Contract> contracts);
 
     void deleteContract(@Param("id") long contractId);
 }

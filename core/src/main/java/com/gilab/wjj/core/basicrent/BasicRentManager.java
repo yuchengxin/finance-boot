@@ -243,6 +243,17 @@ public class BasicRentManager implements BasicRentAgent {
 
     }
 
+    @Override
+    public List<BasicRentMonthResult> monthlyRentReport(long date) {
+        List<Contract> contracts = contractDao.getContractWithFilter(null, null, null, null, null, null, ContractStatus.RENTAL);
+        if(contracts == null || contracts.size() == 0) return null;
+        List<BasicRentMonthResult> monthAllResults = new ArrayList<>();
+        for (Contract contract : contracts){
+            monthAllResults.add(calBasicRentMonth(contract.getId(), date).getResult());
+        }
+        return monthAllResults;
+    }
+
     private List<BasicResult>  calBasicRentPeriodAmount(long payStartTime, int leasebackPrice, Proposal proposal, int period) {
         if(period > proposal.getLeasebackStages() || period <= 0){
             logger.error("period is illegal");

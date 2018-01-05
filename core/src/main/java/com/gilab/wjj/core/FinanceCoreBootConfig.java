@@ -1,6 +1,7 @@
 package com.gilab.wjj.core;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
@@ -13,5 +14,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication(scanBasePackages = { "com.gilab.wjj" })
 @EnableTransactionManagement
+@EnableScheduling
 public class FinanceCoreBootConfig {
 }

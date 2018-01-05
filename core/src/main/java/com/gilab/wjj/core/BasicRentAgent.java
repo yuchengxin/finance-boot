@@ -2,6 +2,8 @@ package com.gilab.wjj.core;
 
 import com.gilab.wjj.persistence.model.*;
 
+import java.util.List;
+
 /**
  * Created by yuankui on 12/20/17.
  * <p>
@@ -20,4 +22,6 @@ public interface BasicRentAgent extends Agent {
      ReqResult<BasicRentPeriodResult> calBasicRentPeriod(long contractId, int period);
 
      ReqResult<BasicRentResult> preCalBasicRentDetail(long paybackDate, int leasebackPrice, long proposalId);
+
+     List<BasicRentMonthResult> monthlyRentReport(long date);
 }

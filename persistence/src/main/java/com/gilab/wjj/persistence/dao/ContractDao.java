@@ -25,4 +25,8 @@ public interface ContractDao {
     void updateContract(Contract contract);
 
     void deleteContract(long contractId);
+
+    void batchUpdateContractStatus(List<Contract> contracts);
+
+    void batchCreateContracts(List<Contract> contracts);
 }

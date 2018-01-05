@@ -139,6 +139,62 @@
         )
     </insert>
 
+    <insert id="insertByBatch" parameterType="java.util.List">
+        insert into finance_contract (
+        region,
+        contractNo,
+        contractVersion,
+        subscriptionDate,
+        signer,
+        signingMode,
+        signingDate,
+        buildingInfo,
+        buildingSize,
+        originalPrice,
+        totalPrice,
+        signTotalPrice,
+        leasebackPrice,
+        backPremium,
+        payStartDate,
+        contractTerDate,
+        paybackDate,
+        beneficiary,
+        proposalId,
+        contractStatus,
+        tariff,
+        taxAmount,
+        logs
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.region},
+            #{item.contractNo},
+            #{item.contractVersion},
+            #{item.subscriptionDate,typeHandler=TimestampLongHandler},
+            #{item.signer,typeHandler=ListMerchant2StringHandler},
+            #{item.signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
+            #{item.signingDate,typeHandler=TimestampLongHandler},
+            #{item.buildingInfo},
+            #{item.buildingSize},
+            #{item.originalPrice},
+            #{item.totalPrice},
+            #{item.signTotalPrice},
+            #{item.leasebackPrice},
+            #{item.backPremium},
+            #{item.payStartDate,typeHandler=TimestampLongHandler},
+            #{item.contractTerDate,typeHandler=TimestampLongHandler},
+            #{item.paybackDate,typeHandler=TimestampLongHandler},
+            #{item.beneficiary,typeHandler=MerchantHandler},
+            #{item.proposalId,typeHandler=LongTypeHandler},
+            #{item.contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler},
+            #{item.tariff},
+            #{item.taxAmount},
+            #{item.logs}
+            )
+        </foreach>
+    </insert>
+
     <!-- update section -->
     <update id="updateContract" parameterType="Contract">
         update finance_contract
@@ -167,6 +223,26 @@
         taxAmount = #{taxAmount},
         logs = #{logs}
         where id = #{id,typeHandler=LongTypeHandler}
+    </update>
+
+    <update id="batchUpdateContractStatus" parameterType="java.util.List">
+        update finance_contract
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="contractStatus =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.contractStatus !=null">
+                        when id=#{item.id} then #{item.contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler}
+                    </if>
+                    <if test="item.contractStatus == null">
+                        when id=#{item.id} then finance_contract.contractStatus
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,typeHandler=LongTypeHandler}
+        </foreach>
     </update>
 
     <!-- delete section -->
