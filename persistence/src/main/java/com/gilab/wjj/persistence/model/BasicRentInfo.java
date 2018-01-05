@@ -43,7 +43,7 @@ public class BasicRentInfo {
     private String signingMode;
     @Excel(name = "回款时间", width = 10)
     private Date paybackDate;
-    @Excel(name = "记租起始日期", width = 10)
+    @Excel(name = "计租起始日期", width = 10)
     private Date payStartDate;
     @Excel(name = "合同期", width = 10)
     private Date contractTerDate;
