@@ -13,8 +13,6 @@ import java.util.List;
  * Change:
  */
 public class BasicRentInfo {
-    @Excel(name = "所在区域", width = 10)
-    private String region;
     @Excel(name = "合同编号", width = 10)
     private String contractNo;
     @Excel(name = "版本", width = 10)
@@ -67,6 +65,8 @@ public class BasicRentInfo {
     private Double tariff;
     @Excel(name = "个税金额", width = 10)
     private Integer taxAmount;
+    @Excel(name = "所在区域", width = 10)
+    private String region;
 
     public BasicRentInfo(String region, String contractNo, String contractVersion, Date subscriptionDate, Date signingDate,
                          String buildingInfo, Double buildingSize, String signer, String phone, String merchantIdNo,

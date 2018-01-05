@@ -5,21 +5,21 @@ import com.gilab.wjj.exception.FinanceErrMsg;
 import com.gilab.wjj.front.utils.RestUtils;
 import com.gilab.wjj.persistence.dao.ContractDao;
 import com.gilab.wjj.persistence.ext.AjaxErrorMessage;
-import com.gilab.wjj.persistence.model.BasicRentInfo;
-import com.gilab.wjj.persistence.model.Contract;
-import com.gilab.wjj.persistence.model.ContractStatus;
-import com.gilab.wjj.persistence.model.SigningMode;
+import com.gilab.wjj.persistence.model.*;
 import com.gilab.wjj.util.excel.ExcelUtils;
 import com.gilab.wjj.util.logback.LoggerFactory;
 import com.google.common.net.HttpHeaders;
 import io.swagger.annotations.*;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -68,6 +68,34 @@ public class ContractController {
         //TODO
         //权限判断
         return RestUtils.getOrSendError(response, contractMgr.createContract(contract));
+    }
+
+    @ApiOperation(value = "批量导入合同", notes = "批量导入合同", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contracts", value = "execl文件", required = true, dataType = "MultipartFile", paramType = "body")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/upload-contracts", method = { RequestMethod.POST }, produces = "application/json")
+    public SimpleReqResult uploadContracts(final HttpServletResponse response,
+                                           @RequestParam("contracts")MultipartFile contracts) throws Exception {
+        //TODO
+        //登录判断
+
+        //TODO
+        //权限判断
+        File f=File.createTempFile("tmp", null);
+        contracts.transferTo(f);
+        f.deleteOnExit();
+
+        List<BasicRentInfo> basicRentInfos = new ExcelUtils<>(new BasicRentInfo()).readFromFile(null, f);
+        return RestUtils.getOrSendError(response, contractMgr.batchCreateContracts(basicRentInfos));
     }
 
     @ApiOperation(value = "查询合同", notes = "查询单个合同", produces = "application/json")
