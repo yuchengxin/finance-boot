@@ -60,7 +60,6 @@
 		calculateBackRent(contractId);
 	}
 
-
 	function calculateBackRent(contractId){
 		$('#merchant').val("");
 		$('#total').val("");
@@ -171,54 +170,56 @@
 			}
 		})
 	}
-//	function chooseGoodsType(){
-//		$("#dlg2").dialog("open").dialog("setTitle","选择合同状态");
-//		$("#typeTree").tree({
-//			url:'/admin/goodsType/loadTreeInfo',
-//			onLoadSuccess:function(node, data){
-//				var rootNode = $("#typeTree").tree('getRoot');
-//				$("#typeTree").tree('expand',rootNode.target);
-//			}
-//		});
-//	}
-//
-//	function saveGoodsTypeChoose(){
-//		var node = $('#typeTree').tree('getSelected'); // 获取选中节点
-//		$("#typeId").val(node.id);
-//		$("#typeName").val(node.text);
-//		$("#dlg2").dialog("close");
-//	}
-//
-//	function closeGoodsTypeChooseDialog(){
-//		$("#dlg2").dialog("close");
-//	}
-	//	function openSaleListGoodsModifyDialog(){
-	//		$("#saveAndAddNextBuuton").hide();
-	//		var selectedRows=$("#dg").datagrid("getSelections");
-	//		if(selectedRows.length!=1){
-	//			$.messager.alert("系统提示","请选择一个商品！");
-	//			return;
-	//		}
-	//		var row=selectedRows[0];
-	//		$("#dlg4").dialog("open").dialog("setTitle","修改销售单商品");
-	//		$("#fm4").form("load",row);
-	//		$("#sellingPrice").val("￥"+row.sellingPrice);
-	//		$("#price").numberbox("setValue",row.price);
-	//		$("#num").numberbox("setValue",row.num);
-	//		$("#num").focus();
-	//		$("#action").val("modify");
-	//		$("#rowIndex").val($("#dg").datagrid("getRowIndex",row));
-	//	}
+
 	function searchContract(){
 		clearGrid("dg");
+		var geturl = "/api/v1/contracts?test=test";
+		if($("#filterStartTime").datebox("getValue")!=""){
+			geturl+="&filterStartTime="+$("#filterStartTime").datebox("getValue");
+		}
+		if($("#filterEndTime").datebox("getValue")!=""){
+			geturl+="&filterEndTime="+$("#filterEndTime").datebox("getValue");
+		}
+		if($("#contractVersion").val()!=""){
+			geturl+="&contractVersion="+$("#contractVersion").val();
+		}
+		if($("#buildingStartSize").val()!=""){
+			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
+		}
+		if($("#buildingEndSize").val()!=""){
+			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
+		}
+		if($("#signMode").val()!=""){
+			geturl+="&signMode="+$("#signMode").val();
+		}
+		if($("#contractStatus").val()!=""){
+			geturl+="&contractStatus="+$("#contractStatus").val();
+		}
+
 		$.ajax({
-			url: '/test/contractsearch',
-			type: 'POST',
-			data: "{" +
-			"\"contractNo\":\""+$("#contractNo").val()+"\"," +
-			"\"signer\":\""+$("#signer").val()+"\"," +
-			"\"phone\":\""+$("#phone").val()+"\"" +
-			"}",
+//			url: '/test/contractsearch',
+			url: geturl,
+//			'test=test' +
+//			'&filterStartTime='+$("#filterStartTime").datebox("getValue")==""?null:$("#filterStartTime").datebox("getValue")+
+//			'&filterEndTime='+$("#filterEndTime").datebox("getValue")==""?null:$("#filterEndTime").datebox("getValue")+
+//			'&contractVersion='+$("#contractVersion").val()==""?null:$("#contractVersion").val()+
+//			'&buildingStartSize='+$("#buildingStartSize").val()==""?null:$("#buildingStartSize").val()+
+//			'&buildingEndSize='+$("#buildingEndSize").val()==""?null:$("#buildingEndSize").val()+
+//			'&signMode='+$("#signMode").val()==""?null:$("#signMode").val()+
+//			'&contractStatus='+$("#contractStatus").val()==""?null:$("#contractStatus").val(),
+			type: 'GET',
+//			data: "{" +
+//			"\"filterStartTime\":\""+$("#filterStartTime").val()+"\"," +
+//			"\"filterEndTime\":\""+$("#filterEndTime").val()+"\"," +
+//			"\"contractVersion\":\""+$("#contractVersion").val()+"\"," +
+//			"\"buildingStartSize\":\""+$("#buildingStartSize").val()+"\"," +
+//			"\"buildingEndSize\":\""+$("#buildingEndSize").val()+"\"," +
+//			"\"signMode\":\""+$("#signMode").val()+"\"," +
+//			"\"contractStatus\":\""+$("#contractStatus").val()+"\"" +
+////			"\"contractNo\":\""+$("#contractNo").val()+"\"," +
+////			"\"signer\":\""+$("#signer").val()+"\"," +
+////			"\"phone\":\""+$("#phone").val()+"\"" +
+//			"}",
 			contentType: 'application/json',
 			success: function (data) {
 				if (data.length > 0) {
@@ -269,10 +270,18 @@
 				oHours = oDate.getHours(),
 				oMinutes = oDate.getMinutes(),
 				oSeconds = oDate.getSeconds();
-				oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
+//				oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
+				oTime =oYear+"-"+oMonth+"-"+oDay;//最后拼接时间
 		return oTime;
 	};
-
+	function DateToLong(v){
+		var d = new Date();
+		var dArr = v.value.split('-');
+		d.setYear(dArr[0]);
+		d.setMonth(dArr[1] - 1);
+		d.setDate(dArr[2]);
+		return d.getTime();
+	}
 	function editContract(){
 //		$("form[id='dlg4'] :text").attr("disabled","true");
 		$('#buildingSize').removeAttr("disabled");
@@ -288,7 +297,6 @@
 
 		$.messager.alert("jsoninfo",JSON.stringify(contractobj));
 	}
-
 	function download(){
 		$.ajax({
 			url: '/api/v1/download-contracts',
@@ -303,11 +311,9 @@
 		})
 
 	}
-
 	function openAddContract(){
 		$("#addcontract").dialog("open").dialog("setTitle","新增");
 	}
-
 	function addContract(){
 
 		var contractinfo = $('#fm6').serializeArray();
@@ -315,7 +321,7 @@
 		$.each(contractinfo,function(i,v){
 			if(v.name.indexOf('Date')>0){
 				var d = new Date(),
-						dArr = v.value.split('-');
+				dArr = v.value.split('-');
 				d.setYear(dArr[0]);
 				d.setMonth(dArr[1] - 1);
 				d.setDate(dArr[2]);
@@ -365,11 +371,9 @@
 			})
 		}
 	}
-
 	function closeAddContract(){
 		$("#addcontract").dialog("close");
 	}
-
 	function openChooseMerchant(){
 		clearGrid("dg3");
 		$("#dlg").dialog("open").dialog("setTitle","选择签约人");
@@ -382,7 +386,6 @@
 			rownumbers: true
 		});
 	}
-
 	function openChooseBenefic(){
 		clearGrid("dg_benefic_list");
 		$("#dg_benefic").dialog("open").dialog("setTitle","选择受益人");
@@ -395,7 +398,6 @@
 			rownumbers: true
 		});
 	}
-
 	function searchMerchant(name,type){
 		//清除之前搜索出来的商户信息
 		clearGrid("dg3");
@@ -428,7 +430,6 @@
 			}
 		})
 	}
-
 	function addMerchant(){
 
 		$.ajax({
@@ -451,7 +452,6 @@
 			}
 		})
 	}
-
 	function addBenefit(){
 
 		$.ajax({
@@ -474,15 +474,12 @@
 			}
 		})
 	}
-
 	function openAddMerchant(){
 		$("#addMerchant").dialog("open").dialog("setTitle","添加签约人");
 	}
-
 	function openAddBenefit(){
 		$("#addBenefit").dialog("open").dialog("setTitle","添加受益人");
 	}
-
 	function chooseSelectMerchant(){
 //		$("#saveAndAddNextBuuton").show();
 		var selectedRows=$("#dg3").datagrid("getSelections");
@@ -514,9 +511,7 @@
 //		$("#action").val("add");
 
 	}
-
 	function chooseSelectBenefic(){
-//		$("#saveAndAddNextBuuton").show();
 		var selectedRows=$("#dg_benefic_list").datagrid("getSelections");
 		if(selectedRows.length!=1){
 			$.messager.alert("系统提示","请选择一个受益人！");
@@ -535,15 +530,8 @@
 			selectedMercahnt: row.merchantName+"("+row.merchantPhone+")",
 			selectedMechanDetail: JSON.stringify(row)
 		});
-//		$("#dlg4").dialog("open").dialog("setTitle","选择商户品");
-//		$("#fm4").form("load",row);
-//		$("#sellingPrice").val("￥"+row.sellingPrice);
-//		$("#price").numberbox("setValue",row.sellingPrice);
-//		$("#num").focus();
-//		$("#action").val("add");
 
 	}
-
 	function updateMerchantNum(){
 		var merchantNameval = '';
 		var item = $('#selectedMerchants').datagrid('getRows');
@@ -553,7 +541,6 @@
 //		var merchantNameval = "已选" + $( '#selectedMerchants').datagrid('getRows').length + "人";
 		$("#asigner").val(merchantNameval)
 	}
-
 	function updateBeneficVal(){
 		var row =  $( '#dg_benefic_selected').datagrid('getRows');
 		var beneficVal = '';
@@ -562,12 +549,55 @@
 		}
 		$("#abeneficiary").val(beneficVal)
 	}
-
 	function deleteSelected(gridId){
 		var selectedRows=$( '#'+gridId).datagrid("getSelections");
 		var row = selectedRows[0];
 		var index = $( '#'+gridId).datagrid("getRowIndex",row);
 		$( '#'+gridId).datagrid('deleteRow', index);
+	}
+
+	function ajaxFileUpload(){
+		$("#loading")
+				.ajaxStart(function(){
+					$(this).show();
+				})
+				.ajaxComplete(function(){
+					$(this).hide();
+				});
+
+		$.ajaxFileUpload
+		(
+				{
+					url:'upload.php',
+					secureuri:false,
+					fileElementId:'fileToUpload',
+					dataType: 'json',
+					data:{name:'logan', id:'id'},
+					success: function (data, status)
+					{
+						if(typeof(data.error) != 'undefined')
+						{
+							if(data.error != '')
+							{
+								alert(data.error);
+							}else{
+								alert("上传成功")
+								$("#imgURL").attr("value",data.msg);
+								//alert(data.msg);
+								//$("#img").attr("src","upload/"+data.msg);
+
+							}
+						}
+					},
+					error: function (data, status, e)
+					{
+						alert(e);
+					}
+				}
+		)
+
+		return false;
+
 	}
 
 </script>
@@ -610,16 +640,34 @@
  
  <div id="tb">
  	<div style="padding: 5px">
- 		&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>
- 		&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>
-		&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>
-		<!--<input type="text" id="typeName"  style="width: 90px;" readonly="readonly" onclick="chooseGoodsType()"/>-->
-		<!--&nbsp;签约人：&nbsp;<input type="text" id="codeOrName" size="20" onkeydown="if(event.keyCode==13) searchStock()"/>-->
+ 		<!--&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>-->
+ 		<!--&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>-->
+		<!--&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>		-->
+		签约日期范围：<input type="text" id="filterStartTime" name="filterStartTime"  size="8" class="easyui-datebox"/>
+		-<input type="text" id="filterEndTime" name="filterEndTime" size="8" class="easyui-datebox"/>
+		合同版本：<select type="text" id="contractVersion" name="contractVersion" style="width: 70px;" >
+		<option value="22">1</option>
+		<option value="23">2</option>
+		<option value="23">3</option>
+		<option value="23">4</option>
+	</select>
+		建筑面积范围：<input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 50px;"/>
+		-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 50px;"/>
+		签约方式：<select type="text" id="signMode" name="signMode" style="width: 70px;" >
+		<option value="MORTGAGE">按揭贷款</option>
+		<option value="DISPOSABLE">一次性</option>
+	</select>
+		合同状态：<select type="text" id="contractStatus" name="contractStatus" style="width: 70px;" >
+		<option value="UNSIGNED">未签约</option>
+		<option value="PENDINGRENTAL">已签约，市场培育期</option>
+		<option value="RENTAL">已签约，返租期</option>
+		<option value="NORMALEND">正常结束</option>
+		<option value="ABNORMALEND">非正常结束</option>
+	</select>
  		<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
-
 		<a href="javascript:openAddContract()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增记录</a>
 		<!--<a href="javascript:download()" class="easyui-linkbutton" iconCls="icon-folder" plain="true">批量导入</a>-->
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批量导入：<input name="userfile1" type="file" value="">
+
 
  	</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
  </div>
@@ -631,11 +679,6 @@
    	<ul id="typeTree" class="easyui-tree"></ul>
    
   </div>
- 
- <!--<div id="dlg-buttons2">-->
- 	<!--<a href="javascript:saveGoodsTypeChoose()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>-->
- 	<!--<a href="javascript:closeGoodsTypeChooseDialog()" class="easyui-linkbutton" iconCls="icon-cancel" plain="true">关闭</a>-->
- <!--</div>-->
 
 <div id="dlg4" class="easyui-dialog" style="width:650px;height:450px;padding: 5px 5px"
 	 closed="true" buttons="#dlg-buttons4" data-options="onClose:function(){resetValue()}">
@@ -728,7 +771,6 @@
 	</div>
 </div>
 
-
 <div id="bacrent" class="easyui-dialog" style="width:950px;height:420px;" closed="true">
 	<div class="easyui-layout" style="width:100%;height:100%;">
 
@@ -775,7 +817,6 @@
 
 
 </div>
-
 
 <div id="addcontract" class="easyui-dialog" style="width:650px;height:450px;padding: 10px 20px"
 	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
@@ -849,10 +890,17 @@
 		</tr>
 	</table>
 	</form>
-		<div id="ac-buttons" align="center">
+	<div id="ac-buttons" align="center">
 		<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addContract()">保存</a>
 		<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
 		<a href="javascript:closeAddContract()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+		<!--<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批量导入：<input name="userfile1" type="file" value=""></a>-->
+	</div>
+	<div  align="center">
+	<a>
+		<input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input"><button class="button" id="buttonUpload" onclick="return ajaxFileUpload();">上传</button>
+		<input name="imgURL" id="imgURL" class="easyui-validatebox" type="hidden">
+	</a>
 	</div>
 </div>
 
@@ -871,8 +919,7 @@
 		</div>
 		<div region="west" style="width: 200px" title="已选签约人" split="true" data-options="collapsible:false">
 			<table id="selectedMerchants" class="easyui-datagrid"
-				   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"
-				   url="/test/contractlist" fit="false" >
+				   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true" >
 				<thead>
 				<tr>
 					<th field="id" width="30" hidden=true align="center">编号</th>
