@@ -26,6 +26,20 @@
     where username = #{username}
   </select>
 
+  <select id="selectUserWithFilter" resultMap="UserMap">
+    select
+    id,
+    username,
+    password,
+    permissions,
+    description
+    from finance_user
+    where 1 = 1
+    <if test="username != null">
+      and username = #{username}
+    </if>
+  </select>
+
   <!-- insert section -->
   <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
     insert into finance_user (

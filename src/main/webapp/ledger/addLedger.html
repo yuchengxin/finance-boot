@@ -62,14 +62,41 @@
 	}
 	
 	function searchContract(){
+		clearGrid("dg");
+		var geturl = "/api/v1/contracts?test=test";
+		if($("#filterStartTime").datebox("getValue")!=""){
+			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
+		}
+		if($("#filterEndTime").datebox("getValue")!=""){
+			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
+		}
+		if($("#contractVersion").val()!=""){
+			geturl+="&contractVersion="+$("#contractVersion").val();
+		}
+		if($("#buildingStartSize").val()!=""){
+			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
+		}
+		if($("#buildingEndSize").val()!=""){
+			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
+		}
+		if($("#signMode").val()!=""){
+			geturl+="&signMode="+$("#signMode").val();
+		}
+		if($("#contractStatus").val()!=""){
+			geturl+="&contractStatus="+$("#contractStatus").val();
+		}
+
 		$.ajax({
-			url: '/test/contractsearch',
-			type: 'POST',
-			data: "{" +
-			"\"contractNo\":\""+$("#contractNo").val()+"\"," +
-			"\"signer\":\""+$("#signer").val()+"\"," +
-			"\"phone\":\""+$("#phone").val()+"\"" +
-			"}",
+			url: geturl,
+//			'test=test' +
+//			'&filterStartTime='+$("#filterStartTime").datebox("getValue")==""?null:$("#filterStartTime").datebox("getValue")+
+//			'&filterEndTime='+$("#filterEndTime").datebox("getValue")==""?null:$("#filterEndTime").datebox("getValue")+
+//			'&contractVersion='+$("#contractVersion").val()==""?null:$("#contractVersion").val()+
+//			'&buildingStartSize='+$("#buildingStartSize").val()==""?null:$("#buildingStartSize").val()+
+//			'&buildingEndSize='+$("#buildingEndSize").val()==""?null:$("#buildingEndSize").val()+
+//			'&signMode='+$("#signMode").val()==""?null:$("#signMode").val()+
+//			'&contractStatus='+$("#contractStatus").val()==""?null:$("#contractStatus").val(),
+			type: 'GET',
 			contentType: 'application/json',
 			success: function (data) {
 				if (data.length > 0) {
@@ -83,6 +110,7 @@
 							merchantName:data[i].merchantName,
 							subscriptionDate:getMoth(data[i].subscriptionDate),
 							signingDate:getMoth(data[i].signingDate),
+							detailButton:'<a href=\"javascript:openCalculateBacRent(\''+ data[i].id +'\',\''+data[i].contractNo+'\')\" class=\"easyui-linkbutton\" iconCls=\"icon-search\" plain=\"true\">计算<\/a>',
 							region:data[i].region,
 							signer:data[i].signer,
 							signingMode:data[i].signingMode,
@@ -94,7 +122,7 @@
 							payStartDate:getMoth(data[i].payStartDate),
 							contractTerDate:getMoth(data[i].contractTerDate),
 							paybackDate:getMoth(data[i].paybackDate),
-							beneficiary:data[i].beneficiary,
+							beneficiary:data[i].beneficiary.merchantName,
 							proposalId:data[i].proposalId,
 							contractStatus:data[i].contractStatus,
 							tariff:data[i].tariff,
@@ -166,7 +194,7 @@
 			<th field="contractVersion" width="20" align="center">合同版本</th>
 			<th field="buildingInfo" width="50" align="center" >楼层房号</th>
 			<th field="buildingSize" width="50" align="center" >建筑面积(m2)</th>
-			<th field="signer" width="50" align="center" >商户姓名</th>
+			<th field="beneficiary" width="40" align="center" >受益人信息</th>
 			<th field="subscriptionDate" width="50" align="center">认购日期</th>
 			<th field="signingDate" width="50" align="center" >签约日期</th>
 			<th hidden="true" field="region" width="40" align="center" >所在区域</th>
@@ -179,7 +207,7 @@
 			<th hidden="true" field="payStartDate" width="40" align="center" >记租起始时日期</th>
 			<th hidden="true" field="contractTerDate" width="40" align="center" >合同期</th>
 			<th hidden="true" field="paybackDate" width="40" align="center" >回款时间</th>
-			<th hidden="true" field="beneficiary" width="40" align="center" >受益人信息</th>
+			<th hidden="true" field="signer" width="50" align="center" >商户姓名</th>
 			<th hidden="true" field="proposalId" width="40" align="center" >方案</th>
 			<th hidden="true" field="contractStatus" width="40" align="center" >合同状态</th>
 			<th hidden="true" field="tariff" width="40" align="center" >税率</th>
@@ -192,12 +220,41 @@
 		<div style="padding-bottom: 5px">
 			<fieldset style="border-color: #E7F0FF">
 				<legend>查询设置</legend>
-				&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>
-				&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>
-				&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>
-				<!--<input type="text" id="typeName"  style="width: 90px;" readonly="readonly" onclick="chooseGoodsType()"/>-->
-				<!--&nbsp;签约人：&nbsp;<input type="text" id="codeOrName" size="20" onkeydown="if(event.keyCode==13) searchStock()"/>-->
-				<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+				<table align="center" width="100%">
+					<tr>
+						<td>签约日期范围：<input type="text" id="filterStartTime" name="filterStartTime"  size="8" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" size="8" class="easyui-datebox"/></td>
+						<td>合同版本：<select type="text" id="contractVersion" name="contractVersion" style="width: 150px;" >
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</select></td>
+						<td>建筑面积范围：<input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 50px;"/>-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 50px;"/></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="signMode" name="signMode" style="width: 175px;" >
+							<option value="MORTGAGE">按揭贷款</option>
+							<option value="DISPOSABLE">一次性</option>
+						</select></td>
+						<td>合同状态：<select type="text" id="contractStatus" name="contractStatus" style="width: 150px;" >
+							<option value="UNSIGNED">未签约</option>
+							<option value="PENDINGRENTAL">已签约，市场培育期</option>
+							<option value="RENTAL">已签约，返租期</option>
+							<option value="NORMALEND">正常结束</option>
+							<option value="ABNORMALEND">非正常结束</option>
+						</select></td>
+						<td>房号信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="buildingInfo" name="buildingInfo" style="width: 110px;"/></td>
+						<td>
+							<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+					</tr>
+				</table>
+
+
+				<!--&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>-->
+				<!--&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>-->
+				<!--&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>-->
+				<!--<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>-->
 			</fieldset>
 		</div>
 	</div>
