@@ -11,9 +11,7 @@
 <script type="text/javascript">
 
 	$(function(){
-
-
-
+		openChooseMerchant();
 		$("#dg").datagrid({
 			//双击事件
 			onDblClickRow: function (index, row) {
@@ -170,7 +168,6 @@
 			}
 		})
 	}
-
 	function searchContract(){
 		clearGrid("dg");
 		var geturl = "/api/v1/contracts?test=test";
@@ -261,7 +258,6 @@
 			}
 		})
 	}
-
 	function getMoth(str){
 		var oDate = new Date(str),
 				oYear = oDate.getFullYear(),
@@ -273,7 +269,7 @@
 //				oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
 				oTime =oYear+"-"+oMonth+"-"+oDay;//最后拼接时间
 		return oTime;
-	};
+	}
 	function dateToLong(v){
 		var d = new Date();
 		var dArr = v.split('-');
@@ -313,6 +309,9 @@
 	}
 	function openAddContract(){
 		$("#addcontract").dialog("open").dialog("setTitle","新增");
+	}
+	function openAddContracts(){
+		$("#addcontracts").dialog("open").dialog("setTitle","批量导入");
 	}
 	function addContract(){
 
@@ -436,7 +435,7 @@
 			data: "{"+
 			"\"merchantName\":\""+$("#newMerchantName").val()+"\","+
 			"\"merchantPhone\":\""+$("#newMmerchantPhone").val()+"\","+
-			"\"merchantIdNo\":\""+$("#newMmerchantIdNo").val()+"\","+
+			"\"merchantIdNo\":\""+$("#newMmerchantIdNo").val()+"\""+
 //			"\"bankInfo\":\""+$("#newBankInfo").val()+"\","+
 //			"\"bankAccount\":\""+$("#newBankAcount").val()+"\","+
 //			"\"merchantAddress\":\""+$("#newMerchnatAddress").val()+"\""+
@@ -553,34 +552,25 @@
 		var index = $( '#'+gridId).datagrid("getRowIndex",row);
 		$( '#'+gridId).datagrid('deleteRow', index);
 	}
-
-	function ajaxFileUpload(){
-//		$("#loading")
-//				.ajaxStart(function(){
-//					$(this).show();
-//				})
-//				.ajaxComplete(function(){
-//					$(this).hide();
-//				});
-		$.ajaxFileUpload({
-			url:'/api/v1/upload-contracts',
-			secureuri:false,
-			fileElementId:'fileToUpload',
-			dataType: 'json',
-			type: 'PUT',
-			contentType: 'application/json',
-//			data:{name:'logan', id:'id'},
-			success: function (data, status)
-			{
-				alert("上传成功")
+	function doUpload() {
+		var formData = new FormData($( "#uploadForm" )[0]);
+		$.ajax({
+			url: '/api/v1/upload-contracts' ,
+			type: 'POST',
+			data: formData,
+			async: false,
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function (returndata) {
+				$.messager.alert("上传成功",returndata);
+				$("#addcontracts").dialog("close");
 			},
-			error: function (data, status, e)
-			{
-				alert(e);
-			}
-		})
-		return false;
-
+		error: function (returndata) {
+			$.messager.alert("上传失败",returndata);
+			$("#addcontracts").dialog("close");
+		}
+		});
 	}
 
 </script>
@@ -793,18 +783,14 @@
 				</tr>
 				</thead>
 			</table>
-			<div id="tb3">
-				<div>
-					<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
-				</div>
-			</div>
+
 		</div>
 	</div>
 
 
 </div>
 
-<div id="addcontract" class="easyui-dialog" style="width:650px;height:450px;padding: 10px 20px"
+<div id="addcontract" class="easyui-dialog" style="width:650px;height:440px;padding: 10px 20px"
 	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
 	<form id="fm6" name="fm6" method="post">
 	<table cellspacing="6px">
@@ -881,17 +867,17 @@
 		<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addContract()">保存</a>
 		<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
 		<a href="javascript:closeAddContract()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+		<a href="javascript:openAddContracts()" class="easyui-linkbutton" iconCls="icon-folder">批量导入</a>
 		<!--<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批量导入：<input name="userfile1" type="file" value=""></a>-->
 	</div>
+</div>
+
+<div id="addcontracts" class="easyui-dialog" style="width:450px;height:100px;padding: 10px 10px"
+	 closed="true">
 	<div  align="center">
-	<!--<a>-->
-		<!--<input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input">-->
-		<!--<button class="button" id="buttonUpload" onclick="return ajaxFileUpload();">上传</button>-->
-		<!--&lt;!&ndash;<input name="imgURL" id="imgURL" class="easyui-validatebox" type="hidden">&ndash;&gt;-->
-	<!--</a>-->
-		<form name="serForm" action="/api/v1/upload-contracts" method="post"  enctype="multipart/form-data">
-			<input type="file" name="contracts">
-			<input type="submit" value="upload"/>
+		<form id= "uploadForm">
+			<!--<p >指定文件名： <input type="text" name="filename" value= ""/></p >-->
+			 <input type="file" name="contracts"/><input type="button" value="上传" onclick="doUpload()" />
 		</form>
 	</div>
 </div>
@@ -921,15 +907,15 @@
 				</thead>
 			</table>
 			<!--<ul id="tree" class="easyui-tree" style="padding: 10px"></ul>-->
-			<div style="position:absolute;bottom: 10px;left: 50px">
-
+			<div style="position:absolute;bottom: 10px;" align="center">
+				<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" data-options="iconCls:'icon-ok'">添加</a>
 				<a id="del" href="javascript:deleteSelected('selectedMerchants')" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
 			</div>
 		</div>
 		<div region="center">
 			<table id="dg3" title="签约人信息" class="easyui-datagrid"
-				   fitColumns="true" pagination="true" rownumbers="true" singleSelect="true"
-				   url="/test/contractlist" fit="true" toolbar="#tb3">
+				   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"
+				    fit="true" toolbar="#tb3">
 				<thead>
 				<tr>
 					<th field="id" width="30" hidden=true align="center">编号</th>
@@ -942,11 +928,11 @@
 				</tr>
 				</thead>
 			</table>
-			<div>
-				<div>
-					<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
-				</div>
-			</div>
+			<!--<div>-->
+				<!--<div>-->
+					<!--<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>-->
+				<!--</div>-->
+			<!--</div>-->
 		</div>
 	</div>
 </div>
@@ -959,6 +945,7 @@
 			<div style="padding-top: 8px;padding-left: 40px;">
 				&nbsp;受益人搜索：&nbsp;<input type="text" id="s_codeOrName_benefic" size="30"/>
 				<a class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="searchMerchant($('#s_codeOrName_benefic').val(),'benefic')">搜索</a>
+				<a href="javascript:openAddBenefit()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加新受益人</a>
 			</div>
 		</div>
 		<div region="west" style="width: 200px" title="已选受益人" split="true" data-options="collapsible:false">
@@ -975,7 +962,7 @@
 			</table>
 			<!--<ul id="tree" class="easyui-tree" style="padding: 10px"></ul>-->
 			<div style="position:absolute;bottom: 10px;left: 4px">
-				<a href="javascript:openAddBenefit()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新增</a>
+				<a href="javascript:chooseSelectBenefic()" class="easyui-linkbutton" data-options="iconCls:'icon-ok'">添加</a>
 				<a id="del_benefic" href="javascript:deleteSelected('dg_benefic_selected')" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
 			</div>
 		</div>
@@ -995,11 +982,11 @@
 				</tr>
 				</thead>
 			</table>
-			<div id="tb3_benefic">
-				<div>
-					<a href="javascript:chooseSelectBenefic()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>
-				</div>
-			</div>
+			<!--<div id="tb3_benefic">-->
+				<!--<div>-->
+					<!--<a href="javascript:chooseSelectBenefic()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>-->
+				<!--</div>-->
+			<!--</div>-->
 		</div>
 	</div>
 
