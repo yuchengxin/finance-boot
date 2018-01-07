@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gilab.wjj.persistence.mapper.LoginMapper">
+
+  <select id="getMenuByParentId" resultMap="MenuMap">
+    --     select * from t_menu where p_id=?1 and id in (SELECT menu_id FROM t_role_menu WHERE role_id=?2)
+    select * from finance_menu where p_id=#{parentId,typeHandler=IntegerTypeHandler}
+  </select>
+
+  <select id="getPermissionsWithFilter" resultMap="PermissionMap">
+    select p.id,p.menuid,p.permission,m.name,m.url from (select * from finance_permission_list
+    WHERE 1 = 1
+    <if test="permission != null">
+      and permission = #{permission}
+    </if>
+    ) p LEFT JOIN finance_menu m ON p.menuid=m.id ORDER BY p.permission;
+  </select>
+
+  <delete id="deletePermitionListById">
+    delete from finance_permission_list where id = #{id};
+  </delete>
+  
+  <select id="menuList" resultType="map">
+    select * from finance_menu where state=0;
+  </select>
+
+  <insert id="addPermissionList">
+    insert into `finance_permission_list` (`menuid`,`permission`) values (#{menuid},#{permission});
+  </insert>
+
+  <resultMap id="MenuMap" type="MenuList">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="url" column="url"/>
+    <result property="state" column="state"/>
+    <result property="icon" column="icon"/>
+    <result property="pId" column="p_id"/>
+  </resultMap>
+
+  <resultMap id="PermissionMap" type="PermissionList">
+    <id property="id" column="id"/>
+    <result property="menuid" column="menuid"/>
+    <result property="permission" column="permission" typeHandler="ListPermissionToStringHandler"/>
+    <result property="name" column="name"/>
+    <result property="url" column="url"/>
+  </resultMap>
+</mapper>
