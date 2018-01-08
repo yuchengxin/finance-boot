@@ -128,7 +128,7 @@ public class ContractManager implements ContractAgent {
                 break;
         }
         ContractStatus status = ContractStatus.UNSIGNED;
-        if(basicRentInfo.getContractStatus().equals("已签")){
+        if(basicRentInfo.getContractStatus().equals("已签") && basicRentInfo.getPaybackDate() != null && basicRentInfo.getContractTerDate() != null){
             Proposal proposal = proposalDao.getProposal(proposalId);
             if(proposal == null){
                 logger.error("can't find proposal[d%]", proposalId);
@@ -145,6 +145,8 @@ public class ContractManager implements ContractAgent {
                 }
         } else if(basicRentInfo.getContractStatus().equals("已结束")){
             status = ContractStatus.NORMALEND;
+        } else {
+            status = ContractStatus.ABNORMALEND;
         }
 
         return new Contract.Builder()
@@ -152,7 +154,7 @@ public class ContractManager implements ContractAgent {
                 .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
                 .signingDate(basicRentInfo.getSigningDate() == null ? 0 : basicRentInfo.getSigningDate().getTime())
                 .signTotalPrice(basicRentInfo.getSignTotalPrice())
-                .subscriptionDate(basicRentInfo.getSubscriptionDate().getTime())
+                .subscriptionDate(basicRentInfo.getSubscriptionDate() == null ? 0 : basicRentInfo.getSubscriptionDate().getTime())
                 .leasebackPrice(basicRentInfo.getLeasebackPrice())
                 .paybackDate(basicRentInfo.getPaybackDate() == null ? 0 : basicRentInfo.getPaybackDate().getTime())
                 .payStartDate(basicRentInfo.getPayStartDate() == null ? 0 : basicRentInfo.getPayStartDate().getTime() )
