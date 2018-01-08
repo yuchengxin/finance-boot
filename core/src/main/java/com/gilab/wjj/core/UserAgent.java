@@ -31,4 +31,6 @@ public interface UserAgent extends Agent {
     SimpleReqResult revoke(long userId, List<Permission> permissions);
 
     List<Permission> getPermissions(long userId);
+
+    void modifyPassword(User user);
 }

@@ -24,4 +24,6 @@ public interface UserDao {
     void updateUser(User user);
 
     void deleteUser(long userId);
+
+    void modifyPassword(User user);
 }

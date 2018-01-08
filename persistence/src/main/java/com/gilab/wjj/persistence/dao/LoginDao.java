@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public interface LoginDao {
 
-    List<MenuList> getMenuByParentId(Integer parentId);
+    List<MenuList> getMenuByParentId(Integer parentId, Integer permission);
 
     List<PermissionList> getPermissionsWithFilter(String permission);
 

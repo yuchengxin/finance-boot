@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Mapper
 public interface LoginMapper {
-    List<MenuList> getMenuByParentId(@Param("parentId") Integer parentId);
+    List<MenuList> getMenuByParentId(@Param("parentId") Integer parentId, @Param("permission") Integer permission);
 
     List<PermissionList> getPermissionsWithFilter(@Param("permission") String permission);
 

@@ -26,4 +26,6 @@ public interface UserMapper {
     void updateUser(User user);
 
     void deleteUser(@Param("id") long userId);
+
+    void modifyPassword(User user);
 }

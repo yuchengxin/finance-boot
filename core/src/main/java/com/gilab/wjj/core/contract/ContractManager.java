@@ -148,31 +148,37 @@ public class ContractManager implements ContractAgent {
         } else {
             status = ContractStatus.ABNORMALEND;
         }
+        Contract testcontract = new Contract();
+        try{
+            testcontract = new Contract.Builder()
+                    .signer(signer)
+                    .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
+                    .signingDate(basicRentInfo.getSigningDate() == null ? 0 : basicRentInfo.getSigningDate().getTime())
+                    .signTotalPrice(basicRentInfo.getSignTotalPrice())
+                    .subscriptionDate(basicRentInfo.getSubscriptionDate() == null ? 0 : basicRentInfo.getSubscriptionDate().getTime())
+                    .leasebackPrice(basicRentInfo.getLeasebackPrice())
+                    .paybackDate(basicRentInfo.getPaybackDate() == null ? 0 : basicRentInfo.getPaybackDate().getTime())
+                    .payStartDate(basicRentInfo.getPayStartDate() == null ? 0 : basicRentInfo.getPayStartDate().getTime() )
+                    .buildingInfo(basicRentInfo.getBuildingInfo())
+                    .buildingSize(basicRentInfo.getBuildingSize())
+                    .backPremium(basicRentInfo.getBackPremium())
+                    .beneficiary(beneficiary == null ? null : beneficiary.get(0))
+                    .contractTerDate(basicRentInfo.getContractTerDate() == null ? 0 : basicRentInfo.getContractTerDate().getTime())
+                    .contractVersion(version)
+                    .contractNo(basicRentInfo.getContractNo())
+                    .contractStatus(status)
+                    .logs("...")
+                    .originalPrice(basicRentInfo.getOriginalPrice())
+                    .proposalId(proposalId)
+                    .region(basicRentInfo.getRegion())
+                    .totalPrice(basicRentInfo.getTotalPrice())
+                    .taxAmount(basicRentInfo.getTaxAmount())
+                    .build();
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
 
-        return new Contract.Builder()
-                .signer(signer)
-                .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
-                .signingDate(basicRentInfo.getSigningDate() == null ? 0 : basicRentInfo.getSigningDate().getTime())
-                .signTotalPrice(basicRentInfo.getSignTotalPrice())
-                .subscriptionDate(basicRentInfo.getSubscriptionDate() == null ? 0 : basicRentInfo.getSubscriptionDate().getTime())
-                .leasebackPrice(basicRentInfo.getLeasebackPrice())
-                .paybackDate(basicRentInfo.getPaybackDate() == null ? 0 : basicRentInfo.getPaybackDate().getTime())
-                .payStartDate(basicRentInfo.getPayStartDate() == null ? 0 : basicRentInfo.getPayStartDate().getTime() )
-                .buildingInfo(basicRentInfo.getBuildingInfo())
-                .buildingSize(basicRentInfo.getBuildingSize())
-                .backPremium(basicRentInfo.getBackPremium())
-                .beneficiary(beneficiary == null ? null : beneficiary.get(0))
-                .contractTerDate(basicRentInfo.getContractTerDate() == null ? 0 : basicRentInfo.getContractTerDate().getTime())
-                .contractVersion(version)
-                .contractNo(basicRentInfo.getContractNo())
-                .contractStatus(status)
-                .logs("...")
-                .originalPrice(basicRentInfo.getOriginalPrice())
-                .proposalId(proposalId)
-                .region(basicRentInfo.getRegion())
-                .totalPrice(basicRentInfo.getTotalPrice())
-                .taxAmount(basicRentInfo.getTaxAmount())
-                .build();
+        return testcontract;
     }
 
     private List<Merchant> string2Merchant(String nameStr, String phoneStr, String IDStr, String bankStr, String accountStr, String addressStr){

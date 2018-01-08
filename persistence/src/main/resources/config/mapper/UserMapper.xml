@@ -72,6 +72,13 @@
     delete from finance_user where id = #{id,typeHandler=LongTypeHandler}
   </delete>
 
+  <update id="modifyPassword" parameterType="User">
+    update finance_user
+    set
+     password = #{password}
+    where id = #{id,typeHandler=LongTypeHandler}
+  </update>
+
   <resultMap id="UserMap" type="User">
     <id property="id" column="id"/>
     <result property="username" column="username"/>

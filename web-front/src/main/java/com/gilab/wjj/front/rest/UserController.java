@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chejian on 12/23/17.
@@ -83,5 +86,28 @@ public class UserController {
     public List<User> getUserWithFilter(final HttpServletResponse response,
                                                 @RequestParam(name = "username", required = false) final String username) throws IOException {
         return userMgr.getUserWithFilter(username);
+    }
+
+    @ApiOperation(value = "修改密码", notes = "修改登陆密码", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "permission", value = "权限名", dataType = "String", paramType = "query"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/modifyPassword", method = { RequestMethod.POST }, produces = "application/json")
+    public Map modifyPassword(final HttpServletResponse response,
+                              @RequestBody final User user,HttpSession session) throws IOException {
+        User currentUser = (User) session.getAttribute("currentUser");
+        currentUser.setPassword(user.getPassword());
+        userMgr.modifyPassword(currentUser);
+        Map res = new HashMap();
+        res.put("SUCCESS",true);
+        return res;
     }
 }

@@ -50,9 +50,9 @@
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/contractSearch.html'></iframe>";
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/ledger/addLedger.html'></iframe>";
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/calculator.html'></iframe>";
-//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/firstPage.html'></iframe>";
+		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/contract/firstPage.html'></iframe>";
 //		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/power/userManage.html'></iframe>";
-		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/power/permissionManage.html'></iframe>";
+//		var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:99%' src='/power/permissionManage.html'></iframe>";
 		$("#tabs").tabs("add",{
 			title:"首页",
 			iconCls:"menu-25",
@@ -60,13 +60,28 @@
 			content:content
 		});
 		
-		$("#userInfo").load("/user/loadUserInfo"); // 加载用户信息
+		$("#userInfo").load("/api/v1/loadUserInfo"); // 加载用户信息
 
 
 
 		var treedata = [];
 		$.ajax({
-			url: '/test/menu?parentId=-1',
+			url: '/api/v1/loadUserInfo',
+			type: 'GET',
+			contentType: 'application/json',
+			success: function (resdata) {
+				$("#userInfo").load({
+					data:resdata
+				})
+			},
+			error: function () {
+//				$.messager.alert("登陆错误","登陆过期");
+				window.location.href="/login.html";
+			}
+		})
+		$.ajax({
+			url: '/api/v1/menu?parentId=-1',
+//			url: '/test/menu?parentId=-1',
 			type: 'POST',
 			contentType: 'application/json',
 			success: function (data) {
@@ -86,7 +101,8 @@
 				$("#tree").tree('expandAll');
 			},
 			error: function () {
-				alert('An error has occured!! :-(')
+//				$.messager.alert("登陆错误","登陆过期");
+				window.location.href="/login.html";
 			}
 		})
 
@@ -127,15 +143,23 @@
 		function logout(){
 			$.messager.confirm("系统提示","您确定要退出系统吗？",function(r){
 				if(r){
-					window.location.href='/login.html';
-//					window.location.href='/admin/user/logout';
+					$.ajax({
+						url:"/api/v1/exit",
+						type: 'GET',
+						contentType: 'application/json',
+						success: function (data) {
+							window.location.href="/login.html";
+						},
+						error: function () {
+							$.messager.alert("错误","退出失败");
+						}
+					})
 				}
 			 });
 		}
 		
 		function openPasswordModifyDialog(){
 			$("#dlg").dialog("open").dialog("setTitle","修改密码");
-			url="/admin/user/modifyPassword";
 		}
 		
 		
@@ -206,37 +230,36 @@
 
         }
 	});
-	
-	
-	
-	
+
+
 	function modifyPassword(){
-		$("#fm").form("submit",{
-			url:url,
-			onSubmit:function(){
-				var newPassword=$("#newPassword").val();
-				var newPassword2=$("#newPassword2").val();
-				if(!$(this).form("validate")){
-					return false;
+		var newPassword=$("#newPassword").val();
+		var newPassword2=$("#newPassword2").val();
+		if(!$(this).form("validate")){
+			return false;
+		}else if(newPassword!=newPassword2){
+			$.messager.alert("系统提示","确认密码输入错误！");
+			return false;
+		}else{
+			$.ajax({
+				url:"/api/v1/modifyPassword",
+//			url: '/test/menu?parentId=-1',
+				type: 'POST',
+				data: "{"+
+//				"\"newPassword\":\""+$("#newPassword").val()+"\"," +
+//				"\"merchantPhone\":\""+$("#newMmerchantPhone").val()+"\"," +
+				"\"password\":\""+$("#newPassword").val()+"\"" +
+				"}",
+				contentType: 'application/json',
+				success: function (data) {
+
+				},
+				error: function () {
+//					$.messager.alert("登陆错误","登陆过期");
+					window.location.href="/login.html";
 				}
-				if(newPassword!=newPassword2){
-					$.messager.alert("系统提示","确认密码输入错误！");
-					return false;
-				}
-				return true;
-			},
-			success:function(result){
-				var result=eval('('+result+')');
-				if(result.success){
-					$.messager.alert("系统提示","密码修改成功，下一次登录生效！");
-					resetValue();
-					$("#dlg").dialog("close");
-				}else{
-					$.messager.alert("系统提示","密码修改失败！");
-					return;
-				}
-			}
-		 });
+			})
+		}
 	}
 	
 	function closePasswordModifyDialog(){

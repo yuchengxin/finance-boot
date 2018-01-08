@@ -88,4 +88,9 @@ public class UserManager implements UserAgent {
     public List<Permission> getPermissions(long userId) {
         return null;
     }
+
+    @Override
+    public void modifyPassword(User user){
+        userDao.modifyPassword(user);
+    }
 }

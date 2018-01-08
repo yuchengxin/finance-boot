@@ -27,8 +27,8 @@ public class LoginManager implements LoginAgent{
     private LoginDao loginDao;
 
     @Override
-    public List<MenuList> getMenuByParentId(Integer parentId) {
-        return loginDao.getMenuByParentId(parentId);
+    public List<MenuList> getMenuByParentId(Integer parentId, Integer permission) {
+        return loginDao.getMenuByParentId(parentId, permission);
     }
 
     @Override

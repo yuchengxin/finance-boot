@@ -50,6 +50,7 @@ public class TestController {
         }
         if(user.getUsername().equals("chejian")){
             map.put("success", true);
+            session.setAttribute("currentUser", user); // 保存当前角色信息
 //            logService.save(new Log(Log.LOGIN_ACTION,"用户登录")); // 写入日志
             return map;
         }else{
@@ -68,6 +69,7 @@ public class TestController {
 //    @RequestMapping(value="/menu", method = { RequestMethod.POST }, produces = "application/json")
     @RequestMapping(value="/menu", method = { RequestMethod.POST }, produces={"text/html;charset=UTF-8;","application/json;"})
     public  String menu(@RequestParam("parentId") Integer parentId,HttpSession session){
+        User currentUser=(User) session.getAttribute("currentUser");
         JsonArray jsonArray = getAllMenuByParentId(parentId);
         ArrayList<MenuList> menuLists = new ArrayList<>();
         for(int i = 0; i < jsonArray.size(); i++){

@@ -5,8 +5,7 @@
 <mapper namespace="com.gilab.wjj.persistence.mapper.LoginMapper">
 
   <select id="getMenuByParentId" resultMap="MenuMap">
-    --     select * from t_menu where p_id=?1 and id in (SELECT menu_id FROM t_role_menu WHERE role_id=?2)
-    select * from finance_menu where p_id=#{parentId,typeHandler=IntegerTypeHandler}
+    select * from finance_menu where p_id= #{parentId,typeHandler=IntegerTypeHandler}  and (state = 1 || id in (select menuid from finance_permission_list where permission = #{permission}));
   </select>
 
   <select id="getPermissionsWithFilter" resultMap="PermissionMap">

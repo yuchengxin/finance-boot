@@ -24,35 +24,30 @@ canvas{z-index:-1;position:absolute;}
 	  });*/
 	  
 	  $("#loginBtn").click(function(){
-
-//		  $.post("/api/admin/v1/login",{username:$("#username").val(),password:$("#password").val()},function(result){
-//				if(result.success){
-//					window.location.href="/main.html";
-//				}else{
-//					alert(result.errorInfo);
-//				}
-//		});
-
-		  $.ajax({
-			  url:'/test/login',
-			  type: 'POST',
-			  data:"{\"username\":\""+$("#username").val()+"\",\"password\":\""+$("#password").val()+"\"}",
-//			  data: {username:$("#username").val(),password:$("#password").val()},
-			  contentType: 'application/json',
-			  success: function (data) {
-				 if(data.success){
-					 window.location.href="/main.html";
-				 }else{
-					 alert(data.errorInfo);
-				 }
-			  },
-			  error: function () {
-				  alert('An error has occured!! :-(')
-			  }
-		  })
+		  login();
 	  });
 	});
-	
+
+
+	function login(){
+		$.ajax({
+			url:'/api/v1/login',
+			type: 'POST',
+			data:"{\"username\":\""+$("#username").val()+"\",\"password\":\""+$("#password").val()+"\"}",
+//			  data: {username:$("#username").val(),password:$("#password").val()},
+			contentType: 'application/json',
+			success: function (data) {
+				if(data.success){
+					window.location.href="/main.html";
+				}else{
+					alert(data.errorInfo);
+				}
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
+			}
+		})
+	}
 	
 	function saveRole(){
 		var roleId=$("input[name='role']:checked").val();
@@ -73,10 +68,10 @@ canvas{z-index:-1;position:absolute;}
   <em>Lnvoicing Management System</em>
  </dt>
  <dd class="user_icon">
-  <input type="text" id="username" placeholder="账号" class="login_txtbx"/>
+  <input type="text" id="username" placeholder="账号" class="login_txtbx" onkeydown="if(event.keyCode==13) login()"/>
  </dd>
  <dd class="pwd_icon">
-  <input type="password" id="password" placeholder="密码" class="login_txtbx"/>
+  <input type="password" id="password" placeholder="密码" class="login_txtbx" onkeydown="if(event.keyCode==13) login()"/>
  </dd>
   <!--<dd class="val_icon">
   <div class="checkcode">

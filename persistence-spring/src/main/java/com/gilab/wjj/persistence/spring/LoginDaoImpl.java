@@ -28,8 +28,8 @@ public class LoginDaoImpl implements LoginDao{
     private LoginMapper mapper;
 
     @Override
-    public List<MenuList> getMenuByParentId(Integer parentId) {
-        return mapper.getMenuByParentId(parentId);
+    public List<MenuList> getMenuByParentId(Integer parentId, Integer permission) {
+        return mapper.getMenuByParentId(parentId, permission);
     }
 
     @Override

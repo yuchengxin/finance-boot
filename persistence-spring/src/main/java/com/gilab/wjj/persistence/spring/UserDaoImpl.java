@@ -51,4 +51,9 @@ public class UserDaoImpl implements UserDao{
     public void deleteUser(long userId) {
         mapper.deleteUser(userId);
     }
+
+    @Override
+    public void modifyPassword(User user){
+        mapper.modifyPassword(user);
+    }
 }

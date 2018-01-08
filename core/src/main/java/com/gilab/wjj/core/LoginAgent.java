@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface LoginAgent extends Agent {
 
-    List<MenuList> getMenuByParentId(Integer parentId);
+    List<MenuList> getMenuByParentId(Integer parentId, Integer permission);
 
     List<PermissionList> getPermissionsWithFilter(String permission);
 
