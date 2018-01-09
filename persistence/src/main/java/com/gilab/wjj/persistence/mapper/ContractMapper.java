@@ -36,4 +36,6 @@ public interface ContractMapper {
     void batchUpdateContractStatus(List<Contract> contracts);
 
     void deleteContract(@Param("id") long contractId);
+
+    Contract selectContractWithNo(@Param("contractNo") String contractNo);
 }

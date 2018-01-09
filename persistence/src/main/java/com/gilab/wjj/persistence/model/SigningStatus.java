@@ -4,25 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by yuankui on 12/17/17.
+ * Created by yuankui on 1/8/18.
  * <p>
  * Desc:
  * <p>
  * Change:
  */
-public enum ContractStatus implements IntEnum<ContractStatus> {
+public enum  SigningStatus  implements IntEnum<SigningStatus> {
 
-    UNSTARTED(1, "未开始"),
-    PENDINGRENTAL(2, "已签约，市场培育期"),
-    RENTAL(3, "已签约，返租期"),
-    NORMALEND(4, "已签约，正常结束"),
-    ABNORMALEND(5, "已签约，非正常结束");
-
+    UNSIGNED(1, "未签"),
+    SIGNED(2, "已签");
 
     private int value;
     private String description;
 
-    ContractStatus(int value, String description) {
+    SigningStatus(int value, String description) {
         this.value = value;
         this.description = description;
     }
@@ -36,22 +32,22 @@ public enum ContractStatus implements IntEnum<ContractStatus> {
         return description;
     }
 
-    private static Map<Integer, ContractStatus> map;
-    private static Map<String, ContractStatus> strMap;
+    private static Map<Integer, SigningStatus> map;
+    private static Map<String, SigningStatus> strMap;
     static {
         map = new HashMap<>();
         strMap = new HashMap<>();
-        for (ContractStatus t: ContractStatus.values()) {
+        for (SigningStatus t: SigningStatus.values()) {
             map.put(t.getValue(), t);
             strMap.put(t.name(), t);
         }
     }
 
-    public static ContractStatus lookup(int value) {
+    public static SigningStatus lookup(int value) {
         return map.get(value);
     }
 
-    public static ContractStatus strLookup(String name) {
+    public static SigningStatus strLookup(String name) {
         return name == null ? null : strMap.get(name.toUpperCase());
     }
 }

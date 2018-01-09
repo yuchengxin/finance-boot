@@ -24,5 +24,5 @@ public interface ContractAgent extends Agent {
 
     SimpleReqResult deleteContract(long contractId);
 
-    SimpleReqResult batchCreateContracts(List<BasicRentInfo> basicRentInfos);
+    ReqResultMap batchCreateContracts(List<BasicRentInfo> basicRentInfos);
 }

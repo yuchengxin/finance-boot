@@ -14,6 +14,7 @@
         subscriptionDate,
         signer,
         signingMode,
+        signingStatus,
         signingDate,
         buildingInfo,
         buildingSize,
@@ -28,11 +29,38 @@
         beneficiary,
         proposalId,
         contractStatus,
-        tariff,
-        taxAmount,
         logs
         from finance_contract
         where id = #{id,typeHandler=LongTypeHandler}
+    </select>
+
+    <select id="selectContractWithNo" resultMap="ContractMap">
+        select
+        id,
+        region,
+        contractNo,
+        contractVersion,
+        subscriptionDate,
+        signer,
+        signingMode,
+        signingStatus,
+        signingDate,
+        buildingInfo,
+        buildingSize,
+        originalPrice,
+        totalPrice,
+        signTotalPrice,
+        leasebackPrice,
+        backPremium,
+        payStartDate,
+        contractTerDate,
+        paybackDate,
+        beneficiary,
+        proposalId,
+        contractStatus,
+        logs
+        from finance_contract
+        where contractNo = #{contractNo}
     </select>
 
     <select id="selectContractWithFilter" resultMap="ContractMap">
@@ -44,6 +72,7 @@
         subscriptionDate,
         signer,
         signingMode,
+        signingStatus,
         signingDate,
         buildingInfo,
         buildingSize,
@@ -58,8 +87,6 @@
         beneficiary,
         proposalId,
         contractStatus,
-        tariff,
-        taxAmount,
         logs
         from finance_contract
         where 1 = 1
@@ -94,6 +121,7 @@
         subscriptionDate,
         signer,
         signingMode,
+        signingStatus,
         signingDate,
         buildingInfo,
         buildingSize,
@@ -108,8 +136,6 @@
         beneficiary,
         proposalId,
         contractStatus,
-        tariff,
-        taxAmount,
         logs
         )
         values (
@@ -119,6 +145,7 @@
         #{subscriptionDate,typeHandler=TimestampLongHandler},
         #{signer,typeHandler=ListMerchant2StringHandler},
         #{signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
+        #{signingStatus, javaType=SigningStatus,typeHandler=signingStatusHandler},
         #{signingDate,typeHandler=TimestampLongHandler},
         #{buildingInfo},
         #{buildingSize},
@@ -133,13 +160,11 @@
         #{beneficiary,typeHandler=MerchantHandler},
         #{proposalId,typeHandler=LongTypeHandler},
         #{contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler},
-        #{tariff},
-        #{taxAmount},
         #{logs}
         )
     </insert>
 
-    <insert id="insertByBatch" parameterType="java.util.List">
+    <insert id="batchInsertContracts" parameterType="java.util.List">
         insert into finance_contract (
         region,
         contractNo,
@@ -147,6 +172,7 @@
         subscriptionDate,
         signer,
         signingMode,
+        signingStatus,
         signingDate,
         buildingInfo,
         buildingSize,
@@ -161,8 +187,6 @@
         beneficiary,
         proposalId,
         contractStatus,
-        tariff,
-        taxAmount,
         logs
         )
         values
@@ -174,6 +198,7 @@
             #{item.subscriptionDate,typeHandler=TimestampLongHandler},
             #{item.signer,typeHandler=ListMerchant2StringHandler},
             #{item.signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
+            #{signingStatus, javaType=SigningStatus,typeHandler=signingStatusHandler},
             #{item.signingDate,typeHandler=TimestampLongHandler},
             #{item.buildingInfo},
             #{item.buildingSize},
@@ -188,8 +213,6 @@
             #{item.beneficiary,typeHandler=MerchantHandler},
             #{item.proposalId,typeHandler=LongTypeHandler},
             #{item.contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler},
-            #{item.tariff},
-            #{item.taxAmount},
             #{item.logs}
             )
         </foreach>
@@ -205,6 +228,7 @@
         subscriptionDate = #{subscriptionDate,typeHandler=TimestampLongHandler},
         signer = #{signer,typeHandler=ListMerchant2StringHandler},
         signingMode = #{signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
+        signingStatus = #{signingStatus, javaType=SigningStatus,typeHandler=signingStatusHandler},
         signingDate = #{signingDate,typeHandler=TimestampLongHandler},
         buildingInfo = #{buildingInfo},
         buildingSize = #{buildingSize},
@@ -219,8 +243,6 @@
         beneficiary = #{beneficiary,typeHandler=MerchantHandler},
         proposalId = #{proposalId,typeHandler=LongTypeHandler},
         contractStatus = #{contractStatus,javaType=ContractStatus,typeHandler=ContractStatusHandler},
-        tariff = #{tariff},
-        taxAmount = #{taxAmount},
         logs = #{logs}
         where id = #{id,typeHandler=LongTypeHandler}
     </update>
@@ -258,6 +280,7 @@
         <result property="subscriptionDate" column="subscriptionDate" typeHandler="TimestampLongHandler"/>
         <result property="signer" column="signer" typeHandler="ListMerchant2StringHandler"/>
         <result property="signingMode" column="signingMode" javaType="SigningMode" typeHandler="SigningModeHandler"/>
+        <result property="signingStatus" column="signingStatus" javaType="SigningStatus" typeHandler="SigningStatusHandler"/>
         <result property="signingDate" column="signingDate" typeHandler="TimestampLongHandler"/>
         <result property="buildingInfo" column="buildingInfo"/>
         <result property="buildingSize" column="buildingSize"/>
@@ -272,8 +295,6 @@
         <result property="beneficiary" column="beneficiary" javaType="Merchant" typeHandler="MerchantHandler"/>
         <result property="proposalId" column="proposalId"/>
         <result property="contractStatus" column="contractStatus" javaType="ContractStatus" typeHandler="ContractStatusHandler"/>
-        <result property="tariff" column="tariff"/>
-        <result property="taxAmount" column="taxAmount"/>
         <result property="logs" column="logs"/>
 
     </resultMap>

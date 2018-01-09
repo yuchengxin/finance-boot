@@ -18,6 +18,21 @@
         where id = #{id,typeHandler=LongTypeHandler}
     </select>
 
+    <select id="selectMerchantWithCheck" resultMap="MerchantMap">
+        select
+        id,
+        merchantName,
+        merchantPhone,
+        merchantIdNo,
+        bankInfo,
+        bankAccount,
+        merchantAddress
+        from finance_merchants
+        where merchantName = #{merchantName}
+        and merchantPhone = #{merchantPhone}
+        and merchantIdNo = #{merchantIdNo}
+    </select>
+
     <select id="selectMerchantWithFilter" resultMap="MerchantMap">
         select
         id,

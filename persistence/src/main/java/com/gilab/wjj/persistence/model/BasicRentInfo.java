@@ -38,7 +38,7 @@ public class BasicRentInfo {
     @Excel(name = "签约总价", width = 10)
     private Integer signTotalPrice;
     @Excel(name = "签约状态", width = 10)
-    private String contractStatus;
+    private String signingStatus;
     @Excel(name = "签约方式", width = 10)
     private String signingMode;
     @Excel(name = "回款时间", width = 10)
@@ -61,19 +61,21 @@ public class BasicRentInfo {
     private String bankAccount;
     @Excel(name = "通讯地址", width = 10)
     private String beneficiaryAddress;
-    @Excel(name = "税率", width = 10)
-    private Double tariff;
-    @Excel(name = "个税金额", width = 10)
-    private Integer taxAmount;
+    @Excel(name = "返租方案", width = 10)
+    private Integer proposalId;
+//    @Excel(name = "税率", width = 10)
+//    private Double tariff;
+//    @Excel(name = "个税金额", width = 10)
+//    private Integer taxAmount;
     @Excel(name = "所在区域", width = 10)
     private String region;
 
     public BasicRentInfo(String region, String contractNo, String contractVersion, Date subscriptionDate, Date signingDate,
                          String buildingInfo, Double buildingSize, String signer, String phone, String merchantIdNo,
-                         Integer originalPrice, Integer totalPrice, Integer signTotalPrice, String contractStatus,
+                         Integer originalPrice, Integer totalPrice, Integer signTotalPrice, String signingStatus,
                          String signingMode, Date paybackDate, Date payStartDate, Date contractTerDate, Integer leasebackPrice,
                          Integer backPremium, String beneficiary, String beneficiaryIdNo, String bankInfo, String bankAccount,
-                         String beneficiaryAddress, Double tariff, Integer taxAmount) {
+                         String beneficiaryAddress, Integer proposalId) {
         this.region = region;
         this.contractNo = contractNo;
         this.contractVersion = contractVersion;
@@ -87,7 +89,7 @@ public class BasicRentInfo {
         this.originalPrice = originalPrice;
         this.totalPrice = totalPrice;
         this.signTotalPrice = signTotalPrice;
-        this.contractStatus = contractStatus;
+        this.signingStatus = signingStatus;
         this.signingMode = signingMode;
         this.paybackDate = paybackDate;
         this.payStartDate = payStartDate;
@@ -99,8 +101,9 @@ public class BasicRentInfo {
         this.bankInfo = bankInfo;
         this.bankAccount = bankAccount;
         this.beneficiaryAddress = beneficiaryAddress;
-        this.tariff = tariff;
-        this.taxAmount = taxAmount;
+        this.proposalId = proposalId;
+//        this.tariff = tariff;
+//        this.taxAmount = taxAmount;
     }
 
     public BasicRentInfo(){
@@ -210,14 +213,6 @@ public class BasicRentInfo {
         this.signTotalPrice = signTotalPrice;
     }
 
-    public String getContractStatus() {
-        return contractStatus;
-    }
-
-    public void setContractStatus(String contractStatus) {
-        this.contractStatus = contractStatus;
-    }
-
     public String getSigningMode() {
         return signingMode;
     }
@@ -306,21 +301,37 @@ public class BasicRentInfo {
         this.beneficiaryAddress = beneficiaryAddress;
     }
 
-    public Double getTariff() {
-        return tariff;
+    public Integer getProposalId() {
+        return proposalId;
     }
 
-    public void setTariff(Double tariff) {
-        this.tariff = tariff;
+    public void setProposalId(Integer proposalId) {
+        this.proposalId = proposalId;
     }
 
-    public Integer getTaxAmount() {
-        return taxAmount;
+    public String getSigningStatus() {
+        return signingStatus;
     }
 
-    public void setTaxAmount(Integer taxAmount) {
-        this.taxAmount = taxAmount;
+    public void setSigningStatus(String signingStatus) {
+        this.signingStatus = signingStatus;
     }
+
+    //    public Double getTariff() {
+//        return tariff;
+//    }
+//
+//    public void setTariff(Double tariff) {
+//        this.tariff = tariff;
+//    }
+//
+//    public Integer getTaxAmount() {
+//        return taxAmount;
+//    }
+//
+//    public void setTaxAmount(Integer taxAmount) {
+//        this.taxAmount = taxAmount;
+//    }
 
     @Override
     public String toString() {
@@ -338,7 +349,7 @@ public class BasicRentInfo {
                 ", originalPrice=" + originalPrice +
                 ", totalPrice=" + totalPrice +
                 ", signTotalPrice=" + signTotalPrice +
-                ", contractStatus='" + contractStatus + '\'' +
+                ", signingStatus='" + signingStatus + '\'' +
                 ", signingMode='" + signingMode + '\'' +
                 ", paybackDate=" + paybackDate +
                 ", payStartDate=" + payStartDate +
@@ -350,8 +361,7 @@ public class BasicRentInfo {
                 ", bankInfo='" + bankInfo + '\'' +
                 ", bankAccount='" + bankAccount + '\'' +
                 ", beneficiaryAddress='" + beneficiaryAddress + '\'' +
-                ", tariff=" + tariff +
-                ", taxAmount=" + taxAmount +
+                ", proposalId=" + proposalId +
                 '}';
     }
 
@@ -369,7 +379,7 @@ public class BasicRentInfo {
         private Integer originalPrice;
         private Integer totalPrice;
         private Integer signTotalPrice;
-        private String contractStatus;
+        private String signingStatus;
         private String signingMode;
         private Date paybackDate;
         private Date payStartDate;
@@ -381,8 +391,7 @@ public class BasicRentInfo {
         private String bankInfo;
         private String bankAccount;
         private String beneficiaryAddress;
-        private Double tariff;
-        private Integer taxAmount;
+        private Integer proposalId;
 
         public Builder region(String region){
             this.region = region;
@@ -504,26 +513,21 @@ public class BasicRentInfo {
             return this;
         }
 
-        public Builder contractStatus(String  contractStatus){
-            this.contractStatus = contractStatus;
+        public Builder signingStatus(String  signingStatus){
+            this.signingStatus = signingStatus;
             return this;
         }
 
-        public Builder tariff(Double tariff){
-            this.tariff = tariff;
-            return this;
-        }
-
-        public Builder taxAmount(Integer taxAmount){
-            this.taxAmount = taxAmount;
+        public Builder proposalId(Integer proposalId){
+            this.proposalId = proposalId;
             return this;
         }
 
         public BasicRentInfo build(){
             return new BasicRentInfo(region, contractNo, contractVersion, subscriptionDate, signingDate, buildingInfo, buildingSize,
-                    signer, phone, merchantIdNo, originalPrice, totalPrice, signTotalPrice, contractStatus, signingMode,
+                    signer, phone, merchantIdNo, originalPrice, totalPrice, signTotalPrice, signingStatus, signingMode,
                     paybackDate, payStartDate, contractTerDate, leasebackPrice, backPremium, beneficiary, beneficiaryIdNo, bankInfo,
-                    bankAccount, beneficiaryAddress, tariff, taxAmount);
+                    bankAccount, beneficiaryAddress, proposalId);
         }
     }
 }
