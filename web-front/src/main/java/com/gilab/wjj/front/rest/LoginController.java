@@ -133,17 +133,23 @@ public class LoginController {
          */
         if(currentUser != null && (currentUser.getUsername().equals(TEST_USERNAME) && currentUser.getPassword().equals(TEST_PASSWORD))){
             jsonArray = getAllMenuByParentId(parentId);
+        }else if(currentUser == null){
+            jsonArray = new JsonArray();
+            return null;
         }else{
             Integer permission = currentUser.getPermissions().get(0).getValue();
             jsonArray = getAllMenuByParentId(parentId,permission);
+
         }
         /*
         ----------用于程序员调试专用，发布前需注释掉----------
          */
 //        Integer permission = currentUser.getPermissions().get(0).getValue();
 //        JsonArray jsonArray = getAllMenuByParentId(parentId,permission);
-        ArrayList<JsonObject> res = new ArrayList<>();
-        res.add(jsonArray.get(0).getAsJsonObject());
+
+//        ArrayList<JsonObject> res = new ArrayList<>();
+//        res.add(jsonArray.get(0).getAsJsonObject());
+
         return jsonArray.toString();
     }
 

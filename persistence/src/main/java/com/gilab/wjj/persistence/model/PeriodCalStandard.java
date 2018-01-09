@@ -12,6 +12,9 @@ public class PeriodCalStandard {
     private int duration;
     private double proportion;
 
+    public PeriodCalStandard() {
+    }
+
     public PeriodCalStandard(int period, int duration, double proportion) {
         this.period = period;
         this.duration = duration;

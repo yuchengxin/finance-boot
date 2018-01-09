@@ -35,7 +35,7 @@ public class ProposalManager implements ProposalAgent {
 
     @Override
     public List<Proposal> getProposalWithFilter() {
-        return null;
+        return proposalDao.getProposalWithFilter();
     }
 
     @Override

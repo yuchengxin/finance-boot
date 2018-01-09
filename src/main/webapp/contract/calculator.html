@@ -42,50 +42,16 @@
 			return "￥"+val;
 		}
 
-//		function searchPurchase(){
-//			$('#dg2').datagrid('loadData', { total: 0, rows: [] });
-//			var supplierId;
-//			if(isNaN($("#s_supplier").combobox("getValue"))){
-//				supplierId="";
-//			}else{
-//				supplierId=$("#s_supplier").combobox("getValue");
-//			}
-//			$("#dg").datagrid({
-//				url:'/admin/purchaseList/list',
-//				queryParams:{
-//					purchaseNumber:$("#s_purchaseNumber").val(),
-//					'supplier.id':supplierId,
-//					state:$("#s_state").combobox("getValue"),
-//					bPurchaseDate:$("#s_bPurchaseDate").datebox("getValue"),
-//					ePurchaseDate:$("#s_ePurchaseDate").datebox("getValue")
-//				}
-//			});
-//		}
-//
-//		function deletePurchase(){
-//			var selectedRows=$("#dg").datagrid("getSelections");
-//			if(selectedRows.length!=1){
-//				$.messager.alert("系统提示","请选择要删除的进货单！");
-//				return;
-//			}
-//			var id=selectedRows[0].id;
-//			$.messager.confirm("系统提示","<font color=red>删除进货单后将无法恢复，是否删除？</font>",function(r){
-//				if(r){
-//					$.post("/admin/purchaseList/delete",{id:id},function(result){
-//						if(result.success){
-//							$("#dg").datagrid("reload");
-//							$("#dg2").datagrid("reload");
-//						}else{
-//							$.messager.alert("系统提示",result.errorInfo);
-//						}
-//					},"json");
-//				}
-//			});
-//		}
-//
-//		function formatUser(val,row){
-//			return val.trueName;
-//		}
+		function fmoney(s, n) {
+			n = n > 0 && n <= 20 ? n : 2;
+			s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";
+			var l = s.split(".")[0].split("").reverse(), r = s.split(".")[1];
+			t = "";
+			for (i = 0; i < l.length; i++) {
+				t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");
+			}
+			return t.split("").reverse().join("") + "." + r;
+		}
 
 		function clearGrid(gridId){
 			var item = $( '#'+gridId).datagrid('getRows');
@@ -111,24 +77,12 @@
 				success: function (data) {
 					var calRes = "";
 						for(var i = 0; i<data.periodSumPayments.length;i++) {
-							calRes +="第"+	data.periodSumPayments[i].periodInfo.period + "个租赁期（" +"年）   " +
-									getMoth(data.periodSumPayments[i].rentStartPayTime)+"-" + getMoth(data.periodSumPayments[i].rentEndPayTime)+
-									"    合计"+data.periodSumPayments[i].months + "期"+
-									"   每期应支付"+ data.periodSumPayments[i].elevenMonthAmount +"元 " +
-									"   最后一期支付"+data.periodSumPayments[i].lastMonthAmount+"元 " +
-									"   总计"+data.periodSumPayments[i].periodTotal+"元\n"
-
-//							$('#dg').datagrid('appendRow', {
-//								period:data.periodSumPayments[i].periodInfo.period,
-//								duration:data.periodSumPayments[i].periodInfo.duration,
-//								proportion:data.periodSumPayments[i].periodInfo.proportion,
-//								rentStartPayTime:getMoth(data.periodSumPayments[i].rentStartPayTime),
-//								rentEndPayTime:getMoth(data.periodSumPayments[i].rentEndPayTime),
-//								months:data.periodSumPayments[i].months,
-//								elevenMonthAmount:data.periodSumPayments[i].elevenMonthAmount,
-//								lastMonthAmount:data.periodSumPayments[i].lastMonthAmount,
-//								periodTotal:data.periodSumPayments[i].periodTotal
-//							});
+							calRes +="第"+	data.periodSumPayments[i].periodInfo.period + "个租赁期（" +data.periodSumPayments[i].periodInfo.duration+"年）   从" +
+									getMoth(data.periodSumPayments[i].rentStartPayTime)+"到" + getMoth(data.periodSumPayments[i].rentEndPayTime)+
+									"    合计"+data.periodSumPayments[i].months + "个自然月，每12个月为一周期，"+
+									"每周期前11个月每月应支付"+ data.periodSumPayments[i].elevenMonthAmount +"元 " +
+									"   第12个月应支付"+data.periodSumPayments[i].lastMonthAmount+"元 " +
+									"   总计"+fmoney(data.periodSumPayments[i].periodTotal,0)+"元\n"
 						}
 					calRes += "总租赁期总结支付"+ data.total +"元"
 					document.getElementById('calRes').value=calRes;
@@ -214,7 +168,7 @@
 </div>
 <div region="center" style="margin-top: 5px;">
 
-	<table id="dg2"  class="easyui-datagrid" fit=true
+	<table id="dg2" title="每月返租详情" class="easyui-datagrid" fit=true
 		   fitColumns="true"  rownumbers="true" singleSelect="true">
 		<thead>
 		<tr>

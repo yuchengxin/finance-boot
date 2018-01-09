@@ -18,6 +18,12 @@
 				$("#saveAndAddNextBuuton").hide();
 				$("#dlg4").dialog("open").dialog("setTitle","合同详情");
 				$("#fm4").form("load",row);
+				var signer = "";
+				for(var i = 0; i < row.signer.length; i++){
+					signer += row.signer[i].merchantName+" ";
+//					signer += row.signer[i].merchantName+"("+row.signer[i].merchantPhone+")";
+				}
+				$("#showsigner").val(signer);
 				$("#sellingPrice").val("￥"+row.sellingPrice);
 				$("#price").numberbox("setValue",row.price);
 				$("#num").numberbox("setValue",row.num);
@@ -54,7 +60,7 @@
 	}
 
 	function openCalculateBacRent(contractId,detail){
-		$("#bacrent").dialog("open").dialog("setTitle","返租明细(编号："+contractId+'--'+detail+")");
+		$("#bacrent").dialog("open").dialog("setTitle","返租明细(合同编号："+detail+")");
 		calculateBackRent(contractId);
 	}
 
@@ -85,24 +91,12 @@
 				$('#total').val(data.total);
 				var calRes = "";
 				for(var i = 0; i<data.periodSumPayments.length;i++) {
-					calRes +="第"+	data.periodSumPayments[i].periodInfo.period + "个租赁期（" +"年）   " +
-							getMoth(data.periodSumPayments[i].rentStartPayTime)+"-" + getMoth(data.periodSumPayments[i].rentEndPayTime)+
-							"    合计"+data.periodSumPayments[i].months + "期"+
-							"   每期应支付"+ data.periodSumPayments[i].elevenMonthAmount +"元 " +
-							"   最后一期支付"+data.periodSumPayments[i].lastMonthAmount+"元 " +
-							"   总计"+data.periodSumPayments[i].periodTotal+"元\n"
-
-//							$('#dg').datagrid('appendRow', {
-//								period:data.periodSumPayments[i].periodInfo.period,
-//								duration:data.periodSumPayments[i].periodInfo.duration,
-//								proportion:data.periodSumPayments[i].periodInfo.proportion,
-//								rentStartPayTime:getMoth(data.periodSumPayments[i].rentStartPayTime),
-//								rentEndPayTime:getMoth(data.periodSumPayments[i].rentEndPayTime),
-//								months:data.periodSumPayments[i].months,
-//								elevenMonthAmount:data.periodSumPayments[i].elevenMonthAmount,
-//								lastMonthAmount:data.periodSumPayments[i].lastMonthAmount,
-//								periodTotal:data.periodSumPayments[i].periodTotal
-//							});
+					calRes +="第"+	data.periodSumPayments[i].periodInfo.period + "个租赁期（" +data.periodSumPayments[i].periodInfo.duration+"年）   从" +
+							getMoth(data.periodSumPayments[i].rentStartPayTime)+"到" + getMoth(data.periodSumPayments[i].rentEndPayTime)+
+							"    合计"+data.periodSumPayments[i].months + "个自然月，每12个月为一周期，"+
+							"每周期前11个月每月应支付"+ data.periodSumPayments[i].elevenMonthAmount +"元 " +
+							"   第12个月应支付"+data.periodSumPayments[i].lastMonthAmount+"元 " +
+							"   总计"+fmoney(data.periodSumPayments[i].periodTotal,0)+"元\n"
 				}
 				calRes += "总租赁期总结支付"+ data.total +"元"
 				document.getElementById('calRes').value=calRes;
@@ -218,33 +212,12 @@
 		}
 
 		$.ajax({
-//			url: '/test/contractsearch',
 			url: geturl,
-//			'test=test' +
-//			'&filterStartTime='+$("#filterStartTime").datebox("getValue")==""?null:$("#filterStartTime").datebox("getValue")+
-//			'&filterEndTime='+$("#filterEndTime").datebox("getValue")==""?null:$("#filterEndTime").datebox("getValue")+
-//			'&contractVersion='+$("#contractVersion").val()==""?null:$("#contractVersion").val()+
-//			'&buildingStartSize='+$("#buildingStartSize").val()==""?null:$("#buildingStartSize").val()+
-//			'&buildingEndSize='+$("#buildingEndSize").val()==""?null:$("#buildingEndSize").val()+
-//			'&signMode='+$("#signMode").val()==""?null:$("#signMode").val()+
-//			'&contractStatus='+$("#contractStatus").val()==""?null:$("#contractStatus").val(),
 			type: 'GET',
-//			data: "{" +
-//			"\"filterStartTime\":\""+$("#filterStartTime").val()+"\"," +
-//			"\"filterEndTime\":\""+$("#filterEndTime").val()+"\"," +
-//			"\"contractVersion\":\""+$("#contractVersion").val()+"\"," +
-//			"\"buildingStartSize\":\""+$("#buildingStartSize").val()+"\"," +
-//			"\"buildingEndSize\":\""+$("#buildingEndSize").val()+"\"," +
-//			"\"signMode\":\""+$("#signMode").val()+"\"," +
-//			"\"contractStatus\":\""+$("#contractStatus").val()+"\"" +
-////			"\"contractNo\":\""+$("#contractNo").val()+"\"," +
-////			"\"signer\":\""+$("#signer").val()+"\"," +
-////			"\"phone\":\""+$("#phone").val()+"\"" +
-//			"}",
 			contentType: 'application/json',
 			success: function (data) {
 				if (data.length > 0) {
-					for(var i = 0; i<=data.length;i++) {
+					for(var i = 0; i<data.length;i++) {
 						$('#dg').datagrid('appendRow', {
 							id:data[i].id,
 							contractNo:data[i].contractNo,
@@ -303,19 +276,17 @@
 		return d.getTime();
 	}
 	function editContract(){
-//		$("form[id='dlg4'] :text").attr("disabled","true");
-		$('#buildingSize').removeAttr("disabled");
-		$('#buildingInfo').attr("disabled",true);
-		$('#region').attr("disabled","disabled");
+//		$('#buildingInfo').prop("disabled",false);
+//		$('#buildingInfo').removeAttr("disabled");
+//		$('#buildingInfo').removeAttr("readonly");
+//		document.getElementById("id").disabled = "false";
+		$('#buildingInfo').prop("disabled","disabled");
 	}
 	function updateContract(){
-		var contractinfo = $('#fm4').serializeArray();
-		var contractobj = {};
-		$.each(contractinfo,function(i,v){
-			contractobj[v.name.substring(1)] = v.value;
-		})
-
-		$.messager.alert("jsoninfo",JSON.stringify(contractobj));
+		$('#buildingInfo').removeProp("disabled");
+//		$('#buildingInfo').attr("disabled",true);
+//		$('#buildingInfo').attr("readonly","readonly");
+//		document.getElementById("id").disabled = "true";
 	}
 	function download(){
 		$.ajax({
@@ -394,6 +365,7 @@
 	}
 	function closeAddContract(){
 		$("#addcontract").dialog("close");
+		resetMerchant();
 	}
 	function openChooseMerchant(){
 		clearGrid("dg3");
@@ -596,7 +568,20 @@
 		}
 		});
 	}
-
+	function fmoney(s, n) {
+		n = n > 0 && n <= 20 ? n : 2;
+		s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";
+		var l = s.split(".")[0].split("").reverse(), r = s.split(".")[1];
+		t = "";
+		for (i = 0; i < l.length; i++) {
+			t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");
+		}
+		return t.split("").reverse().join("") + "." + r;
+	}
+	function resetMerchant(){
+		clearGrid("selectedMerchants");
+		clearGrid("dg_benefic_selected");
+	}
 </script>
 </head>
 <body style="margin: 1px">
@@ -693,78 +678,145 @@
   </div>
 
 <div id="dlg4" class="easyui-dialog" style="width:650px;height:450px;padding: 5px 5px"
-	 closed="true" buttons="#dlg-buttons4" data-options="onClose:function(){resetValue()}">
+	 closed="true" buttons="#dlg-buttons4" data-options="onClose:function(){resetMerchant()}">
 
 	<fieldset style="border-color: #E7F0FF">
 		<legend>详细信息</legend>
 		<form id="fm4" name="fm4" method="post">
-			<table cellspacing="8px">
+			<table cellspacing="6px">
 				<tr>
-					<td >合同编号：</td>
-					<td><input type="text" name="contractNo" size="10" readonly="readonly" disabled="false"/>
-					</td>
-					<td >签约人：</td>
-					<td><input type="text" name="signer" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >受益人：</td>
-					<td><input type="text" name="beneficiary" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>所在区域&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" name="region"  style="width: 170px;" >
+						<option value="22">22</option>
+						<option value="23">23</option>
+					</select></td>
+					<td>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="contractNo" class="easyui-validatebox" required="true"/></td>
 				</tr>
 				<tr>
-					<td>合同版本：</td>
-					<td><input type="text" name="contractVersion" size="10"  readonly="readonly" disabled="true"/></td>
-					<td>合同状态：</td>
-					<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="true"/></td>
-					<td >所在区域：</td>
-					<td><input type="text" name="region" size="10"/></td>
+					<td>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" name="contractVersion" style="width: 170px;" required="true">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					</select></td>
+					<td>认购日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="subscriptionDate" size="20" class="easyui-datebox" data-options="editable:false"/></td>
+
 				</tr>
 				<tr>
-					<td>楼层房号：</td>
-					<td><input type="text"  name="buildingInfo" size="10" /></td>
-					<td>楼层面积(m2)：</td>
-					<td><input type="text"name="buildingSize" size="10"  disabled="false"/></td>
-					<td >签约方式：</td>
-					<td><input type="text" name="signingMode" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>签约日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="signingDate" size="20" class="easyui-datebox" data-options="editable:false" /></td>
+					<td>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="buildingInfo" class="easyui-validatebox" /></td>
 				</tr>
 				<tr>
-					<td>认购日期：</td>
-					<td><input type="text"  name="subscriptionDate" size="10" readonly="readonly" disabled="true"/></td>
-					<td>签约日期：</td>
-					<td><input type="text"  name="signingDate" size="10" readonly="readonly" disabled="true"/></td>
-					<td >销售原价(元)：</td>
-					<td><input type="text" name="originalPrice" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>建筑面积(m2)：<input type="text" name="buildingSize" class="easyui-validatebox" required="true"/></td>
+					<td>签约人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input id="showsigner" type="text" name="signer" class="easyui-validatebox" required="true"  onclick="openChooseMerchant()"  disabled="disabled"/></td>
 				</tr>
 				<tr>
-					<td >总价(元)：</td>
-					<td><input type="text" name="totalPrice" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >签约总价(元)：</td>
-					<td><input type="text" name="signTotalPrice" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >返租溢价(元)：</td>
-					<td><input type="text" name="backPremium" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>销售原价(元)&nbsp;&nbsp;：<input type="text" name="originalPrice" class="easyui-validatebox" /></td>
+					<td>总价(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="totalPrice" class="easyui-validatebox" /></td>
 				</tr>
 				<tr>
-					<td >记租起始时日期：</td>
-					<td><input type="text" name="payStartDate" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >合同期：</td>
-					<td><input type="text" name="contractTerDate" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >回款时间：</td>
-					<td><input type="text" name="paybackDate" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>签约总价(元)&nbsp;&nbsp;：<input type="text" name="signTotalPrice" class="easyui-validatebox" /></td>
+					<td>返租基价(元)：<input type="text" name="leasebackPrice" class="easyui-validatebox" required="true"/></td>
 				</tr>
 				<tr>
-					<td >方案：</td>
-					<td><input type="text" name="proposalId" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >合同状态：</td>
-					<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="false"/></td>
-					<td >税率：</td>
-					<td><input type="text" name="tariff" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="payStartDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></td>
+					<td>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="paybackDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></td>
 				</tr>
 				<tr>
-					<td >个税金额(元)：</td>
-					<td><input type="text" name="taxAmount" size="10"  readonly="readonly" disabled="false"/></td>
+					<td>返租溢价(元)&nbsp;&nbsp;：<input type="text" name="backPremium" class="easyui-validatebox" disabled="disabled"/></td>
+					<td>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="contractTerDate" size="20" class="easyui-datebox" data-options="editable:false" disabled="disabled" /></td>
+				</tr>
+				<tr>
+					<td>合同状态&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" name="contractStatus"  style="width: 170px;" >
+						<option value="UNSIGNED">未签约</option>
+						<option value="PENDINGRENTAL">已签约，市场培育期</option>
+						<option value="RENTAL">已签约，返租期</option>
+						<option value="NORMALEND">正常结束</option>
+						<option value="ABNORMALEND">非正常结束</option>
+					</select></td>
+					<td>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" name="signingMode" style="width: 166px;" >
+						<option value="MORTGAGE">按揭贷款</option>
+						<option value="DISPOSABLE">一次性</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td>方案选择&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" name="proposalId" style="width: 170px;" required="true">
+						<option value="1">方案一</option>
+						<option value="2">方案二</option>
+						<option value="3">方案三</option>
+						<option value="4">方案四</option>
+					</select></td>
+					<td>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input  type="text" name="beneficiary" class="easyui-validatebox" required="true" disabled="disabled"/></td>
+				</tr>
+				<!--<tr>-->
+					<!--<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="atariff" class="easyui-validatebox"/></div></td>-->
+					<!--<td><div>个税金额(元)：<input type="text" name="ataxAmount" class="easyui-validatebox" /></div></td>-->
+				<!--</tr>-->
+			</table>
+			<!--<table cellspacing="8px">-->
+				<!--<tr>-->
+					<!--<td >合同编号：</td>-->
+					<!--<td><input type="text" name="contractNo" size="10" readonly="readonly" disabled="false"/>-->
+					<!--</td>-->
+					<!--<td >签约人：</td>-->
+					<!--<td><input type="text" id="showsigner" name="signer" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >受益人：</td>-->
+					<!--<td><input type="text" name="beneficiary" size="10"  readonly="readonly" disabled="false"/></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td>合同版本：</td>-->
+					<!--<td><input type="text" name="contractVersion" size="10"  readonly="readonly" disabled="true"/></td>-->
+					<!--<td>合同状态：</td>-->
+					<!--<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="true"/></td>-->
+					<!--<td >所在区域：</td>-->
+					<!--<td><input type="text" name="region" size="10"/></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td>楼层房号：</td>-->
+					<!--<td><input type="text"  name="buildingInfo" size="10" /></td>-->
+					<!--<td>楼层面积(m2)：</td>-->
+					<!--<td><input type="text"name="buildingSize" size="10"  disabled="false"/></td>-->
+					<!--<td >签约方式：</td>-->
+					<!--<td><input type="text" name="signingMode" size="10"  readonly="readonly" disabled="false"/></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td>认购日期：</td>-->
+					<!--<td><input type="text"  name="subscriptionDate" size="10" readonly="readonly" disabled="true"/></td>-->
+					<!--<td>签约日期：</td>-->
+					<!--<td><input type="text"  name="signingDate" size="10" readonly="readonly" disabled="true"/></td>-->
+					<!--<td >销售原价(元)：</td>-->
+					<!--<td><input type="text" name="originalPrice" size="10"  readonly="readonly" disabled="false"/></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td >总价(元)：</td>-->
+					<!--<td><input type="text" name="totalPrice" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >签约总价(元)：</td>-->
+					<!--<td><input type="text" name="signTotalPrice" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >返租溢价(元)：</td>-->
+					<!--<td><input type="text" name="backPremium" size="10"  readonly="readonly" disabled="false"/></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td >记租起始时日期：</td>-->
+					<!--<td><input type="text" name="payStartDate" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >合同期：</td>-->
+					<!--<td><input type="text" name="contractTerDate" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >回款时间：</td>-->
+					<!--<td><input type="text" name="paybackDate" size="10"  readonly="readonly" disabled="false"/></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td >方案：</td>-->
+					<!--<td><input type="text" name="proposalId" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >合同状态：</td>-->
+					<!--<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="false"/></td>-->
+					<!--<td >税率：</td>-->
+					<!--<td><input type="text" name="tariff" size="10"  readonly="readonly" disabled="false"/></td>-->
+				<!--</tr>-->
+				<!--<tr hidden="true">-->
+					<!--<td >个税金额(元)：</td>-->
+					<!--<td><input type="text" name="taxAmount" size="10"  readonly="readonly" disabled="false"/></td>-->
 					<!--<td >合同ID：</td>-->
 					<!--<td><input type="text" name="id" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<td >受益人：</td>
-					<td><input type="text" name="beneficiary" size="10"  readonly="readonly" disabled="false"/></td>
-				</tr>
-			</table>
+				<!--</tr>-->
+			<!--</table>-->
 		</form>
 	</fieldset>
 	<div style="padding-left: 12px;padding-top: 10px">
@@ -810,7 +862,7 @@
 			</div>
 		</div>
 		<div region="center">
-				<table id="bacrentdetail"  class="easyui-datagrid" style="height: 1000px"
+				<table id="bacrentdetail" title="每月返租详情"  class="easyui-datagrid" style="height: 1000px"
 					   fitColumns="true"  rownumbers="true" singleSelect="true"
 					   fit="true" toolbar="#tb">
 				<thead>
@@ -835,7 +887,7 @@
 </div>
 
 <div id="addcontract" class="easyui-dialog" style="width:650px;height:440px;padding: 10px 20px"
-	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){$('#goodsTypeName').val('');}">
+	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){resetMerchant()}">
 	<form id="fm6" name="fm6" method="post">
 	<table cellspacing="6px">
 		<tr>
@@ -843,7 +895,7 @@
 				<option value="22">22</option>
 				<option value="23">23</option>
 				</select></div></td>
-			<td><div>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="acontractNo" name="acontractNo" class="easyui-validatebox" required="true"/></div></td>
+			<td><div>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="No01" type="text" id="acontractNo" name="acontractNo" class="easyui-validatebox" required="true"/></div></td>
 		</tr>
 		<tr>
 			<td><div>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="acontractVersion" name="acontractVersion" style="width: 170px;" required="true">
@@ -872,11 +924,11 @@
 			<td><div>返租基价(元)：<input value="4877620" type="text" id="aleasebackPrice" name="aleasebackPrice" class="easyui-validatebox" required="true"/></div></td>
 		</tr>
 		<tr>
-			<td><div>返租溢价(元)&nbsp;&nbsp;：<input value="123" type="text" id="abackPremium" name="abackPremium" class="easyui-validatebox" /></div></td>
+			<td><div>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="apayStartDate" name="apayStartDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></div></td>
 			<td><div>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="apaybackDate" name="apaybackDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></div></td>
 		</tr>
-		<tr>
-			<td><div>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="apayStartDate" name="apayStartDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></div></td>
+		<tr hidden="true">
+			<td><div>返租溢价(元)&nbsp;&nbsp;：<input value="123" type="text" id="abackPremium" name="abackPremium" class="easyui-validatebox" /></div></td>
 			<td><div>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="acontractTerDate" name="acontractTerDate" size="20" class="easyui-datebox" data-options="editable:false" /></div></td>
 		</tr>
 		<tr>
@@ -887,7 +939,7 @@
 				<option value="NORMALEND">正常结束</option>
 				<option value="ABNORMALEND">非正常结束</option>
 			</select></div></td>
-			<td><div>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="asigningMode" name="asigningMode" style="width: 170px;" >
+			<td><div>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="asigningMode" name="asigningMode" style="width: 166px;" >
 				<option value="MORTGAGE">按揭贷款</option>
 				<option value="DISPOSABLE">一次性</option>
 				</select></div></td>
@@ -901,9 +953,9 @@
 			</select></div></td>
 			<td><div>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="abeneficiary" name="abeneficiary" class="easyui-validatebox" required="true" onclick="openChooseBenefic()" readonly="true"/></div></td>
 		</tr>
-		<tr>
-			<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="0.01" type="text" id="atariff" name="atariff" class="easyui-validatebox"/></div></td>
-			<td><div>个税金额(元)：<input value="4000" type="text" id="ataxAmount" name="ataxAmount" class="easyui-validatebox" /></div></td>
+		<tr hidden="true">
+			<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="atariff" name="atariff" class="easyui-validatebox"/></div></td>
+			<td><div>个税金额(元)：<input value="" type="text" id="ataxAmount" name="ataxAmount" class="easyui-validatebox" /></div></td>
 		</tr>
 	</table>
 	</form>
