@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gilab.wjj.persistence.mapper.TestMapper">
+
+  <select id="getMenuByParentId" resultMap="MenuMap">
+--     select * from t_menu where p_id=?1 and id in (SELECT menu_id FROM t_role_menu WHERE role_id=?2)
+select * from finance_menu where p_id=#{parentId,typeHandler=IntegerTypeHandler}
+  </select>
+
+  <select id="getMerchantByNameAndId" parameterType="map" resultType="map">
+    select * from finance_merchants where merchantName=#{signerMerchantName} and bankAccount=#{bankAccount}
+  </select>
+
+  <insert id="addContract" parameterType="map" keyProperty="returnid" useGeneratedKeys="true" >
+    insert into `finance_contract`(`region`,
+	`contractNo`,
+    `contractVersion`,
+    `subscriptionDate`,
+    `signingDate`,
+    `buildingInfo`,
+    `buildingSize`,
+    `originalPrice`,
+    `totalPrice`,
+    `signer`,
+    `signingMode`,
+    `contractTerDate`,
+    `signTotalPrice`,
+    `paybackDate`,
+    `leasebackPrice`,
+    `backPremium`,
+    `beneficiary`,
+    `proposalId`,
+    `contractStatus`,
+    `logs`,
+    `payStartDate`)
+    values (#{region},
+	#{contractNo},
+    #{contractVersion},
+    #{subscriptionDate},
+    #{signingDate},
+    #{buildingInfo},
+    #{buildingSize},
+    #{originalPrice},
+    #{totalPrice},
+    #{signer},
+    #{signingMode},
+    #{contractTerDate},
+    #{signTotalPrice},
+    #{paybackDate},
+    'leasebackPrice',
+    'backPremium',
+    'beneficiary',
+    'proposalId',
+    'contractStatus',
+    'logs',
+    #{payStartDate});
+  </insert>
+
+  <select id="getContract" parameterType="map" resultType="map">
+    select * from finance_contract ORDER BY createTime DESC limit ${limit};
+  </select>
+
+  <select id="contractSearch" parameterType="map" resultType="map">
+    select * from finance_contract where signer=#{signer} ORDER BY createTime DESC;
+  </select>
+
+  <select id="searchMerchant" parameterType="map" resultType="map">
+    select * from finance_merchants where merchantName=#{merchantName} ORDER BY createTime DESC;
+  </select>
+
+  <insert id="addMerchant" parameterType="map">
+    insert into finance_merchants (merchantName,merchantPhone,merchantIdNo,bankInfo,bankAccount,merchantAddress)
+    values (#{merchantName},#{merchantPhone},#{merchantIdNo},#{bankInfo},#{bankAccount},#{merchantAddress});
+  </insert>
+
+  <resultMap id="MenuMap" type="MenuList">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="url" column="url"/>
+    <result property="state" column="state"/>
+    <result property="icon" column="icon"/>
+    <result property="pId" column="p_id"/>
+
+  </resultMap>
+</mapper>

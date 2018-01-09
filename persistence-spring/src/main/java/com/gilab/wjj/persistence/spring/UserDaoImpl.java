@@ -6,6 +6,8 @@ import com.gilab.wjj.persistence.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by yuankui on 12/17/17.
  * <p>
@@ -30,6 +32,11 @@ public class UserDaoImpl implements UserDao{
     }
 
     @Override
+    public List<User> getUserWithFilter(String username) {
+        return mapper.selectUserWithFilter(username);
+    }
+
+    @Override
     public long createUser(User user) {
         mapper.insertUser(user);
         return user.getId();
@@ -43,5 +50,10 @@ public class UserDaoImpl implements UserDao{
     @Override
     public void deleteUser(long userId) {
         mapper.deleteUser(userId);
+    }
+
+    @Override
+    public void modifyPassword(User user){
+        mapper.modifyPassword(user);
     }
 }

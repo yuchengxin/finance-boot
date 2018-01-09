@@ -6,6 +6,7 @@ import com.gilab.wjj.persistence.model.Permission;
 import com.gilab.wjj.persistence.model.ReqResult;
 import com.gilab.wjj.persistence.model.SimpleReqResult;
 import com.gilab.wjj.persistence.model.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,11 @@ public class UserManager implements UserAgent {
     }
 
     @Override
+    public List<User> getUserWithFilter(@Param("username") String username) {
+        return userDao.getUserWithFilter(username);
+    }
+
+    @Override
     public ReqResult<User> createUser(User user) {
         long id = userDao.createUser(user);
         User newUser = user.clone();
@@ -81,5 +87,10 @@ public class UserManager implements UserAgent {
     @Override
     public List<Permission> getPermissions(long userId) {
         return null;
+    }
+
+    @Override
+    public void modifyPassword(User user){
+        userDao.modifyPassword(user);
     }
 }
