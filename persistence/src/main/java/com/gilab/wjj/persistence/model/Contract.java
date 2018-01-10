@@ -393,7 +393,7 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder subscriptionDate(long subscriptionDate){
+        public Builder subscriptionDate(Long subscriptionDate){
             this.subscriptionDate = subscriptionDate;
             return this;
         }
@@ -408,7 +408,7 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder signingDate(long signingDate){
+        public Builder signingDate(Long signingDate){
             this.signingDate = signingDate;
             return this;
         }
@@ -418,7 +418,7 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder buildingSize(double buildingSize){
+        public Builder buildingSize(Double buildingSize){
             this.buildingSize = buildingSize;
             return this;
         }
@@ -428,37 +428,37 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder originalPrice(int originalPrice){
+        public Builder originalPrice(Integer originalPrice){
             this.originalPrice = originalPrice;
             return this;
         }
 
-        public Builder totalPrice(int totalPrice){
+        public Builder totalPrice(Integer totalPrice){
             this.totalPrice = totalPrice;
             return this;
         }
 
-        public Builder signTotalPrice(int signTotalPrice){
+        public Builder signTotalPrice(Integer signTotalPrice){
             this.signTotalPrice = signTotalPrice;
             return this;
         }
 
-        public Builder leasebackPrice(int leasebackPrice){
+        public Builder leasebackPrice(Integer leasebackPrice){
             this.leasebackPrice = leasebackPrice;
             return this;
         }
 
-        public Builder backPremium(int backPremium){
+        public Builder backPremium(Integer backPremium){
             this.backPremium = backPremium;
             return this;
         }
 
-        public Builder payStartDate(long payStartDate){
+        public Builder payStartDate(Long payStartDate){
             this.payStartDate = payStartDate;
             return this;
         }
 
-        public Builder contractTerDate(long contractTerDate){
+        public Builder contractTerDate(Long contractTerDate){
             this.contractTerDate = contractTerDate;
             return this;
         }
@@ -473,7 +473,7 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder proposalId(long proposalId){
+        public Builder proposalId(Long proposalId){
             this.proposalId = proposalId;
             return this;
         }

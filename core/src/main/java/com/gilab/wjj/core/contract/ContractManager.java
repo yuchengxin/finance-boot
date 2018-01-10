@@ -98,7 +98,10 @@ public class ContractManager implements ContractAgent {
                 continue;
             }
             basicRentInfo.setContractNo(DateUtils.datetimeString(basicRentInfo.getSigningDate().getTime(), "yyMMdd") + basicRentInfo.getBuildingInfo());
-
+            if(contractDao.getContractWithNo(basicRentInfo.getContractNo()) != null){
+                resultFailed.put(basicRentInfo, "数据库中已经有合同编号为"+basicRentInfo.getContractNo()+"的合同了");
+                continue;
+            }
             Contract contract = basicRentInfo2Contract(basicRentInfo);
             if(contract.getContractVersion() == null){
                 contract.setContractVersion("1");
@@ -151,6 +154,10 @@ public class ContractManager implements ContractAgent {
             resultSucceed.put(basicRentInfo, "成功");
         }
         if(resultFailed.size() != 0){
+            for (BasicRentInfo b : resultFailed.keySet()){
+                System.out.println(b);
+                System.out.println(resultFailed.get(b));
+            }
             return ReqResultMap.create(false, resultFailed, "部分数据有问题，请确认之后重新导入");
         }
         contractDao.batchCreateContracts(contracts);
@@ -178,9 +185,9 @@ public class ContractManager implements ContractAgent {
                 .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
                 .signingDate(basicRentInfo.getSigningDate().getTime())
                 .signTotalPrice(basicRentInfo.getSignTotalPrice())
-                .subscriptionDate(basicRentInfo.getSubscriptionDate().getTime())
+                .subscriptionDate(basicRentInfo.getSubscriptionDate() == null ? null : basicRentInfo.getSubscriptionDate().getTime())
                 .leasebackPrice(basicRentInfo.getLeasebackPrice())
-                .paybackDate(basicRentInfo.getPaybackDate().getTime())
+                .paybackDate(basicRentInfo.getPaybackDate() == null ? null : basicRentInfo.getPaybackDate().getTime())
                 .buildingInfo(basicRentInfo.getBuildingInfo())
                 .buildingSize(basicRentInfo.getBuildingSize())
                 .backPremium(basicRentInfo.getBackPremium())

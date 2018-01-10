@@ -198,7 +198,7 @@
             #{item.subscriptionDate,typeHandler=TimestampLongHandler},
             #{item.signer,typeHandler=ListMerchant2StringHandler},
             #{item.signingMode,javaType=SigningMode,typeHandler=SigningModeHandler},
-            #{signingStatus, javaType=SigningStatus,typeHandler=SigningStatusHandler},
+            #{item.signingStatus, javaType=SigningStatus,typeHandler=SigningStatusHandler},
             #{item.signingDate,typeHandler=TimestampLongHandler},
             #{item.buildingInfo},
             #{item.buildingSize},

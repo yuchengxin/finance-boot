@@ -88,7 +88,7 @@ public class ContractTest {
                 .payStartDate(DateUtils.parseDate("2018-11-29"))
                 .beneficiary(result1.getResult())
                 .logs("/home/yuankui/tmp/log.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.PENDINGRENTAL)
                 .build();
         ReqResult<Contract> result3 = contractMgr.createContract(contract);

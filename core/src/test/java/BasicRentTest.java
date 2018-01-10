@@ -145,7 +145,7 @@ public class BasicRentTest {
                 .payStartDate(DateUtils.parseDate("2018-11-29"))
                 .beneficiary(merchants.get(0))
                 .logs("/home/yuankui/tmp/log1.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.PENDINGRENTAL)
                 .build();
 
@@ -169,7 +169,7 @@ public class BasicRentTest {
                 .payStartDate(DateUtils.parseDate("2013-11-29"))
                 .beneficiary(merchants.get(1))
                 .logs("/home/yuankui/tmp/log2.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.PENDINGRENTAL)
                 .build();
 
@@ -193,7 +193,7 @@ public class BasicRentTest {
                 .payStartDate(DateUtils.parseDate("2011-11-29"))
                 .beneficiary(merchants.get(2))
                 .logs("/home/yuankui/tmp/log3.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.RENTAL)
                 .build();
 
@@ -217,7 +217,7 @@ public class BasicRentTest {
                 .payStartDate(DateUtils.parseDate("1998-11-29"))
                 .beneficiary(merchants.get(3))
                 .logs("/home/yuankui/tmp/log4.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.NORMALEND)
                 .build();
 
@@ -241,7 +241,7 @@ public class BasicRentTest {
                 .payStartDate(DateUtils.parseDate("2018-11-29"))
                 .beneficiary(merchants.get(4))
                 .logs("/home/yuankui/tmp/log5.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.ABNORMALEND)
                 .build();
 
@@ -265,7 +265,7 @@ public class BasicRentTest {
                 .payStartDate(DateUtils.parseDate("2018-11-29"))
                 .beneficiary(merchants.get(5))
                 .logs("/home/yuankui/tmp/log6.log")
-                .proposalId(1)
+                .proposalId(1L)
                 .contractStatus(ContractStatus.UNSTARTED)
                 .build();
 

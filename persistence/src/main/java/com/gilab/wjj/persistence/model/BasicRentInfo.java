@@ -19,7 +19,7 @@ public class BasicRentInfo {
     private Date subscriptionDate;
     @Excel(name = "签约日期", width = 10)
     private Date signingDate;
-    @Excel(name = "楼层\\房号", width = 10)
+    @Excel(name = "楼层/房号", width = 10)
     private String buildingInfo;
     @Excel(name = "建筑面积", width = 10)
     private Double buildingSize;
