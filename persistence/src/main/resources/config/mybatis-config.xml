@@ -34,6 +34,8 @@
     <property name="H2" value="H2"/>
   </databaseIdProvider>
   <mappers>
+    <mapper resource="config/mapper/TestMapper.xml"/>
+    <mapper resource="config/mapper/LoginMapper.xml"/>
     <mapper resource="config/mapper/UserMapper.xml"/>
     <mapper resource="config/mapper/ContractMapper.xml"/>
     <mapper resource="config/mapper/MerchantMapper.xml"/>

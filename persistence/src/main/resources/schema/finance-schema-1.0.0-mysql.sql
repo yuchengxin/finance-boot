@@ -215,4 +215,50 @@ CREATE TABLE finance_added_ledger (
 
 CREATE INDEX idx_merchants_added_ledger ON finance_added_ledger (merchantId);
 
+
+DROP TABLE IF EXISTS finance_permission_list;
+CREATE TABLE finance_permission_list (
+  id        BIGINT         NOT NULL      AUTO_INCREMENT,
+  menuid    BIGINT     NOT NULL,
+  permission     varchar(50) NOT NULL,
+  createTime       DATETIME(3) not null default current_timestamp(3),
+  lastUpdateTime   DATETIME(3) on update current_timestamp(3),
+  PRIMARY KEY (`id`)
+) CHARSET = utf8;
+insert into `finance_permission_list` (`menuid`,`permission`) values
+(9010,'1'),
+(9010,'2'),
+(9020,'1');
+
+DROP TABLE IF EXISTS `finance_menu`;
+CREATE TABLE `finance_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `icon` varchar(100) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `state` int(11) DEFAULT NULL,
+  `url` varchar(200) DEFAULT NULL,
+  `p_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKsni20f28wjqrmpp44uawa2ky4` (`p_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6051 DEFAULT CHARSET=utf8;
+
+
+/*Data for the table `finance_menu` */
+insert into `finance_menu`(`id`,`icon`,`name`,`state`,`url`,`p_id`) values
+(1,'menu-plugin','系统菜单',1,NULL,-1),
+(90,'menu-6','系统管理',1,NULL,1),
+(70,'menu-5','返租资料管理',1,NULL,1),
+(80,'menu-3','台账管理',1,NULL,1),
+(7020,'menu-13','资料查询',0,'/contract/contractSearch.html',70),
+(7030,'menu-4','返租计算',0,'/contract/calculator.html',70),
+(8010,'menu-32','添加台账',0,'/ledger/addLedger.html',80),
+(8020,'menu-13','查询台账',0,'/ledger/searchLedger.html',80),
+(9010,'menu-61','用户管理',0,'/power/userManage.html',90),
+(9020,'menu-62','权限管理',0,'/power/permissionManage.html',90),
+(9030,'menu-63','方案管理',0,'/power/proposalManage.html',90),
+(9040,'menu-65','系统日志',0,'/power/log.html',90),
+(9050,'menu-63','修改密码',0,NULL,90),
+(9060,'menu-64','安全退出',0,NULL,90);
+
+
 SET SESSION SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
