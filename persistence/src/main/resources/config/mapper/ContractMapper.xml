@@ -139,7 +139,7 @@
         )
     </insert>
 
-    <insert id="insertByBatch" parameterType="java.util.List">
+    <insert id="batchInsertContracts" parameterType="java.util.List">
         insert into finance_contract (
         region,
         contractNo,

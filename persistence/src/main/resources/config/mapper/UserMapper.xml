@@ -26,6 +26,20 @@
     where username = #{username}
   </select>
 
+  <select id="selectUserWithFilter" resultMap="UserMap">
+    select
+    id,
+    username,
+    password,
+    permissions,
+    description
+    from finance_user
+    where 1 = 1
+    <if test="username != null">
+      and username = #{username}
+    </if>
+  </select>
+
   <!-- insert section -->
   <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
     insert into finance_user (
@@ -57,6 +71,13 @@
   <delete id="deleteUser">
     delete from finance_user where id = #{id,typeHandler=LongTypeHandler}
   </delete>
+
+  <update id="modifyPassword" parameterType="User">
+    update finance_user
+    set
+     password = #{password}
+    where id = #{id,typeHandler=LongTypeHandler}
+  </update>
 
   <resultMap id="UserMap" type="User">
     <id property="id" column="id"/>

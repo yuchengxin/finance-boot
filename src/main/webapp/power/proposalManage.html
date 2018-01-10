@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>方案管理</title>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/default/easyui.css"/>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/icon.css"/>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript">
+
+	function deleteProposal(){
+		var selectedRows=$("#dg").datagrid("getSelections");
+		if(selectedRows.length!=1){
+			 $.messager.alert("系统提示","请选择要删除的数据！");
+			 return;
+		 }
+		 var id=selectedRows[0].id;
+		 $.messager.confirm("系统提示","您确定要删除这条数据吗？",function(r){
+				if(r){
+					$.ajax({
+						url:'/api/v1/deleteProposal?proposalId='+id,
+						type: 'PUT',
+						contentType: 'application/json',
+						success: function (data) {
+							$.messager.alert("系统提示","数据已成功删除！");
+							searchProposal();
+						},
+						error: function () {
+							$.messager.alert("系统提示",result.errorInfo);
+						}
+					})
+				}
+	   });
+	}
+	
+	function openProposalAddDialog(){
+		$("#dlg").dialog("open").dialog("setTitle","添加方案信息");
+	}
+	
+	function openProposalModifyDialog(){
+		var selectedRows=$("#dg").datagrid("getSelections");
+		 if(selectedRows.length!=1){
+			 $.messager.alert("系统提示","请选择一条要修改的数据！");
+			 return;
+		 }
+		 var row=selectedRows[0];
+		 $("#dlg2").dialog("open").dialog("setTitle","修改方案信息");
+		 $("#fm2").form("load",row);
+//		 $("#proposalname2").attr("readonly","readonly")
+	 }
+
+	function saveProposal(){
+		if(!$("#dlg").form("validate")){
+			return false;
+		}else {
+			var proposalobj = {};
+			var confList = [];
+			proposalobj["proposalName"] = $("#proposalName").val();
+			proposalobj["leasebackLife"] = $("#leasebackLife").val();
+			proposalobj["marketCulLife"] = $("#marketCulLife").val();
+			proposalobj["leasebackStages"] = $("#leasebackStages").val();
+			proposalobj["proposalDes"] = $("#proposalDes").val();
+			if(proposalobj["leasebackStages"]>0 && ($("#duration1").val()==""||$("#proportion1").val()=="")){
+				if($("#duration1").val()==""){
+					$("#duration1").focus();
+				}else{
+					$("#proportion1").focus();
+				}
+				return false;
+			}else{
+				if(proposalobj["leasebackStages"]>0){
+					var confObj = {};
+					confObj["period"]=1;
+					confObj["duration"]=$("#duration1").val();
+					confObj["proportion"]=$("#proportion1").val();
+					confList.push(confObj);
+				}
+				if(proposalobj["leasebackStages"]>1 && ($("#duration2").val()==""||$("#proportion2").val()=="")){
+					if($("#duration2").val()==""){
+						$("#duration2").focus();
+					}else{
+						$("#proportion2").focus();
+					}
+					return false;
+				}else{
+					if(proposalobj["leasebackStages"]>1) {
+						var confObj = {};
+						confObj["period"] = 2;
+						confObj["duration"] = $("#duration2").val();
+						confObj["proportion"] = $("#proportion2").val();
+						confList.push(confObj);
+					}
+					if(proposalobj["leasebackStages"]>2 && ($("#duration3").val()==""||$("#proportion3").val()=="")){
+						if($("#duration3").val()==""){
+							$("#duration3").focus();
+						}else{
+							$("#proportion3").focus();
+						}
+						return false;
+					}else{
+						if(proposalobj["leasebackStages"]>2) {
+							var confObj = {};
+							confObj["period"] = 3;
+							confObj["duration"] = $("#duration3").val();
+							confObj["proportion"] = $("#proportion3").val();
+							confList.push(confObj);
+						}
+						proposalobj["conf"] = confList;
+						$.ajax({
+							url:'/api/v1/proposal',
+							type: 'PUT',
+							data: JSON.stringify(proposalobj),
+							contentType: 'application/json',
+							success: function (data) {
+								$.messager.alert("系统提示","添加成功！");
+								resetValue();
+								searchProposal();
+								$("#dlg").dialog("close");
+							},
+							error: function () {
+								$.messager.alert("系统提示","添加失败！");
+							}
+						})
+					}
+				}
+			}
+
+
+
+		}
+	 }
+
+	function updateProposal(){
+		if(!$("#dlg2").form("validate")){
+			return false;
+		}else {
+			var proposalobj = {};
+			var confList = [];
+			proposalobj["id"] = $("#id").val();
+			proposalobj["proposalName"] = $("#nproposalName").val();
+			proposalobj["leasebackLife"] = $("#nleasebackLife").val();
+			proposalobj["marketCulLife"] = $("#nmarketCulLife").val();
+			proposalobj["leasebackStages"] = $("#nleasebackStages").val();
+			proposalobj["proposalDes"] = $("#nproposalDes").val();
+			if(proposalobj["leasebackStages"]>0 && ($("#nduration1").val()==""||$("#nproportion1").val()=="")){
+				if($("#nduration1").val()==""){
+					$("#nduration1").focus();
+				}else{
+					$("#nproportion1").focus();
+				}
+				return false;
+			}else{
+				if(proposalobj["leasebackStages"]>0){
+					var confObj = {};
+					confObj["period"]=1;
+					confObj["duration"]=$("#nduration1").val();
+					confObj["proportion"]=$("#nproportion1").val();
+					confList.push(confObj);
+				}
+				if(proposalobj["leasebackStages"]>1 && ($("#nduration2").val()==""||$("#nproportion2").val()=="")){
+					if($("#nduration2").val()==""){
+						$("#nduration2").focus();
+					}else{
+						$("#nproportion2").focus();
+					}
+					return false;
+				}else{
+					if(proposalobj["leasebackStages"]>1) {
+						var confObj = {};
+						confObj["period"] = 2;
+						confObj["duration"] = $("#nduration2").val();
+						confObj["proportion"] = $("#nproportion2").val();
+						confList.push(confObj);
+					}
+					if(proposalobj["leasebackStages"]>2 && ($("#nduration3").val()==""||$("#nproportion3").val()=="")){
+						if($("#nduration3").val()==""){
+							$("#nduration3").focus();
+						}else{
+							$("#nproportion3").focus();
+						}
+						return false;
+					}else{
+						if(proposalobj["leasebackStages"]>2) {
+							var confObj = {};
+							confObj["period"] = 3;
+							confObj["duration"] = $("#nduration3").val();
+							confObj["proportion"] = $("#nproportion3").val();
+							confList.push(confObj);
+						}
+						proposalobj["conf"] = confList;
+						$.ajax({
+							url:'/api/v1/updateProposal',
+							type: 'POST',
+							data: JSON.stringify(proposalobj),
+							contentType: 'application/json',
+							success: function (data) {
+								$.messager.alert("系统提示","修改成功！");
+//								resetValue();
+								searchProposal();
+								$("#dlg2").dialog("close");
+							},
+							error: function () {
+								$.messager.alert("系统提示","修改失败！");
+							}
+						})
+					}
+				}
+			}
+
+
+
+		}
+	 }
+
+	function resetValue(){
+		 $("#id").val("");
+		 $("#username").val("");
+		 $("#password").val("");
+		 $("#description").val("");
+	 }
+	
+	 function closeProposalDialog(){
+		 $("#dlg").dialog("close");
+		 resetValue();
+	 }
+
+	 function closeUpdateProposal(){
+		 $("#dlg2").dialog("close");
+		 $("#id").val("");
+		 $("#username2").val("");
+		 $("#password2").val("");
+		 $("#description2").val("");
+	 }
+
+	function clearGrid(gridId){
+		var item = $( '#'+gridId).datagrid('getRows');
+		if (item) {
+			for (var i = item.length - 1; i >= 0; i--) {
+				var index = $( '#'+gridId).datagrid('getRowIndex', item[i]);
+				$( '#'+gridId).datagrid('deleteRow', index);
+			}
+		}
+	}
+
+	 function searchProposal(){
+		 clearGrid("dg");
+		 var geturl = "/api/v1/proposal?test=test";
+		 if($("#s_proposalName").val()!=""){
+			 geturl+="&s_proposalName="+$("#s_proposalName").val();
+		 }
+		 $.ajax({
+			 url:geturl,
+			 type: 'GET',
+			 contentType: 'application/json',
+			 success: function (data) {
+				 for(var i = 0; i < data.length; i ++){
+					 $('#dg').datagrid('appendRow', {
+						 id: data[i].id,
+						 proposalName: data[i].proposalName,
+						 leasebackLife: data[i].leasebackLife,
+						 marketCulLife: data[i].marketCulLife,
+						 duration1: data[i].conf.length>0?data[i].conf[0].duration:"无",
+						 proportion1:data[i].conf.length>0?data[i].conf[0].proportion:"无",
+						 duration2: data[i].conf.length>1?data[i].conf[1].duration:"无",
+						 proportion2:data[i].conf.length>1?data[i].conf[1].proportion:"无",
+						 duration3: data[i].conf.length>2?data[i].conf[2].duration:"无",
+						 proportion3:data[i].conf.length>2?data[i].conf[2].proportion:"无",
+						 leasebackStages: data[i].leasebackStages,
+						 conf: data[i].conf.toString(),
+						 proposalDes: data[i].proposalDes
+					 });
+				 }
+			 },
+			 error: function () {
+				 alert('An error has occured!! :-( loading users')
+			 }
+		 })
+	}
+
+	 $(function () {  
+		 
+		 $("#dg").datagrid({  
+		        //双击事件  
+		        onDblClickRow: function (index, row) {
+					openProposalModifyDialog();
+		        }  
+		    });
+		 searchProposal();
+
+
+
+		 
+	 });
+</script>
+</head>
+<body style="margin: 1px">
+<table id="dg"  class="easyui-datagrid"
+   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"  fit="true" toolbar="#tb">
+   <thead>
+   	<tr>    
+   		<th hidden="true" field="id" width="20" align="center">编号</th>
+   		<th field="proposalName" width="50" align="center">方案名</th>
+   		<th field="leasebackLife" width="50" align="center" type="password">合计年限</th>
+   		<th field="marketCulLife" width="50" align="center">培育年限</th>
+   		<th field="leasebackStages" width="50" align="center">返租期数</th>
+   		<th field="duration1" width="50" align="center">第一期时长(年)</th>
+   		<th field="proportion1" width="50" align="center">第一期系数</th>
+   		<th field="duration2" width="50" align="center">第二期时长(年)</th>
+   		<th field="proportion2" width="50" align="center">第二期系数</th>
+   		<th field="duration3" width="50" align="center">第三期时长(年)</th>
+   		<th field="proportion3" width="50" align="center">第三期系数</th>
+   		<th hidden="true" field="conf" width="80" align="center">计算方式</th>
+   		<th field="proposalDes" width="80" align="center">备注</th>
+   	</tr>
+   </thead>
+ </table>
+ 
+ <div id="tb">
+	 <div>
+		 &nbsp;方案名：&nbsp;<input type="text" id="s_proposalName" size="20" onkeydown="if(event.keyCode==13) searchProposal()"/>
+		 <a href="javascript:searchProposal()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+	 </div>
+	 <div>
+		<a href="javascript:openProposalAddDialog()" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加</a>
+		<a href="javascript:openProposalModifyDialog()" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+		<a href="javascript:deleteProposal()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+	</div>
+ </div>
+ 
+ <div id="dlg" class="easyui-dialog" style="width:350px;height:430px;padding: 10px 20px"
+   closed="true" buttons="#dlg-buttons" data-options="onClose:function(){resetValue()}">
+   
+   <form id="fm" method="post">
+   	<table cellspacing="8px">
+   		<tr>
+   			<td>方案名称：</td>
+   			<td colspan="2"><input type="text" id="proposalName" name="proposalName" class="easyui-validatebox" required="true" style="width: 150px;"/></td>
+   		</tr>
+   		<tr>
+   			<td>合计年限：</td>
+   			<td colspan="2"><input type="number" id="leasebackLife" name="leasebackLife" class="easyui-validatebox"  required="true" style="width: 150px;"/></td>
+   		</tr>
+   		<tr>
+   			<td>培育年限：</td>
+   			<td colspan="2"><input type="number" id="marketCulLife" name="lesebackLife" class="easyui-validatebox"  required="true" style="width: 150px;"/></td>
+   		</tr>
+   		<tr>
+   			<td>返租期数：</td>
+			<td colspan="2"><input type="number" id="leasebackStages" name="leasebackStages" class="easyui-validatebox"  required="true" style="width: 150px;"/></td>
+   		</tr>
+		<tr>
+			<td align="center">期数</td>
+			<td align="center">持续年限</td>
+			<td align="center">系数</td>
+		</tr>
+		<tr>
+			<td align="center">第一期:</td>
+			<td><input type="number" id="duration1" name="duration1" class="easyui-validatebox" style="width: 70px;"/></td>
+			<td><input type="number" id="proportion1" name="proportion1" class="easyui-validatebox" style="width: 70px;"/></td>
+		</tr>
+		<tr>
+			<td align="center">第二期:</td>
+			<td><input type="number" id="duration2" name="duration2" class="easyui-validatebox" style="width: 70px;"/></td>
+			<td><input type="number" id="proportion2" name="proportion2" class="easyui-validatebox" style="width: 70px;"/></td>
+		</tr>
+		<tr>
+			<td align="center">第三期:</td>
+			<td><input type="number" id="duration3" name="duration3" class="easyui-validatebox" style="width: 70px;"/></td>
+			<td><input type="number" id="proportion3" name="proportion3" class="easyui-validatebox" style="width: 70px;"/></td>
+		</tr>
+   		<tr>
+   			<td valign="top">备注：</td>
+   			<td colspan="2">
+   				<textarea rows="5" style="width: 100%" id="proposalDes" name="proposalDes"></textarea>
+   			</td>
+   		</tr>
+   	</table>
+   </form>
+ </div>
+ 
+ <div id="dlg-buttons">
+ 	<a href="javascript:saveProposal()" class="easyui-linkbutton" iconCls="icon-ok">保存</a>
+ 	<a href="javascript:closeProposalDialog()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+ </div>
+
+
+<div id="dlg2" class="easyui-dialog" style="width:350px;height:430px;padding: 10px 20px"
+	 closed="true" buttons="#dlg-buttons2" data-options="onClose:function(){resetValue()}">
+
+	<form id="fm2" method="post">
+		<table cellspacing="8px">
+			<tr hidden="true">
+				<td>方案id：</td>
+				<td colspan="2"><input type="text" id="id" name="id" class="easyui-validatebox" required="true" style="width: 150px;"/></td>
+			</tr>
+			<tr>
+				<td>方案名称：</td>
+				<td colspan="2"><input type="text" id="nproposalName" name="proposalName" class="easyui-validatebox" required="true" style="width: 150px;"/></td>
+			</tr>
+			<tr>
+				<td>合计年限：</td>
+				<td colspan="2"><input type="number" id="nleasebackLife" name="leasebackLife" class="easyui-validatebox"  required="true" style="width: 150px;"/></td>
+			</tr>
+			<tr>
+				<td>培育年限：</td>
+				<td colspan="2"><input type="number" id="nmarketCulLife" name="marketCulLife" class="easyui-validatebox"  required="true" style="width: 150px;"/></td>
+			</tr>
+			<tr>
+				<td>返租期数：</td>
+				<td colspan="2"><input type="number" id="nleasebackStages" name="leasebackStages" class="easyui-validatebox"  required="true" style="width: 150px;"/></td>
+			</tr>
+			<tr>
+				<td align="center">期数</td>
+				<td align="center">持续年限</td>
+				<td align="center">系数</td>
+			</tr>
+			<tr>
+				<td align="center">第一期:</td>
+				<td><input type="number" id="nduration1" name="duration1" class="easyui-validatebox" style="width: 70px;"/></td>
+				<td><input type="number" id="nproportion1" name="proportion1" class="easyui-validatebox" style="width: 70px;"/></td>
+			</tr>
+			<tr>
+				<td align="center">第二期:</td>
+				<td><input type="number" id="nduration2" name="duration2" class="easyui-validatebox" style="width: 70px;"/></td>
+				<td><input type="number" id="nproportion2" name="proportion2" class="easyui-validatebox" style="width: 70px;"/></td>
+			</tr>
+			<tr>
+				<td align="center">第三期:</td>
+				<td><input type="number" id="nduration3" name="duration3" class="easyui-validatebox" style="width: 70px;"/></td>
+				<td><input type="number" id="nproportion3" name="proportion3" class="easyui-validatebox" style="width: 70px;"/></td>
+			</tr>
+			<tr>
+				<td valign="top">备注：</td>
+				<td colspan="2">
+					<textarea rows="5" style="width: 100%" id="nproposalDes" name="proposalDes"></textarea>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+ 
+ <div id="dlg-buttons2">
+ 	<a href="javascript:updateProposal()" class="easyui-linkbutton" iconCls="icon-ok">保存</a>
+ 	<a href="javascript:closeUpdateProposal()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+ </div>
+ 
+</body>
+</html>
