@@ -226,9 +226,21 @@ CREATE TABLE finance_permission_list (
   PRIMARY KEY (`id`)
 ) CHARSET = utf8;
 insert into `finance_permission_list` (`menuid`,`permission`) values
+(7020,'1'),
+(7030,'1'),
+(8010,'1'),
+(8020,'1'),
 (9010,'1'),
-(9010,'2'),
-(9020,'1');
+(9020,'1'),
+(9030,'1'),
+(9040,'1'),
+(9050,'1'),
+(9060,'1'),
+(7020,'2'),
+(7030,'2'),
+(8020,'2'),
+(9050,'2'),
+(9060,'2');
 
 DROP TABLE IF EXISTS `finance_menu`;
 CREATE TABLE `finance_menu` (
