@@ -129,9 +129,12 @@
 							taxAmount:data[i].taxAmount
 						});
 					}
-				} else {
-					alert("datasizeis0");
 				}
+				$.messager.alert(' ','<font size=\"2\" color=\"#666666\"><strong>查询到' +data.length+
+						'条记录</strong></font>','infoSunnyIcon',
+						function(){
+						});
+				setTimeout(function(){ $(".messager-body").window('close'); },1000);
 			},
 			error: function () {
 				alert('An error has occured!! :-(')
@@ -224,6 +227,7 @@
 					<tr>
 						<td>签约日期范围：<input type="text" id="filterStartTime" name="filterStartTime"  size="8" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" size="8" class="easyui-datebox"/></td>
 						<td>合同版本：<select type="text" id="contractVersion" name="contractVersion" style="width: 150px;" >
+							<option value="">所有版本</option>
 							<option value="1">1</option>
 							<option value="2">2</option>
 							<option value="3">3</option>
@@ -234,11 +238,12 @@
 					</tr>
 					<tr>
 						<td>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="signMode" name="signMode" style="width: 175px;" >
+							<option value="">所有方式</option>
 							<option value="MORTGAGE">按揭贷款</option>
 							<option value="DISPOSABLE">一次性</option>
 						</select></td>
 						<td>合同状态：<select type="text" id="contractStatus" name="contractStatus" style="width: 150px;" >
-							<option value="UNSIGNED">未签约</option>
+							<option value="UNSTARTED">未开始</option>
 							<option value="PENDINGRENTAL">已签约，市场培育期</option>
 							<option value="RENTAL">已签约，返租期</option>
 							<option value="NORMALEND">正常结束</option>
