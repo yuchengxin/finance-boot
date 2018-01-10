@@ -93,7 +93,7 @@ public class ContractController {
         File f=File.createTempFile("tmp", null);
         contracts.transferTo(f);
         f.deleteOnExit();
-
+        System.out.println(f.getPath());
         List<BasicRentInfo> basicRentInfos = new ExcelUtils<>(new BasicRentInfo()).readFromFile(null, f);
         return RestUtils.getOrSendError(response, contractMgr.batchCreateContracts(basicRentInfos));
     }

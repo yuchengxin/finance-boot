@@ -15,8 +15,6 @@ import java.util.List;
 public class BasicRentInfo {
     @Excel(name = "合同编号", width = 10)
     private String contractNo;
-    @Excel(name = "版本", width = 10)
-    private String contractVersion;
     @Excel(name = "认购日期", width = 10)
     private Date subscriptionDate;
     @Excel(name = "签约日期", width = 10)
@@ -31,14 +29,15 @@ public class BasicRentInfo {
     private String phone;
     @Excel(name = "身份证号", width = 10)
     private String merchantIdNo;
+    @Excel(name = "签约状态", width = 10)
+    private String signingStatus;
     @Excel(name = "销售原价", width = 10)
     private Integer originalPrice;
     @Excel(name = "总价", width = 10)
     private Integer totalPrice;
     @Excel(name = "签约总价", width = 10)
     private Integer signTotalPrice;
-    @Excel(name = "签约状态", width = 10)
-    private String signingStatus;
+
     @Excel(name = "签约方式", width = 10)
     private String signingMode;
     @Excel(name = "回款时间", width = 10)
@@ -69,6 +68,8 @@ public class BasicRentInfo {
 //    private Integer taxAmount;
     @Excel(name = "所在区域", width = 10)
     private String region;
+    @Excel(name = "版本", width = 10)
+    private String contractVersion;
 
     public BasicRentInfo(String region, String contractNo, String contractVersion, Date subscriptionDate, Date signingDate,
                          String buildingInfo, Double buildingSize, String signer, String phone, String merchantIdNo,
