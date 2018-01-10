@@ -30,5 +30,5 @@ public interface ContractDao {
 
     void batchCreateContracts(List<Contract> contracts);
 
-    Contract getContractWithNo(String ContractNo);
+    Contract getContractWithNo(String contractNo);
 }

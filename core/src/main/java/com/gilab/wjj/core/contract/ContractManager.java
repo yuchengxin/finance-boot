@@ -126,9 +126,9 @@ public class ContractManager implements ContractAgent {
                 contract.setContractStatus(ContractStatus.UNSTARTED);
             } else {
                 ContractStatus status;
-                Proposal proposal = proposalDao.getProposal(basicRentInfo.getProposalId());
+                Proposal proposal = proposalDao.getProposal(contract.getProposalId());
                 if(proposal == null){
-                    logger.error("can't find proposal[d%]", basicRentInfo.getProposalId());
+                    logger.error("can't find proposal[d%]", contract.getProposalId());
                     throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
                 }
                 long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();

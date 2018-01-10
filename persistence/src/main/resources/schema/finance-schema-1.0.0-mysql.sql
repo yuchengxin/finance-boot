@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS finance_user, finance_permission;
-DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status;
+DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status, finance_signing_status;
 DROP TABLE IF EXISTS finance_merchants;
 DROP TABLE IF EXISTS finance_leaseback_proposal, finance_proposal_history;
 DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger;
@@ -53,16 +53,14 @@ CREATE TABLE finance_contract (
   originalPrice    INT                ,
   totalPrice       INT                ,
   signTotalPrice   INT                ,
-  leasebackPrice   INT                NOT NULL ,
+  leasebackPrice   INT                ,
   backPremium      INT                ,
-  paybackDate      DATETIME(3)        NOT NULL ,
+  paybackDate      DATETIME(3)        ,
   payStartDate     DATETIME(3)        ,
   contractTerDate  DATETIME(3)        ,
   beneficiary      VARCHAR(200)       ,
-  proposalId       INT                NOT NULL ,
+  proposalId       INT                ,
   contractStatus   SMALLINT           NOT NULL ,
-#   tariff           DOUBLE             ,
-#   taxAmount        INT                ,
   logs             TEXT               NOT NULL ,
   createTime       DATETIME(3) not null default current_timestamp(3),
   lastUpdateTime   DATETIME(3) on update current_timestamp(3)
@@ -87,16 +85,14 @@ CREATE TABLE finance_contract_history (
   originalPrice    INT                ,
   totalPrice       INT                ,
   signTotalPrice   INT                ,
-  leasebackPrice   INT                NOT NULL ,
+  leasebackPrice   INT                ,
   backPremium      INT                ,
-  paybackDate      DATETIME(3)        NOT NULL ,
+  paybackDate      DATETIME(3)        ,
   payStartDate     DATETIME(3)        ,
   contractTerDate  DATETIME(3)        ,
   beneficiary      VARCHAR(200)       ,
-  proposalId       INT                NOT NULL ,
+  proposalId       INT                ,
   contractStatus   SMALLINT           NOT NULL ,
-  #   tariff           DOUBLE             ,
-  #   taxAmount        INT                ,
   logs             TEXT               NOT NULL ,
   effectiveStartTime DATETIME(3)      DEFAULT current_timestamp(3),
   effectiveEndTime   DATETIME(3)      DEFAULT '2099-12-31 23:59:59.999'
@@ -115,6 +111,19 @@ VALUES
   (1 , 'MORTGAGE' , 'pay with mortgage'),
   (2 , 'DISPOSABLE', 'disposable payment');
 
+CREATE TABLE finance_signing_status (
+  id               SMALLINT           NOT NULL PRIMARY KEY ,
+  signStatusName     VARCHAR(100)       NOT NULL ,
+  signStatusDes      VARCHAR(200) ,
+  createTime        DATETIME(3)       DEFAULT current_timestamp(3),
+  lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
+) charset=utf8;
+
+INSERT INTO finance_signing_status (id, signStatusName, signStatusDes)
+VALUES
+  (1 , 'UNSIGNED' , 'has not signed'),
+  (2 , 'SIGNED', 'has been signed');
+
 CREATE TABLE finance_contract_status (
   id                        SMALLINT          NOT NULL PRIMARY KEY ,
   contractStatusName        VARCHAR(100)      NOT NULL ,
@@ -125,7 +134,7 @@ CREATE TABLE finance_contract_status (
 
 INSERT INTO finance_contract_status (id, contractStatusName, contractStatusDes)
 VALUES
-  (1, 'UNSIGNED', 'has not signed'),
+  (1, 'UNSTARTED', 'has not signed'),
   (2, 'PENDINGRENTAL', 'Market cultivation period, did not begin to return rent'),
   (3, 'RENTAL', 'has already begun to return rent'),
   (4, 'NORMALEND', 'the contract ended normally'),

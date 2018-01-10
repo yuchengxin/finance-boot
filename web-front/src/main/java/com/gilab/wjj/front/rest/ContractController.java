@@ -83,7 +83,7 @@ public class ContractController {
     })
     @ResponseBody
     @RequestMapping(value = "/upload-contracts", method = { RequestMethod.POST }, produces = "application/json")
-    public SimpleReqResult uploadContracts(final HttpServletResponse response,
+    public Map<BasicRentInfo, String> uploadContracts(final HttpServletResponse response,
                                            @RequestParam("contracts")MultipartFile contracts) throws Exception {
         //TODO
         //登录判断

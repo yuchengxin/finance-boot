@@ -61,8 +61,8 @@ public class BasicRentInfo {
     private String bankAccount;
     @Excel(name = "通讯地址", width = 10)
     private String beneficiaryAddress;
-    @Excel(name = "返租方案", width = 10)
-    private Integer proposalId;
+//    @Excel(name = "返租方案", width = 10)
+//    private Integer proposalId;
 //    @Excel(name = "税率", width = 10)
 //    private Double tariff;
 //    @Excel(name = "个税金额", width = 10)
@@ -75,7 +75,7 @@ public class BasicRentInfo {
                          Integer originalPrice, Integer totalPrice, Integer signTotalPrice, String signingStatus,
                          String signingMode, Date paybackDate, Date payStartDate, Date contractTerDate, Integer leasebackPrice,
                          Integer backPremium, String beneficiary, String beneficiaryIdNo, String bankInfo, String bankAccount,
-                         String beneficiaryAddress, Integer proposalId) {
+                         String beneficiaryAddress) {
         this.region = region;
         this.contractNo = contractNo;
         this.contractVersion = contractVersion;
@@ -101,7 +101,7 @@ public class BasicRentInfo {
         this.bankInfo = bankInfo;
         this.bankAccount = bankAccount;
         this.beneficiaryAddress = beneficiaryAddress;
-        this.proposalId = proposalId;
+//        this.proposalId = proposalId;
 //        this.tariff = tariff;
 //        this.taxAmount = taxAmount;
     }
@@ -301,13 +301,13 @@ public class BasicRentInfo {
         this.beneficiaryAddress = beneficiaryAddress;
     }
 
-    public Integer getProposalId() {
-        return proposalId;
-    }
-
-    public void setProposalId(Integer proposalId) {
-        this.proposalId = proposalId;
-    }
+//    public Integer getProposalId() {
+//        return proposalId;
+//    }
+//
+//    public void setProposalId(Integer proposalId) {
+//        this.proposalId = proposalId;
+//    }
 
     public String getSigningStatus() {
         return signingStatus;
@@ -361,7 +361,7 @@ public class BasicRentInfo {
                 ", bankInfo='" + bankInfo + '\'' +
                 ", bankAccount='" + bankAccount + '\'' +
                 ", beneficiaryAddress='" + beneficiaryAddress + '\'' +
-                ", proposalId=" + proposalId +
+//                ", proposalId=" + proposalId +
                 '}';
     }
 
@@ -391,7 +391,7 @@ public class BasicRentInfo {
         private String bankInfo;
         private String bankAccount;
         private String beneficiaryAddress;
-        private Integer proposalId;
+//        private Integer proposalId;
 
         public Builder region(String region){
             this.region = region;
@@ -518,16 +518,16 @@ public class BasicRentInfo {
             return this;
         }
 
-        public Builder proposalId(Integer proposalId){
-            this.proposalId = proposalId;
-            return this;
-        }
+//        public Builder proposalId(Integer proposalId){
+//            this.proposalId = proposalId;
+//            return this;
+//        }
 
         public BasicRentInfo build(){
             return new BasicRentInfo(region, contractNo, contractVersion, subscriptionDate, signingDate, buildingInfo, buildingSize,
                     signer, phone, merchantIdNo, originalPrice, totalPrice, signTotalPrice, signingStatus, signingMode,
                     paybackDate, payStartDate, contractTerDate, leasebackPrice, backPremium, beneficiary, beneficiaryIdNo, bankInfo,
-                    bankAccount, beneficiaryAddress, proposalId);
+                    bankAccount, beneficiaryAddress);
         }
     }
 }

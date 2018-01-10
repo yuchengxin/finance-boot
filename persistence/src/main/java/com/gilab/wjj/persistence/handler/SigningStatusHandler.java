@@ -10,8 +10,8 @@ import com.gilab.wjj.persistence.model.SigningStatus;
  * <p>
  * Change:
  */
-public class SigningStatusHanler extends IntEnumTypeHandler<SigningStatus> {
-    public SigningStatusHanler() {
+public class SigningStatusHandler extends IntEnumTypeHandler<SigningStatus> {
+    public SigningStatusHandler() {
         super(SigningStatus.class);
     }
 }

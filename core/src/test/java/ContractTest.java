@@ -87,8 +87,6 @@ public class ContractTest {
                 .paybackDate(DateUtils.parseDate("2015-11-30"))
                 .payStartDate(DateUtils.parseDate("2018-11-29"))
                 .beneficiary(result1.getResult())
-                .tariff(0.01)
-                .taxAmount(4000)
                 .logs("/home/yuankui/tmp/log.log")
                 .proposalId(1)
                 .contractStatus(ContractStatus.PENDINGRENTAL)

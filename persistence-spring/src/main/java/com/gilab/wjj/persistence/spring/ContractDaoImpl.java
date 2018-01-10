@@ -60,4 +60,9 @@ public class ContractDaoImpl implements ContractDao {
     public void batchCreateContracts(List<Contract> contracts) {
         mapper.batchInsertContracts(contracts);
     }
+
+    @Override
+    public Contract getContractWithNo(String contractNo) {
+        return mapper.selectContractWithNo(contractNo);
+    }
 }
