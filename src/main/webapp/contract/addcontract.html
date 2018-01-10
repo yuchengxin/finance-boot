@@ -309,8 +309,6 @@
 
 
 		$("#saleDate").datebox("setValue",genTodayStr()); // 设置当前日期
-		
-		$("#dh").load('/admin/saleList/getSaleNumber');
 
 		loadContractList(3);
 		
@@ -772,7 +770,7 @@
 			</div>
 			<div region="center">
 				<table id="dg3" title="签约人信息" class="easyui-datagrid"
-				   fitColumns="true" pagination="true" rownumbers="true" singleSelect="true"
+				   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"
 				   url="/test/contractlist" fit="true" toolbar="#tb3">
 				   <thead>
 				   	<tr>
@@ -826,7 +824,7 @@
 			</div>
 			<div region="center">
 				<table id="dg_benefic_list" title="受益人" class="easyui-datagrid"
-					   fitColumns="true" pagination="true" rownumbers="true" singleSelect="true"
+					   fitColumns="true" pagination="false" rownumbers="true" singleSelect="true"
 					   url="/test/contractlist" fit="true" toolbar="#tb3">
 					<thead>
 					<tr>
