@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gilab.wjj.persistence.ext.AjaxErrorMessage;
 import com.gilab.wjj.persistence.model.ReqResult;
+import com.gilab.wjj.persistence.model.ReqResultMap;
 import com.gilab.wjj.persistence.model.SimpleReqResult;
 import com.gilab.wjj.util.logback.LoggerFactory;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 /**
  * Created by jiangzhe on 17-3-3.
@@ -82,6 +84,16 @@ public class RestUtils {
     }
 
     public static SimpleReqResult getOrSendError(HttpServletResponse response, SimpleReqResult attempt) throws IOException {
+        return getOrSendError(response, attempt, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    public static <T> Map<T, String> getOrSendError(HttpServletResponse response, ReqResultMap<T> attempt, int code) throws IOException {
+        if (attempt.isSuccess()) return attempt.getResult();
+        sendError(response, code, new AjaxErrorMessage(code, attempt.getMessage()));
+        return null;
+    }
+
+    public static <T> Map<T, String> getOrSendError(HttpServletResponse response, ReqResultMap<T> attempt) throws IOException {
         return getOrSendError(response, attempt, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 

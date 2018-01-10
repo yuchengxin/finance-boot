@@ -16,6 +16,8 @@ public interface MerchantDao {
 
     List<Merchant> getMerchantWithFilter(String merchantName, String merchantPhone, String merchantIdNo, String bankAccount);
 
+    Merchant getMerchantWithCheck(String merchantName, String merchantPhone, String merchantIdNo);
+
     long createMerchant(Merchant merchant);
 
     void updateMerchant(Merchant merchant);

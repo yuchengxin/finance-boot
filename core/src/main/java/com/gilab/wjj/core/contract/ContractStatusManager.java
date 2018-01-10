@@ -68,7 +68,7 @@ public class ContractStatusManager implements InitializingBean {
         }
         long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
         long currentTime = System.currentTimeMillis();
-        if(contract.getContractStatus() != ContractStatus.UNSIGNED
+        if(contract.getContractStatus() != ContractStatus.UNSTARTED
                 && contract.getContractStatus() != ContractStatus.NORMALEND
                 && contract.getContractStatus() != ContractStatus.ABNORMALEND){
             if(currentTime < payStartTime && currentTime > contract.getPaybackDate()){

@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yuankui on 12/20/17.
@@ -79,106 +81,118 @@ public class ContractManager implements ContractAgent {
 
     @Override
     @Transactional
-    public SimpleReqResult batchCreateContracts(List<BasicRentInfo> basicRentInfos) {
+    public ReqResultMap batchCreateContracts(List<BasicRentInfo> basicRentInfos) {
         List<Contract> contracts = new ArrayList<>();
+
+        Map<BasicRentInfo, String> resultFailed = new HashMap<>();
+        Map<BasicRentInfo, String> resultSucceed = new HashMap<>();
         for(BasicRentInfo basicRentInfo : basicRentInfos){
+            StringBuilder resultStr = new StringBuilder();
+            if(basicRentInfo.getSigningDate() == null){
+                resultStr.append("签约日期不能为空;");
+            } else if(basicRentInfo.getBuildingInfo() == null){
+                resultStr.append("楼层/房号不能为空;");
+            }
+            if(!resultStr.toString().isEmpty()){
+                resultFailed.put(basicRentInfo, resultStr.toString());
+                continue;
+            }
+            basicRentInfo.setContractNo(DateUtils.datetimeString(basicRentInfo.getSigningDate().getTime(), "yyMMdd") + basicRentInfo.getBuildingInfo());
+
             Contract contract = basicRentInfo2Contract(basicRentInfo);
+            if(contract.getContractVersion() == null){
+                contract.setContractVersion("1");
+            }
+            switch (contract.getContractVersion()){
+                case "1" :
+                    contract.setProposalId(1L);
+                    break;
+                case "2" :
+                    contract.setProposalId(2L);
+                    break;
+                case "3" :
+                    contract.setProposalId(1L);
+                    break;
+                case "4" :
+                    contract.setProposalId(2L);
+                    break;
+                default:
+                    contract.setContractStatus(ContractStatus.UNSTARTED);
+            }
+            if(contract.getBeneficiary() == null || contract.getBeneficiary().getMerchantName() == null
+                    || contract.getBeneficiary().getBankInfo() == null || contract.getBeneficiary().getBankAccount() == null
+                    || contract.getBeneficiary().getMerchantIdNo() == null || contract.getPaybackDate() == null
+                    || contract.getLeasebackPrice() == null || contract.getProposalId() == null){
+                contract.setContractStatus(ContractStatus.UNSTARTED);
+            } else {
+                ContractStatus status;
+                Proposal proposal = proposalDao.getProposal(contract.getProposalId());
+                if(proposal == null){
+                    logger.error("can't find proposal[d%]", contract.getProposalId());
+                    throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
+                }
+                long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
+                long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife()).getMillis();
+                long currentTime = System.currentTimeMillis();
+                if(currentTime < payStartTime && currentTime > basicRentInfo.getPaybackDate().getTime()){
+                    status = ContractStatus.PENDINGRENTAL;
+                }else if(currentTime >= payStartTime && currentTime < contractTerTime){
+                    status = ContractStatus.RENTAL;
+                }else if(currentTime >= contractTerTime){
+                    status = ContractStatus.NORMALEND;
+                } else
+                    status = ContractStatus.UNSTARTED;
+
+                contract.setPayStartDate(payStartTime);
+                contract.setContractTerDate(contractTerTime);
+                contract.setContractStatus(status);
+            }
             contracts.add(contract);
+            resultSucceed.put(basicRentInfo, "成功");
+        }
+        if(resultFailed.size() != 0){
+            return ReqResultMap.create(false, resultFailed, "部分数据有问题，请确认之后重新导入");
         }
         contractDao.batchCreateContracts(contracts);
-        return SimpleReqResult.success("succeed to batch create contracts");
+        return ReqResultMap.success(resultSucceed, "导入成功");
     }
 
     private Contract basicRentInfo2Contract(BasicRentInfo basicRentInfo){
         List<Merchant> signer = string2Merchant(basicRentInfo.getSigner(), basicRentInfo.getPhone(), basicRentInfo.getMerchantIdNo(), null, null, null);
         if(signer != null && signer.size() != 0)
             for(Merchant merchant : signer){
-                if(merchantDao.getMerchantWithFilter(merchant.getMerchantName(), merchant.getMerchantPhone(), null, null) == null){
+                if(merchantDao.getMerchantWithCheck(merchant.getMerchantName(), merchant.getMerchantPhone(), merchant.getMerchantIdNo()) == null){
                     merchantDao.createMerchant(merchant);
                 }
             }
         List<Merchant>  beneficiary = string2Merchant(basicRentInfo.getBeneficiary(), null, basicRentInfo.getBeneficiaryIdNo(), basicRentInfo.getBankInfo(), basicRentInfo.getBankAccount(), basicRentInfo.getBeneficiaryAddress());
         if(beneficiary != null && beneficiary.size() != 0)
             for(Merchant merchant : beneficiary){
-                if(merchantDao.getMerchantWithFilter(merchant.getMerchantName(), merchant.getMerchantPhone(), null, null) == null){
+                if(merchantDao.getMerchantWithCheck(merchant.getMerchantName(), merchant.getMerchantPhone(), merchant.getMerchantIdNo()) == null){
                     merchantDao.createMerchant(merchant);
                 }
             }
-        String version;
-        if(basicRentInfo.getContractVersion() == null || basicRentInfo.getContractVersion().isEmpty()){
-            version = "1";
-        } else {
-            version = basicRentInfo.getContractVersion();
-        }
-        int proposalId = 1;
-        switch (version){
-            case "1":
-                proposalId = 1;
-                break;
-            case "2":
-                proposalId = 2;
-                break;
-            case "3":
-                proposalId = 3;
-                break;
-            case "4":
-                proposalId = 4;
-                break;
-            default:
-                break;
-        }
-        ContractStatus status = ContractStatus.UNSIGNED;
-        if(basicRentInfo.getContractStatus().equals("已签") && basicRentInfo.getPaybackDate() != null && basicRentInfo.getContractTerDate() != null){
-            Proposal proposal = proposalDao.getProposal(proposalId);
-            if(proposal == null){
-                logger.error("can't find proposal[d%]", proposalId);
-                throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
-            }
-            long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
-            long currentTime = System.currentTimeMillis();
-                if(currentTime < payStartTime && currentTime > basicRentInfo.getPaybackDate().getTime()){
-                    status = ContractStatus.PENDINGRENTAL;
-                }else if(currentTime >= payStartTime && currentTime < basicRentInfo.getContractTerDate().getTime()){
-                    status = ContractStatus.RENTAL;
-                }else if(currentTime >= basicRentInfo.getContractTerDate().getTime()){
-                    status = ContractStatus.NORMALEND;
-                }
-        } else if(basicRentInfo.getContractStatus().equals("已结束")){
-            status = ContractStatus.NORMALEND;
-        } else {
-            status = ContractStatus.ABNORMALEND;
-        }
-        Contract testcontract = new Contract();
-        try{
-            testcontract = new Contract.Builder()
-                    .signer(signer)
-                    .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
-                    .signingDate(basicRentInfo.getSigningDate() == null ? 0 : basicRentInfo.getSigningDate().getTime())
-                    .signTotalPrice(basicRentInfo.getSignTotalPrice())
-                    .subscriptionDate(basicRentInfo.getSubscriptionDate() == null ? 0 : basicRentInfo.getSubscriptionDate().getTime())
-                    .leasebackPrice(basicRentInfo.getLeasebackPrice())
-                    .paybackDate(basicRentInfo.getPaybackDate() == null ? 0 : basicRentInfo.getPaybackDate().getTime())
-                    .payStartDate(basicRentInfo.getPayStartDate() == null ? 0 : basicRentInfo.getPayStartDate().getTime() )
-                    .buildingInfo(basicRentInfo.getBuildingInfo())
-                    .buildingSize(basicRentInfo.getBuildingSize())
-                    .backPremium(basicRentInfo.getBackPremium())
-                    .beneficiary(beneficiary == null ? null : beneficiary.get(0))
-                    .contractTerDate(basicRentInfo.getContractTerDate() == null ? 0 : basicRentInfo.getContractTerDate().getTime())
-                    .contractVersion(version)
-                    .contractNo(basicRentInfo.getContractNo())
-                    .contractStatus(status)
-                    .logs("...")
-                    .originalPrice(basicRentInfo.getOriginalPrice())
-                    .proposalId(proposalId)
-                    .region(basicRentInfo.getRegion())
-                    .totalPrice(basicRentInfo.getTotalPrice())
-                    .taxAmount(basicRentInfo.getTaxAmount())
-                    .build();
-        }catch (Throwable e){
-            e.printStackTrace();
-        }
 
-        return testcontract;
+        return new Contract.Builder()
+                .signer(signer)
+                .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
+                .signingDate(basicRentInfo.getSigningDate().getTime())
+                .signTotalPrice(basicRentInfo.getSignTotalPrice())
+                .subscriptionDate(basicRentInfo.getSubscriptionDate().getTime())
+                .leasebackPrice(basicRentInfo.getLeasebackPrice())
+                .paybackDate(basicRentInfo.getPaybackDate().getTime())
+                .buildingInfo(basicRentInfo.getBuildingInfo())
+                .buildingSize(basicRentInfo.getBuildingSize())
+                .backPremium(basicRentInfo.getBackPremium())
+                .beneficiary(beneficiary == null ? null : beneficiary.get(0))
+                .contractVersion(basicRentInfo.getContractVersion())
+                .contractNo(basicRentInfo.getContractNo())
+                .logs("...")
+                .originalPrice(basicRentInfo.getOriginalPrice())
+                .region(basicRentInfo.getRegion())
+                .totalPrice(basicRentInfo.getTotalPrice())
+                .signingStatus(SigningStatus.strLookup(basicRentInfo.getSigningStatus()))
+                .build();
     }
 
     private List<Merchant> string2Merchant(String nameStr, String phoneStr, String IDStr, String bankStr, String accountStr, String addressStr){
@@ -252,18 +266,43 @@ public class ContractManager implements ContractAgent {
     }
 
     private ReqResult<Contract> preCheckCreate(Contract contract){
-        if(contract.getPaybackDate() <= 0){
+        if(contract.getContractNo() == null){
+            return ReqResult.fail("合同编号不能为空");
+        } else if(contractDao.getContractWithNo(contract.getContractNo()) != null){
+            return ReqResult.fail("合同编号不允许相同");
+        } else if(contract.getPaybackDate() == null || contract.getPaybackDate() <= 0){
             return ReqResult.fail("回款日期不能为空");
-        } else if(contract.getLeasebackPrice() <= 0) {
+        } else if(contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0) {
             return ReqResult.fail("返租基价不能为空");
         } else if(contract.getProposalId() <= 0 || proposalDao.getProposal(contract.getProposalId()) == null){
             return ReqResult.fail("方案不存在");
+        } else if(contract.getBeneficiary() == null || contract.getBeneficiary().getMerchantName() == null
+                || contract.getBeneficiary().getMerchantIdNo() == null || contract.getBeneficiary().getBankInfo() == null
+                || contract.getBeneficiary().getBankAccount() == null){
+            return ReqResult.fail("受益人信息不完整");
         } else {
             Proposal proposal = proposalDao.getProposal(contract.getProposalId());
             long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
             long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife()).getMillis();
             contract.setPayStartDate(payStartTime);
             contract.setContractTerDate(contractTerTime);
+            for(Merchant m : contract.getSigner()){
+                if(merchantDao.getMerchant(m.getId()) == null){
+                    merchantDao.createMerchant(m);
+                }
+            }
+            if(merchantDao.getMerchant(contract.getBeneficiary().getId()) == null){
+                merchantDao.createMerchant(contract.getBeneficiary());
+            }
+            long currentTime = System.currentTimeMillis();
+            if(currentTime < payStartTime && currentTime > contract.getPaybackDate()){
+                contract.setContractStatus(ContractStatus.PENDINGRENTAL);
+            }else if(currentTime >= payStartTime && currentTime < contract.getContractTerDate()){
+                contract.setContractStatus(ContractStatus.RENTAL);
+            }else if(currentTime >= contract.getContractTerDate()){
+                contract.setContractStatus(ContractStatus.NORMALEND);
+            } else
+                contract.setContractStatus(ContractStatus.UNSTARTED);
             return ReqResult.emptySuccess();
         }
     }

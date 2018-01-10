@@ -31,6 +31,11 @@ public class MerchantDaoImpl implements MerchantDao {
     }
 
     @Override
+    public Merchant getMerchantWithCheck(String merchantName, String merchantPhone, String merchantIdNo) {
+        return mapper.selectMerchantWithCheck(merchantName, merchantPhone, merchantIdNo);
+    }
+
+    @Override
     public long createMerchant(Merchant merchant) {
         mapper.insertMerchant(merchant);
         return merchant.getId();

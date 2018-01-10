@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS finance_user, finance_permission;
-DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status;
+DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status, finance_signing_status;
 DROP TABLE IF EXISTS finance_merchants;
 DROP TABLE IF EXISTS finance_leaseback_proposal, finance_proposal_history;
 DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger;
@@ -41,11 +41,12 @@ VALUES
 CREATE TABLE finance_contract (
   id               BIGINT             NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   region           VARCHAR(100)       ,
-  contractNo       VARCHAR(100)       ,
+  contractNo       VARCHAR(100)       NOT NULL ,
   contractVersion  VARCHAR(20)        ,
   subscriptionDate DATETIME(3)        ,
   signer           VARCHAR(1000)      ,
   signingMode      SMALLINT           ,
+  signingStatus    SMALLINT           ,
   signingDate      DATETIME(3)        ,
   buildingInfo     VARCHAR(100)       ,
   buildingSize     DOUBLE             ,
@@ -59,9 +60,7 @@ CREATE TABLE finance_contract (
   contractTerDate  DATETIME(3)        ,
   beneficiary      VARCHAR(200)       ,
   proposalId       INT                ,
-  contractStatus   SMALLINT           ,
-  tariff           DOUBLE              ,
-  taxAmount        INT                 ,
+  contractStatus   SMALLINT           NOT NULL ,
   logs             TEXT               NOT NULL ,
   createTime       DATETIME(3) not null default current_timestamp(3),
   lastUpdateTime   DATETIME(3) on update current_timestamp(3)
@@ -72,12 +71,14 @@ CREATE INDEX idx_finance_contract_signer ON finance_contract (signer);
 
 CREATE TABLE finance_contract_history (
   id               BIGINT             NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+  contractId       BIGINT             NOT NULL ,
   region           VARCHAR(100)       ,
-  contractNo       VARCHAR(100)       ,
+  contractNo       VARCHAR(100)       NOT NULL ,
   contractVersion  VARCHAR(20)        ,
   subscriptionDate DATETIME(3)        ,
   signer           VARCHAR(1000)      ,
   signingMode      SMALLINT           ,
+  signingStatus    SMALLINT           ,
   signingDate      DATETIME(3)        ,
   buildingInfo     VARCHAR(100)       ,
   buildingSize     DOUBLE             ,
@@ -87,11 +88,11 @@ CREATE TABLE finance_contract_history (
   leasebackPrice   INT                ,
   backPremium      INT                ,
   paybackDate      DATETIME(3)        ,
+  payStartDate     DATETIME(3)        ,
+  contractTerDate  DATETIME(3)        ,
   beneficiary      VARCHAR(200)       ,
   proposalId       INT                ,
-  contractStatus   SMALLINT           ,
-  tariff           DOUBLE              ,
-  taxAmount        INT                 ,
+  contractStatus   SMALLINT           NOT NULL ,
   logs             TEXT               NOT NULL ,
   effectiveStartTime DATETIME(3)      DEFAULT current_timestamp(3),
   effectiveEndTime   DATETIME(3)      DEFAULT '2099-12-31 23:59:59.999'
@@ -110,6 +111,19 @@ VALUES
   (1 , 'MORTGAGE' , 'pay with mortgage'),
   (2 , 'DISPOSABLE', 'disposable payment');
 
+CREATE TABLE finance_signing_status (
+  id               SMALLINT           NOT NULL PRIMARY KEY ,
+  signStatusName     VARCHAR(100)       NOT NULL ,
+  signStatusDes      VARCHAR(200) ,
+  createTime        DATETIME(3)       DEFAULT current_timestamp(3),
+  lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
+) charset=utf8;
+
+INSERT INTO finance_signing_status (id, signStatusName, signStatusDes)
+VALUES
+  (1 , 'UNSIGNED' , 'has not signed'),
+  (2 , 'SIGNED', 'has been signed');
+
 CREATE TABLE finance_contract_status (
   id                        SMALLINT          NOT NULL PRIMARY KEY ,
   contractStatusName        VARCHAR(100)      NOT NULL ,
@@ -120,7 +134,7 @@ CREATE TABLE finance_contract_status (
 
 INSERT INTO finance_contract_status (id, contractStatusName, contractStatusDes)
 VALUES
-  (1, 'UNSIGNED', 'has not signed'),
+  (1, 'UNSTARTED', 'has not signed'),
   (2, 'PENDINGRENTAL', 'Market cultivation period, did not begin to return rent'),
   (3, 'RENTAL', 'has already begun to return rent'),
   (4, 'NORMALEND', 'the contract ended normally'),
@@ -129,11 +143,11 @@ VALUES
 CREATE TABLE finance_merchants (
   id                BIGINT                NOT NULL  AUTO_INCREMENT PRIMARY KEY ,
   merchantName      VARCHAR(100)          ,
-  merchantPhone     VARCHAR(20)           ,
-  merchantIdNo      VARCHAR(30)           ,
-  bankInfo          VARCHAR(100)          ,
-  bankAccount       VARCHAR(20)           ,
-  merchantAddress   VARCHAR(200)          ,
+  merchantPhone     VARCHAR(100)           ,
+  merchantIdNo      VARCHAR(300)           ,
+  bankInfo          VARCHAR(1000)          ,
+  bankAccount       VARCHAR(200)           ,
+  merchantAddress   VARCHAR(1000)          ,
   createTime        DATETIME(3)       DEFAULT current_timestamp(3),
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;

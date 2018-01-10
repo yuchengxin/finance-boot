@@ -22,6 +22,10 @@ public interface MerchantMapper {
                                             @Param("merchantIdNo") String merchantIdNo,
                                             @Param("bankAccount") String bankAccount);
 
+    Merchant selectMerchantWithCheck(@Param("merchantName") String merchantName,
+                                     @Param("merchantPhone") String merchantPhone,
+                                     @Param("merchantIdNo") String merchantIdNo);
+
     void insertMerchant(Merchant merchant);
 
     void updateMerchant(Merchant merchant);

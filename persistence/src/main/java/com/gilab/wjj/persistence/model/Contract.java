@@ -27,6 +27,7 @@ public class Contract implements Entity, Cloneable {
     private Long subscriptionDate;
     private List<Merchant> signer;
     private SigningMode signingMode = SigningMode.DISPOSABLE;
+    private SigningStatus signingStatus = SigningStatus.UNSIGNED;
     private Long signingDate;
     private String buildingInfo;
     private Double buildingSize;
@@ -40,20 +41,16 @@ public class Contract implements Entity, Cloneable {
     private Long paybackDate;
     private Merchant beneficiary;
     private Long proposalId;
-    private ContractStatus contractStatus = ContractStatus.UNSIGNED;
-    private Double tariff;
-    private Integer taxAmount;
+    private ContractStatus contractStatus = ContractStatus.UNSTARTED;
+//    private Double tariff;
+//    private Integer taxAmount;
     private String logs;
 
 
     public Contract(){
     }
 
-    public Contract(long id, String region, String contractNo, String contractVersion, long subscriptionDate,
-                    List<Merchant> signer, SigningMode signingMode, long signingDate, String buildingInfo,
-                    double buildingSize, int originalPrice, int totalPrice, int signTotalPrice, int leasebackPrice,
-                    int backPremium, long payStartDate, long contractTerDate, long paybackDate, Merchant beneficiary, long proposalId,
-                    ContractStatus contractStatus, Double tariff, Integer taxAmount, String logs) {
+    public Contract(long id, String region, String contractNo, String contractVersion, Long subscriptionDate, List<Merchant> signer, SigningMode signingMode, SigningStatus signingStatus, Long signingDate, String buildingInfo, Double buildingSize, Integer originalPrice, Integer totalPrice, Integer signTotalPrice, Integer leasebackPrice, Integer backPremium, Long payStartDate, Long contractTerDate, Long paybackDate, Merchant beneficiary, Long proposalId, ContractStatus contractStatus, String logs) {
         this.id = id;
         this.region = region;
         this.contractNo = contractNo;
@@ -61,6 +58,7 @@ public class Contract implements Entity, Cloneable {
         this.subscriptionDate = subscriptionDate;
         this.signer = signer;
         this.signingMode = signingMode;
+        this.signingStatus = signingStatus;
         this.signingDate = signingDate;
         this.buildingInfo = buildingInfo;
         this.buildingSize = buildingSize;
@@ -75,9 +73,12 @@ public class Contract implements Entity, Cloneable {
         this.beneficiary = beneficiary;
         this.proposalId = proposalId;
         this.contractStatus = contractStatus;
-        this.tariff = tariff;
-        this.taxAmount = taxAmount;
         this.logs = logs;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     public void setId(long id) {
@@ -108,11 +109,11 @@ public class Contract implements Entity, Cloneable {
         this.contractVersion = contractVersion;
     }
 
-    public long getSubscriptionDate() {
+    public Long getSubscriptionDate() {
         return subscriptionDate;
     }
 
-    public void setSubscriptionDate(long subscriptionDate) {
+    public void setSubscriptionDate(Long subscriptionDate) {
         this.subscriptionDate = subscriptionDate;
     }
 
@@ -132,11 +133,19 @@ public class Contract implements Entity, Cloneable {
         this.signingMode = signingMode;
     }
 
-    public long getSigningDate() {
+    public SigningStatus getSigningStatus() {
+        return signingStatus;
+    }
+
+    public void setSigningStatus(SigningStatus signingStatus) {
+        this.signingStatus = signingStatus;
+    }
+
+    public Long getSigningDate() {
         return signingDate;
     }
 
-    public void setSigningDate(long signingDate) {
+    public void setSigningDate(Long signingDate) {
         this.signingDate = signingDate;
     }
 
@@ -148,59 +157,75 @@ public class Contract implements Entity, Cloneable {
         this.buildingInfo = buildingInfo;
     }
 
-    public double getBuildingSize() {
+    public Double getBuildingSize() {
         return buildingSize;
     }
 
-    public void setBuildingSize(double buildingSize) {
+    public void setBuildingSize(Double buildingSize) {
         this.buildingSize = buildingSize;
     }
 
-    public int getOriginalPrice() {
+    public Integer getOriginalPrice() {
         return originalPrice;
     }
 
-    public void setOriginalPrice(int originalPrice) {
+    public void setOriginalPrice(Integer originalPrice) {
         this.originalPrice = originalPrice;
     }
 
-    public int getTotalPrice() {
+    public Integer getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(int totalPrice) {
+    public void setTotalPrice(Integer totalPrice) {
         this.totalPrice = totalPrice;
     }
 
-    public int getSignTotalPrice() {
+    public Integer getSignTotalPrice() {
         return signTotalPrice;
     }
 
-    public void setSignTotalPrice(int signTotalPrice) {
+    public void setSignTotalPrice(Integer signTotalPrice) {
         this.signTotalPrice = signTotalPrice;
     }
 
-    public int getLeasebackPrice() {
+    public Integer getLeasebackPrice() {
         return leasebackPrice;
     }
 
-    public void setLeasebackPrice(int leasebackPrice) {
+    public void setLeasebackPrice(Integer leasebackPrice) {
         this.leasebackPrice = leasebackPrice;
     }
 
-    public int getBackPremium() {
+    public Integer getBackPremium() {
         return backPremium;
     }
 
-    public void setBackPremium(int backPremium) {
+    public void setBackPremium(Integer backPremium) {
         this.backPremium = backPremium;
     }
 
-    public long getPaybackDate() {
+    public Long getPayStartDate() {
+        return payStartDate;
+    }
+
+    public void setPayStartDate(Long payStartDate) {
+        this.payStartDate = payStartDate;
+    }
+
+    public Long getContractTerDate() {
+        return contractTerDate;
+    }
+
+    public void setContractTerDate(Long contractTerDate) {
+        this.contractTerDate = contractTerDate;
+    }
+
+    public Long getPaybackDate() {
         return paybackDate;
     }
 
-    public void setPaybackDate(long paybackDate) {
+    public void setPaybackDate(Long paybackDate) {
         this.paybackDate = paybackDate;
     }
 
@@ -212,11 +237,11 @@ public class Contract implements Entity, Cloneable {
         this.beneficiary = beneficiary;
     }
 
-    public long getProposalId() {
+    public Long getProposalId() {
         return proposalId;
     }
 
-    public void setProposalId(long proposalId) {
+    public void setProposalId(Long proposalId) {
         this.proposalId = proposalId;
     }
 
@@ -228,22 +253,6 @@ public class Contract implements Entity, Cloneable {
         this.contractStatus = contractStatus;
     }
 
-    public Double getTariff() {
-        return tariff;
-    }
-
-    public void setTariff(Double tariff) {
-        this.tariff = tariff;
-    }
-
-    public Integer getTaxAmount() {
-        return taxAmount;
-    }
-
-    public void setTaxAmount(Integer taxAmount) {
-        this.taxAmount = taxAmount;
-    }
-
     public String getLogs() {
         return logs;
     }
@@ -253,37 +262,17 @@ public class Contract implements Entity, Cloneable {
     }
 
     @Override
-    public long getId() {
-        return id;
-    }
-
-    public long getPayStartDate() {
-        return payStartDate;
-    }
-
-    public void setPayStartDate(long payStartDate) {
-        this.payStartDate = payStartDate;
-    }
-
-    public long getContractTerDate() {
-        return contractTerDate;
-    }
-
-    public void setContractTerDate(long contractTerDate) {
-        this.contractTerDate = contractTerDate;
-    }
-
-    @Override
     public String toString() {
         return "Contract{" +
                 "id=" + id +
                 ", region='" + region + '\'' +
                 ", contractNo='" + contractNo + '\'' +
                 ", contractVersion='" + contractVersion + '\'' +
-                ", subscriptionDate=" + DateUtils.datetimeString(subscriptionDate, "yyyy-MM-dd") +
+                ", subscriptionDate=" + subscriptionDate +
                 ", signer=" + signer +
                 ", signingMode=" + signingMode +
-                ", signingDate=" + DateUtils.datetimeString(signingDate, "yyyy-MM-dd") +
+                ", signingStatus=" + signingStatus +
+                ", signingDate=" + signingDate +
                 ", buildingInfo='" + buildingInfo + '\'' +
                 ", buildingSize=" + buildingSize +
                 ", originalPrice=" + originalPrice +
@@ -291,14 +280,12 @@ public class Contract implements Entity, Cloneable {
                 ", signTotalPrice=" + signTotalPrice +
                 ", leasebackPrice=" + leasebackPrice +
                 ", backPremium=" + backPremium +
-                ", payStartDate=" + DateUtils.datetimeString(payStartDate, "yyyy-MM-dd") +
-                ", contractTerDate=" + DateUtils.datetimeString(contractTerDate, "yyyy-MM-dd") +
-                ", paybackDate=" + DateUtils.datetimeString(paybackDate, "yyyy-MM-dd") +
+                ", payStartDate=" + payStartDate +
+                ", contractTerDate=" + contractTerDate +
+                ", paybackDate=" + paybackDate +
                 ", beneficiary=" + beneficiary +
                 ", proposalId=" + proposalId +
                 ", contractStatus=" + contractStatus +
-                ", tariff=" + tariff +
-                ", taxAmount=" + taxAmount +
                 ", logs='" + logs + '\'' +
                 '}';
     }
@@ -341,9 +328,7 @@ public class Contract implements Entity, Cloneable {
                 .beneficiaryAddress(beneficiary.getMerchantAddress())
                 .bankInfo(beneficiary.getBankInfo())
                 .bankAccount(beneficiary.getBankAccount())
-                .contractStatus(contractStatus.getDescription())
-                .tariff(tariff)
-                .taxAmount(taxAmount)
+                .signingStatus(signingStatus.getDescription())
                 .build();
     }
 
@@ -371,6 +356,7 @@ public class Contract implements Entity, Cloneable {
         private Long subscriptionDate;
         private List<Merchant> signer;
         private SigningMode signingMode = SigningMode.DISPOSABLE;
+        private SigningStatus signingStatus = SigningStatus.UNSIGNED;
         private Long signingDate;
         private String buildingInfo;
         private Double buildingSize;
@@ -384,9 +370,7 @@ public class Contract implements Entity, Cloneable {
         private Long paybackDate;
         private Merchant beneficiary;
         private Long proposalId;
-        private ContractStatus contractStatus = ContractStatus.UNSIGNED;
-        private Double tariff;
-        private Integer taxAmount;
+        private ContractStatus contractStatus = ContractStatus.UNSTARTED;
         private String logs;
 
         public Builder id(long id){
@@ -416,6 +400,11 @@ public class Contract implements Entity, Cloneable {
 
         public Builder signingMode(SigningMode signingMode){
             this.signingMode = signingMode;
+            return this;
+        }
+
+        public Builder signingStatus(SigningStatus signingStatus){
+            this.signingStatus = signingStatus;
             return this;
         }
 
@@ -474,7 +463,7 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder paybackDate(long paybackDate){
+        public Builder paybackDate(Long paybackDate){
             this.paybackDate = paybackDate;
             return this;
         }
@@ -494,25 +483,15 @@ public class Contract implements Entity, Cloneable {
             return this;
         }
 
-        public Builder tariff(Double tariff){
-            this.tariff = tariff;
-            return this;
-        }
-
-        public Builder taxAmount(Integer taxAmount){
-            this.taxAmount = taxAmount;
-            return this;
-        }
-
         public Builder logs(String logs){
             this.logs = logs;
             return this;
         }
 
         public Contract build(){
-            return new Contract(id, region, contractNo, contractVersion, subscriptionDate, signer, signingMode, signingDate,
+            return new Contract(id, region, contractNo, contractVersion, subscriptionDate, signer, signingMode, signingStatus, signingDate,
                     buildingInfo, buildingSize, originalPrice, totalPrice, signTotalPrice, leasebackPrice, backPremium,
-                    payStartDate, contractTerDate, paybackDate, beneficiary, proposalId, contractStatus, tariff, taxAmount, logs);
+                    payStartDate, contractTerDate, paybackDate, beneficiary, proposalId, contractStatus, logs);
         }
     }
 }

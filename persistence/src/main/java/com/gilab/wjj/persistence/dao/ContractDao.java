@@ -29,4 +29,6 @@ public interface ContractDao {
     void batchUpdateContractStatus(List<Contract> contracts);
 
     void batchCreateContracts(List<Contract> contracts);
+
+    Contract getContractWithNo(String contractNo);
 }
