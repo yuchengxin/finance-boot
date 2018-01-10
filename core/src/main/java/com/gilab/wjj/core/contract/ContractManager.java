@@ -106,7 +106,6 @@ public class ContractManager implements ContractAgent {
             if(contract.getContractVersion() == null){
                 contract.setContractVersion("1.0");
             }
-            System.out.println(contract.getContractVersion());
             switch (contract.getContractVersion()){
                 case "1.0" :
                 case "1" :
@@ -139,7 +138,7 @@ public class ContractManager implements ContractAgent {
                     logger.error("can't find proposal[d%]", contract.getProposalId());
                     throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
                 }
-                long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
+                long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
                 long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife()).getMillis();
                 long currentTime = System.currentTimeMillis();
                 if(currentTime < payStartTime && currentTime > basicRentInfo.getPaybackDate().getTime()){
@@ -159,10 +158,6 @@ public class ContractManager implements ContractAgent {
             resultSucceed.put(basicRentInfo, "成功");
         }
         if(resultFailed.size() != 0){
-            for (BasicRentInfo b : resultFailed.keySet()){
-                System.out.println(b);
-                System.out.println(resultFailed.get(b));
-            }
             return ReqResultMap.create(false, resultFailed, "部分数据有问题，请确认之后重新导入");
         }
         contractDao.batchCreateContracts(contracts);
@@ -171,7 +166,6 @@ public class ContractManager implements ContractAgent {
 
     private Contract basicRentInfo2Contract(BasicRentInfo basicRentInfo){
         List<Merchant> signer = string2Merchant(basicRentInfo.getSigner(), basicRentInfo.getPhone(), basicRentInfo.getMerchantIdNo(), null, null, null);
-        System.out.println(basicRentInfo.getPhone());
         if(signer != null && signer.size() != 0)
             for(Merchant merchant : signer){
                 if(merchantDao.getMerchantWithCheck(merchant.getMerchantName(), merchant.getMerchantPhone(), merchant.getMerchantIdNo()) == null){
@@ -188,7 +182,7 @@ public class ContractManager implements ContractAgent {
 
         return new Contract.Builder()
                 .signer(signer)
-                .signingMode(SigningMode.strLookup(basicRentInfo.getSigningMode()))
+                .signingMode(SigningMode.desLookup(basicRentInfo.getSigningMode()))
                 .signingDate(basicRentInfo.getSigningDate().getTime())
                 .signTotalPrice(basicRentInfo.getSignTotalPrice())
                 .subscriptionDate(basicRentInfo.getSubscriptionDate() == null ? null : basicRentInfo.getSubscriptionDate().getTime())
@@ -204,7 +198,7 @@ public class ContractManager implements ContractAgent {
                 .originalPrice(basicRentInfo.getOriginalPrice())
                 .region(basicRentInfo.getRegion())
                 .totalPrice(basicRentInfo.getTotalPrice())
-                .signingStatus(SigningStatus.strLookup(basicRentInfo.getSigningStatus()))
+                .signingStatus(SigningStatus.desLookup(basicRentInfo.getSigningStatus()))
                 .build();
     }
 
@@ -295,7 +289,7 @@ public class ContractManager implements ContractAgent {
             return ReqResult.fail("受益人信息不完整");
         } else {
             Proposal proposal = proposalDao.getProposal(contract.getProposalId());
-            long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
+            long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
             long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife()).getMillis();
             contract.setPayStartDate(payStartTime);
             contract.setContractTerDate(contractTerTime);

@@ -34,12 +34,15 @@ public enum SigningMode implements IntEnum<SigningMode> {
 
     private static Map<Integer, SigningMode> map;
     private static Map<String, SigningMode> strMap;
+    private static Map<String, SigningMode> desMap;
     static {
         map = new HashMap<>();
         strMap = new HashMap<>();
+        desMap = new HashMap<>();
         for (SigningMode t: SigningMode.values()) {
             map.put(t.getValue(), t);
             strMap.put(t.name(), t);
+            desMap.put(t.getDescription(), t);
         }
     }
 
@@ -49,5 +52,9 @@ public enum SigningMode implements IntEnum<SigningMode> {
 
     public static SigningMode strLookup(String name) {
         return name == null ? null : strMap.get(name.toUpperCase());
+    }
+
+    public static SigningMode desLookup(String description){
+        return description == null ? null : desMap.get(description);
     }
 }

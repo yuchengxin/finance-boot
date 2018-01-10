@@ -40,6 +40,14 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find contract[d%]", contractId);
             return ReqResult.fail("Cannot find contract[%d]", contractId);
         }
+        if(contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0
+                || contract.getPaybackDate() == null || contract.getPaybackDate() <= 0
+                || contract.getPayStartDate() == null || contract.getPayStartDate() <= 0
+                || contract.getContractTerDate() == null || contract.getContractTerDate() <= 0
+                || contract.getContractStatus() == ContractStatus.UNSTARTED){
+            logger.error("can't cal contract[d%]", contractId);
+            return ReqResult.fail("条件未达成，不允许计算[%d]", contract.getContractNo());
+        }
         Proposal proposal = proposalDao.getProposal(contract.getProposalId());
         if(proposal == null){
             logger.error("can't find proposal[d%]", contract.getProposalId());
@@ -82,6 +90,14 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find contract[d%]", contractId);
             return ReqResult.fail("Cannot find contract[%d]", contractId);
         }
+        if(contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0
+                || contract.getPaybackDate() == null || contract.getPaybackDate() <= 0
+                || contract.getPayStartDate() == null || contract.getPayStartDate() <= 0
+                || contract.getContractTerDate() == null || contract.getContractTerDate() <= 0
+                || contract.getContractStatus() == ContractStatus.UNSTARTED){
+            logger.error("can't cal contract[d%]", contractId);
+            return ReqResult.fail("条件未达成，不允许计算[%d]", contract.getContractNo());
+        }
         date = formatDate(contract, date);
         if(!isDateLegal(contract.getPayStartDate(), contract.getContractTerDate(), date)){
             logger.error("date is illegal");
@@ -117,6 +133,14 @@ public class BasicRentManager implements BasicRentAgent {
         if(contract == null) {
             logger.error("can't find contract[d%]", contractId);
             return ReqResult.fail("Cannot find contract[%d]", contractId);
+        }
+        if(contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0
+                || contract.getPaybackDate() == null || contract.getPaybackDate() <= 0
+                || contract.getPayStartDate() == null || contract.getPayStartDate() <= 0
+                || contract.getContractTerDate() == null || contract.getContractTerDate() <= 0
+                || contract.getContractStatus() == ContractStatus.UNSTARTED){
+            logger.error("can't cal contract[d%]", contractId);
+            return ReqResult.fail("条件未达成，不允许计算[%d]", contract.getContractNo());
         }
         Calendar calendar=Calendar.getInstance();
         long startTime = contract.getPayStartDate();
@@ -178,6 +202,14 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find contract[d%]", contractId);
             return ReqResult.fail("Cannot find contract[%d]", contractId);
         }
+        if(contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0
+                || contract.getPaybackDate() == null || contract.getPaybackDate() <= 0
+                || contract.getPayStartDate() == null || contract.getPayStartDate() <= 0
+                || contract.getContractTerDate() == null || contract.getContractTerDate() <= 0
+                || contract.getContractStatus() == ContractStatus.UNSTARTED){
+            logger.error("can't cal contract[d%]", contractId);
+            return ReqResult.fail("条件未达成，不允许计算[%d]", contract.getContractNo());
+        }
         Proposal proposal = proposalDao.getProposal(contract.getProposalId());
         if(proposal == null){
             logger.error("can't find proposal[d%]", contract.getProposalId());
@@ -212,7 +244,7 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find proposal[d%]", proposalId);
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
         }
-        long payStartTime = DateUtils.convertJodaTime(paybackDate).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
+        long payStartTime = DateUtils.convertJodaTime(paybackDate).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
 
         double total = 0;
         List<BasicResult> allResult = new ArrayList<>();

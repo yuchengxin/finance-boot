@@ -39,7 +39,7 @@ public class ContractStatusManager implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        calibrationStatus();
+//        calibrationStatus();
     }
 
     @Transactional
@@ -74,7 +74,7 @@ public class ContractStatusManager implements InitializingBean {
             logger.error("can't find proposal[d%]", contract.getProposalId());
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
         }
-        long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(-1).getMillis();
+        long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
         long currentTime = System.currentTimeMillis();
         if(contract.getContractStatus() != ContractStatus.UNSTARTED
                 && contract.getContractStatus() != ContractStatus.NORMALEND
