@@ -249,7 +249,13 @@
 					}
 				} else {
 //					alert("datasizeis0");
+
 				}
+				$.messager.alert(' ','<font size=\"2\" color=\"#666666\"><strong>查询到' +data.length+
+						'条记录</strong></font>','infoSunnyIcon',
+						function(){
+						});
+				setTimeout(function(){ $(".messager-body").window('close'); },3000);
 			},
 			error: function () {
 				alert('An error has occured!! :-(')
@@ -362,7 +368,7 @@
 				data: JSON.stringify(contractobj),
 				contentType: 'application/json',
 				success: function (data) {
-					$.messager.alert("系统提示",'合同添加成功')
+					$.messager.alert('合同添加成功')
 					closeAddContract();
 //					window.location.reload();
 				},
