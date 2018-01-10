@@ -1,13 +1,18 @@
 package com.gilab.wjj.util;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import net.sf.json.JSONObject;
 import org.apache.poi.ss.formula.functions.T;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -110,7 +115,28 @@ public class StringUtils {
         return (Map<String, Object>) jb;
     }
 
-    public static Object string2Entity(String str, Class entity){
-        return JSON.parseObject(str,entity);
+    public static <T> T string2Entity(String str, Class<T> entity){
+        System.out.println(str);
+//        return JSON.parseObject(str,entity);
+
+        ObjectMapper om = new ObjectMapper();
+        T readValue = null;
+        try {
+            readValue = om.readValue(str, entity);
+        } catch (JsonParseException | IOException e) {
+            e.printStackTrace();
+        }
+        return readValue;
+    }
+
+    public static <T> String Entity2String(T t){
+        ObjectMapper om = new ObjectMapper();
+        try {
+            String json = om.writeValueAsString(t);
+            return json;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

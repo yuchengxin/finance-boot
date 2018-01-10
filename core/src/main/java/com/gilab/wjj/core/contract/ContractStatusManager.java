@@ -61,6 +61,14 @@ public class ContractStatusManager implements InitializingBean {
     }
 
     private ContractStatus calCurrentStatus(Contract contract){
+        if(contract.getContractNo() == null || contract.getPaybackDate() == null || contract.getPaybackDate() <= 0
+                || contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0
+                || contract.getProposalId() == null || contract.getProposalId() <= 0 || proposalDao.getProposal(contract.getProposalId()) == null
+                || contract.getBeneficiary() == null || contract.getBeneficiary().getMerchantName() == null
+                || contract.getBeneficiary().getMerchantIdNo() == null || contract.getBeneficiary().getBankInfo() == null
+                || contract.getBeneficiary().getBankAccount() == null){
+            return ContractStatus.UNSTARTED;
+        }
         Proposal proposal = proposalDao.getProposal(contract.getProposalId());
         if(proposal == null){
             logger.error("can't find proposal[d%]", contract.getProposalId());

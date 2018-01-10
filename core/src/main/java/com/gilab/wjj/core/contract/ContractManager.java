@@ -104,20 +104,25 @@ public class ContractManager implements ContractAgent {
             }
             Contract contract = basicRentInfo2Contract(basicRentInfo);
             if(contract.getContractVersion() == null){
-                contract.setContractVersion("1");
+                contract.setContractVersion("1.0");
             }
+            System.out.println(contract.getContractVersion());
             switch (contract.getContractVersion()){
+                case "1.0" :
                 case "1" :
                     contract.setProposalId(1L);
                     break;
                 case "2" :
+                case "2.0" :
                     contract.setProposalId(2L);
                     break;
                 case "3" :
+                case "3.0" :
                     contract.setProposalId(1L);
                     break;
                 case "4" :
-                    contract.setProposalId(2L);
+                case "4.0" :
+                    contract.setProposalId(1L);
                     break;
                 default:
                     contract.setContractStatus(ContractStatus.UNSTARTED);
@@ -166,6 +171,7 @@ public class ContractManager implements ContractAgent {
 
     private Contract basicRentInfo2Contract(BasicRentInfo basicRentInfo){
         List<Merchant> signer = string2Merchant(basicRentInfo.getSigner(), basicRentInfo.getPhone(), basicRentInfo.getMerchantIdNo(), null, null, null);
+        System.out.println(basicRentInfo.getPhone());
         if(signer != null && signer.size() != 0)
             for(Merchant merchant : signer){
                 if(merchantDao.getMerchantWithCheck(merchant.getMerchantName(), merchant.getMerchantPhone(), merchant.getMerchantIdNo()) == null){
@@ -255,7 +261,7 @@ public class ContractManager implements ContractAgent {
                 if(account != null)
                     merchant.setBankAccount(account[i]);
                 if(address != null)
-                    merchant.setMerchantAddress(address[i]);
+                    merchant.setMerchantAddress(address[i].replaceAll("[\\t\\n\\r]", ""));
                 merchants.add(merchant);
             }
         }else{

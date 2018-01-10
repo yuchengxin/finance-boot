@@ -94,14 +94,14 @@ public class Merchant implements Entity, Cloneable{
 
     @Override
     public String toString() {
-        return "{" +
-                "id:" + id +
-                ", merchantName:'" + merchantName + '\'' +
-                ", merchantPhone:'" + merchantPhone + '\'' +
-                ", merchantIdNo:'" + merchantIdNo + '\'' +
-                ", bankInfo:'" + bankInfo + '\'' +
-                ", bankAccount:'" + bankAccount + '\'' +
-                ", merchantAddress:'" + merchantAddress + '\'' +
+        return "Merchant{" +
+                "id=" + id +
+                ", merchantName='" + merchantName + '\'' +
+                ", merchantPhone='" + merchantPhone + '\'' +
+                ", merchantIdNo='" + merchantIdNo + '\'' +
+                ", bankInfo='" + bankInfo + '\'' +
+                ", bankAccount='" + bankAccount + '\'' +
+                ", merchantAddress='" + merchantAddress + '\'' +
                 '}';
     }
 

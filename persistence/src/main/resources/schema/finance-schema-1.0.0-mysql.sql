@@ -147,7 +147,7 @@ CREATE TABLE finance_merchants (
   merchantIdNo      VARCHAR(300)           ,
   bankInfo          VARCHAR(1000)          ,
   bankAccount       VARCHAR(200)           ,
-  merchantAddress   VARCHAR(1000)          ,
+  merchantAddress   VARCHAR(10000)          ,
   createTime        DATETIME(3)       DEFAULT current_timestamp(3),
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;
@@ -184,7 +184,8 @@ CREATE TABLE finance_leaseback_proposal (
 
 INSERT INTO finance_leaseback_proposal (proposalName, leasebackLife, marketCulLife, leasebackStages, conf, proposalDes)
 VALUES  ('v1', 15, 3, 3, '[{"period":1, "duration":2, "proportion":0.065}, {"period":2, "duration":5, "proportion":0.07}, {"period":3, "duration":5, "proportion":0.075}]','etl'),
-  ('v2', 5, 3, 1, '[{"period":1, "duration":2, "proportion":0.065}]', 'etl');
+  ('v2', 5, 3, 1, '[{"period":1, "duration":2, "proportion":0.065}]', 'etl'),
+  ('v3', 15, 3, 3, '[{"period":1, "duration":2, "proportion":0.065}, {"period":2, "duration":10, "proportion":0.07}]', 'etl');
 
 
 CREATE TABLE finance_proposal_history (

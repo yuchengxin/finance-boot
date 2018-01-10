@@ -48,11 +48,11 @@ public class MerchantHandler extends BaseTypeHandler<Merchant> {
     }
 
     private String merchant2String(Merchant merchant){
-        return merchant.toString();
+        return StringUtils.Entity2String(merchant);
     }
 
     private Merchant string2Merchant(String str){
-        return (Merchant) StringUtils.string2Entity(str, Merchant.class);
+        return StringUtils.string2Entity(str, Merchant.class);
     }
 
 
