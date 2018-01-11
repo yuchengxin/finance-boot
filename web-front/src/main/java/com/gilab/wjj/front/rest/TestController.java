@@ -2,23 +2,31 @@ package com.gilab.wjj.front.rest;
 
 
 import com.gilab.wjj.core.TestAgent;
+import com.gilab.wjj.persistence.model.ContractStatus;
 import com.gilab.wjj.persistence.model.MenuList;
+import com.gilab.wjj.persistence.model.SigningMode;
 import com.gilab.wjj.persistence.model.User;
 import com.gilab.wjj.util.logback.LoggerFactory;
+import com.google.common.net.HttpHeaders;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 
 //import com.gilab.wjj.utils.RestUtils;
 
@@ -34,6 +42,9 @@ public class TestController {
 
     @Autowired
     private TestAgent testMgr;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
     /**
      * 用户登录请求
      * @param user
@@ -212,5 +223,39 @@ public class TestController {
     }
 
 
+    @ApiOperation(value = "导出返租明细表", notes = "导出返租明细表", produces = "application/octet-stream")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "filterStartTime", value = "签约时间段的起始时间", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "filterEndTime", value = "签约时间段的结束时间", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "contractVersion", value = "合同版本", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "buildingStartSize", value = "建筑最小面积", dataType = "Double", paramType = "query"),
+            @ApiImplicitParam(name = "buildingEndSize", value = "建筑最大面积", dataType = "Double", paramType = "query"),
+            @ApiImplicitParam(name = "signMode", value = "签约方式", dataType = "SignMode", paramType = "query"),
+            @ApiImplicitParam(name = "contractStatus", value = "合同状态", dataType = "ContractStatus", paramType = "query")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/download-bacrent", method = { RequestMethod.GET }, produces = "application/octet-stream")
+    public ResponseEntity<Resource> downloadContracts(HttpServletResponse response,
+                                                      @RequestParam(name = "filterStartTime", required = false) Long filterStartTime,
+                                                      @RequestParam(name = "filterEndTime", required = false) Long filterEndTime,
+                                                      @RequestParam(name = "contractVersion", required = false) String contractVersion,
+                                                      @RequestParam(name = "buildingStartSize", required = false) Double buildingStartSize,
+                                                      @RequestParam(name = "buildingEndSize", required = false) Double buildingEndSize,
+                                                      @RequestParam(name = "signMode", required = false) SigningMode signMode,
+                                                      @RequestParam(name = "contractStatus", required = false) ContractStatus contractStatus) throws Exception {
+
+        //TODO
+        //权限判断
+
+        String prefix = "Contract_" + UUID.randomUUID().toString();
+        String filepath="bacrent.xlsx";//注意filepath的内容；
+        File file=new File(filepath);
+
+        String sendFileName = prefix + ".xlsx";
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + sendFileName +"\"")
+                .body(resourceLoader.getResource("file:" + file.getAbsolutePath()));
+    }
 
 }
