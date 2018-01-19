@@ -61,7 +61,8 @@
 	}
 
 	function openCalculateBacRent(contractId,detail){
-		$("#bacrent").dialog("open").dialog("setTitle","返租明细(合同编号："+detail+")");
+		$("#bacrent").dialog("open").dialog("setTitle","返租明细" +contractId+
+			"(合同编号："+detail+")");
 		calculateBackRent(contractId);
 	}
 
@@ -69,7 +70,7 @@
 		$('#merchant').val("");
 		$('#total').val("");
 		clearGrid("bacrentdetail");
-		contractId = 1;
+//		contractId = 1;
 		$('#selectedId').val(contractId);
 		if($('#month').val().length==0 && $('#year').val().length>0){
 			calYearRent(contractId,$('#period').val(),$('#year').val())
@@ -112,7 +113,7 @@
 				}
 			},
 			error: function () {
-				alert('An error has occured!! :-(')
+				alert('不可計算，請完善信息')
 			}
 		})
 	}
@@ -368,7 +369,7 @@
 				data: JSON.stringify(contractobj),
 				contentType: 'application/json',
 				success: function (data) {
-					$.messager.alert('合同添加成功')
+					$.messager.alert('合同添加成功','')
 					closeAddContract();
 //					window.location.reload();
 				},
@@ -586,7 +587,7 @@
 			contentType: false,
 			processData: false,
 			success: function (returndata) {
-				$.messager.alert("上传成功",returndata);
+				$.messager.alert("上传成功",'');
 				$("#addcontracts").dialog("close");
 			},
 		error: function (returndata) {
