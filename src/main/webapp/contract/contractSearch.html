@@ -12,7 +12,8 @@
 <script type="text/javascript">
 
 	$(function(){
-		searchContract();
+//		searchContract();
+		openAddContract();
 		$("#dg").datagrid({
 			//双击事件
 			onDblClickRow: function (index, row) {
@@ -654,32 +655,40 @@
 			<legend>查询设置</legend>
 		<table align="center" width="100%">
 			<tr>
-				<td>签约日期范围：<input type="text" id="filterStartTime" name="filterStartTime"  size="8" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" size="8" class="easyui-datebox"/></td>
-				<td>合同版本：<select type="text" id="contractVersion" name="contractVersion" style="width: 150px;" >
+				<td style="width: 8%;">签约日期：</td>
+				<td  style="width: 20%;"><input type="text" id="filterStartTime" name="filterStartTime"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" style="width: 84%" class="easyui-datebox"/></td>
+				<td style="width: 8%;">合同版本：</td>
+				<td style="width: 17%;"><select type="text" id="contractVersion" name="contractVersion" style="width: 80%">
 					<option value="">所有版本</option>
 					<option value="1">1</option>
 					<option value="2">2</option>
 					<option value="3">3</option>
 					<option value="4">4</option>
 				</select></td>
-				<td>建筑面积范围：<input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 50px;"/>-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 50px;"/></td>
-				<td></td>
+				<td style="width: 8%;">建筑面积：</td>
+				<td style="width: 10%;"><input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 40%"/>-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 40%"/></td>
+				<td style="width: 12%;"></td>
 			</tr>
 			<tr>
-				<td>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="signMode" name="signMode" style="width: 175px;" >
+				<!--<td>签约方式：<select type="text" id="signMode" name="signMode" style="width: 175px;" >-->
+				<td>签约方式：</td>
+				<td><select type="text" id="signMode" name="signMode" style="width: 72%" >
 					<option value="">所有方式</option>
 					<option value="MORTGAGE">按揭贷款</option>
 					<option value="DISPOSABLE">一次性</option>
 				</select></td>
-				<td>合同状态：<select type="text" id="contractStatus" name="contractStatus" style="width: 150px;" >
+				<td style="width: 8%;">合同状态：</td>
+				<td><select type="text" id="contractStatus" name="contractStatus" style="width: 80%" >
 					<option value="UNSTARTED">未开始</option>
 					<option value="PENDINGRENTAL">已签约，市场培育期</option>
 					<option value="RENTAL">已签约，返租期</option>
 					<option value="NORMALEND">正常结束</option>
 					<option value="ABNORMALEND">非正常结束</option>
 				</select></td>
-				<td>房号信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="buildingInfo" name="buildingInfo" style="width: 110px;"/></td>
-				<td>
+				<td style="width: 8%;">房号信息：</td>
+				<td><input type="text" id="buildingInfo" name="buildingInfo" style="width: 90%"/></td>
+				<!--<td>房号信息：<input type="text" id="buildingInfo" name="buildingInfo" style="width: 22%"/></td>-->
+				<td align="center" >
 					<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
 					<a href="javascript:openAddContract()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增记录</a></td>
 			</tr>
@@ -690,13 +699,7 @@
 		<!--&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>		-->
 	</div>
 	 <div  style="padding: 5px">
-
-
-
-		<!--<a href="javascript:download()" class="easyui-linkbutton" iconCls="icon-folder" plain="true">批量导入</a>-->
-
-
- 	</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+ 	</div>
  </div>
  
  
@@ -777,76 +780,9 @@
 					</select></td>
 					<td>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input  type="text" name="beneficiary" class="easyui-validatebox" required="true" disabled="disabled"/></td>
 				</tr>
-				<!--<tr>-->
-					<!--<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" name="atariff" class="easyui-validatebox"/></div></td>-->
-					<!--<td><div>个税金额(元)：<input type="text" name="ataxAmount" class="easyui-validatebox" /></div></td>-->
-				<!--</tr>-->
+
 			</table>
-			<!--<table cellspacing="8px">-->
-				<!--<tr>-->
-					<!--<td >合同编号：</td>-->
-					<!--<td><input type="text" name="contractNo" size="10" readonly="readonly" disabled="false"/>-->
-					<!--</td>-->
-					<!--<td >签约人：</td>-->
-					<!--<td><input type="text" id="showsigner" name="signer" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >受益人：</td>-->
-					<!--<td><input type="text" name="beneficiary" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-				<!--<tr>-->
-					<!--<td>合同版本：</td>-->
-					<!--<td><input type="text" name="contractVersion" size="10"  readonly="readonly" disabled="true"/></td>-->
-					<!--<td>合同状态：</td>-->
-					<!--<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="true"/></td>-->
-					<!--<td >所在区域：</td>-->
-					<!--<td><input type="text" name="region" size="10"/></td>-->
-				<!--</tr>-->
-				<!--<tr>-->
-					<!--<td>楼层房号：</td>-->
-					<!--<td><input type="text"  name="buildingInfo" size="10" /></td>-->
-					<!--<td>楼层面积(m2)：</td>-->
-					<!--<td><input type="text"name="buildingSize" size="10"  disabled="false"/></td>-->
-					<!--<td >签约方式：</td>-->
-					<!--<td><input type="text" name="signingMode" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-				<!--<tr>-->
-					<!--<td>认购日期：</td>-->
-					<!--<td><input type="text"  name="subscriptionDate" size="10" readonly="readonly" disabled="true"/></td>-->
-					<!--<td>签约日期：</td>-->
-					<!--<td><input type="text"  name="signingDate" size="10" readonly="readonly" disabled="true"/></td>-->
-					<!--<td >销售原价(元)：</td>-->
-					<!--<td><input type="text" name="originalPrice" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-				<!--<tr>-->
-					<!--<td >总价(元)：</td>-->
-					<!--<td><input type="text" name="totalPrice" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >签约总价(元)：</td>-->
-					<!--<td><input type="text" name="signTotalPrice" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >返租溢价(元)：</td>-->
-					<!--<td><input type="text" name="backPremium" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-				<!--<tr>-->
-					<!--<td >记租起始时日期：</td>-->
-					<!--<td><input type="text" name="payStartDate" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >合同期：</td>-->
-					<!--<td><input type="text" name="contractTerDate" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >回款时间：</td>-->
-					<!--<td><input type="text" name="paybackDate" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-				<!--<tr>-->
-					<!--<td >方案：</td>-->
-					<!--<td><input type="text" name="proposalId" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >合同状态：</td>-->
-					<!--<td><input type="text" name="contractStatus" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >税率：</td>-->
-					<!--<td><input type="text" name="tariff" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-				<!--<tr hidden="true">-->
-					<!--<td >个税金额(元)：</td>-->
-					<!--<td><input type="text" name="taxAmount" size="10"  readonly="readonly" disabled="false"/></td>-->
-					<!--<td >合同ID：</td>-->
-					<!--<td><input type="text" name="id" size="10"  readonly="readonly" disabled="false"/></td>-->
-				<!--</tr>-->
-			<!--</table>-->
+
 		</form>
 	</fieldset>
 	<div style="padding-left: 12px;padding-top: 10px">
@@ -874,9 +810,6 @@
 				&nbsp;期：&nbsp;<input type="number" id="period" size="2" style="font-size:5px"/>
 				&nbsp;年：&nbsp;<input type="number" id="year" size="2" style="font-size:5px"/>
 				&nbsp;月：&nbsp;<input type="number" id="month" size="2" style="font-size:5px"/>
-				<!--<select class="easyui-combobox"   editable="false" style="width: 100px;" id="period" name="period" panelHeight="auto"></select>-->
-				<!--<select class="easyui-combobox"   editable="false" style="width: 100px;" id="year" name="year" panelHeight="auto"></select>-->
-				<!--<select class="easyui-combobox"   editable="false" style="width: 100px;" id="month" name="month" panelHeight="auto"></select>-->
 				<a class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="calculateBackRent($('#selectedId').val())">计算</a>
 
 				<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;商户：</a><input type="text" id="merchant" size="5" disabled="true"/>
@@ -897,15 +830,11 @@
 					   fit="true" toolbar="#tb">
 				<thead>
 				<tr>
-					<!--<th field="id" width="30" hidden=true align="center">编号</th>-->
 					<th field="period" width="25" align="center">阶段(期)</th>
 					<th hidden="true" field="duration" width="25" align="center">阶段持续时间</th>
 					<th field="proportion" width="25" align="center">利率</th>
 					<th field="date" width="25" align="center">计划返租时间</th>
 					<th field="amount" width="25" align="center">计划返租金额(元)</th>
-					<!--<th field="bankInfo" width="50" align="center" >开户行</th>-->
-					<!--<th field="bankAccount" width="50" align="center" formatter="formatPurchasingPrice">开户行账号</th>-->
-					<!--<th field="merchantAddress" width="60" align="center">期</th>-->
 				</tr>
 				</thead>
 			</table>
@@ -913,78 +842,77 @@
 		</div>
 	</div>
 
-
 </div>
+
+
 
 <div id="addcontract" class="easyui-dialog" style="width:650px;height:380px;padding: 10px 20px"
 	 closed="true" buttons="#dlg-buttons2"  data-options="onClose:function(){resetMerchant()}">
 	<form id="fm6" name="fm6" method="post">
-	<table cellspacing="6px">
-		<tr>
-			<td><div>所在区域&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="aregion" name="aregion"  style="width: 170px;" >
-				<option value="22">22</option>
-				<option value="23">23</option>
-				</select></div></td>
-			<td><div>合同编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="No01" type="text" id="acontractNo" name="acontractNo" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>合同版本&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="acontractVersion" name="acontractVersion" style="width: 170px;" required="true">
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				</select></div></td>
-			<td><div>认购日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="asubscriptionDate" name="asubscriptionDate" size="20" class="easyui-datebox" data-options="editable:false"/></div></td>
+		<table cellspacing="6px">
+			<tr>
+				<td style="width: 15%">所在区域&nbsp;：</td>
+				<td style="width: 25%"><select type="text" id="aregion" name="aregion"  style="width: 81%" >
+					<option value="22">22</option>
+					<option value="23">23</option>
+				</select></td>
+				<td style="width: 15%">合同编号&nbsp;：</td>
+				<td style="width: 25%"><input value="No01" type="text" id="acontractNo" name="acontractNo" style="width: 80%" class="easyui-validatebox" required="true"/></td>
+			</tr>
+			<tr>
+				<td>合同版本&nbsp;：</td>
+				<td><select type="text" id="acontractVersion" name="acontractVersion" style="width: 81%" required="true">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				</select></td>
+				<td>认购日期&nbsp;：</td>
+				<td style="width: 25%"><input type="text" id="asubscriptionDate" name="asubscriptionDate" style="width: 140%" class="easyui-datebox" data-options="editable:false"/></td>
 
-		</tr>
-		<tr>
-			<td><div>签约日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="asigningDate" name="asigningDate" size="20" class="easyui-datebox" data-options="editable:false" /></div></td>
-			<td><div>楼层房号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="1层-商10" type="text" id="abuildingInfo" name="abuildingInfo" class="easyui-validatebox" /></div></td>
-		</tr>
-		<tr>
-			<td><div>建筑面积(m2)：<input value="221.71" type="text" id="abuildingSize" name="abuildingSize" class="easyui-validatebox" required="true"/></div></td>
-			<td><div>签约人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="asigner" name="asigner" class="easyui-validatebox" required="true"  onclick="openChooseMerchant()"  readonly="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>销售原价(元)&nbsp;&nbsp;：<input value="5200" type="text" id="aoriginalPrice" name="aoriginalPrice" class="easyui-validatebox" /></div></td>
-			<td><div>总价(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="6000" type="text" id="atotalPrice" name="atotalPrice" class="easyui-validatebox" /></div></td>
-		</tr>
-		<tr>
-			<td><div>签约总价(元)&nbsp;&nbsp;：<input value="5500" type="text" id="asignTotalPrice" name="asignTotalPrice" class="easyui-validatebox" /></div></td>
-			<td><div>返租基价(元)：<input value="4877620" type="text" id="aleasebackPrice" name="aleasebackPrice" class="easyui-validatebox" required="true"/></div></td>
-		</tr>
-		<tr>
-			<td><div>记租起始日&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="apayStartDate" name="apayStartDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></div></td>
-			<td><div>回款时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="apaybackDate" name="apaybackDate" size="20" class="easyui-datebox" data-options="editable:false" required="true"/></div></td>
-		</tr>
-		<tr hidden="true">
-			<td><div>返租溢价(元)&nbsp;&nbsp;：<input value="123" type="text" id="abackPremium" name="abackPremium" class="easyui-validatebox" /></div></td>
-			<td><div>合同期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="acontractTerDate" name="acontractTerDate" size="20" class="easyui-datebox" data-options="editable:false" /></div></td>
-		</tr>
-		<tr>
-			<td><div>签约状态&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="SigningStatus" name="SigningStatus"  style="width: 170px;" >
-				<option value="UNSIGNED">未签</option>
-				<option value="SIGNED">已签</option>
-			</select></div></td>
-			<td><div>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="asigningMode" name="asigningMode" style="width: 166px;" >
-				<option value="MORTGAGE">按揭贷款</option>
-				<option value="DISPOSABLE">一次性</option>
-				</select></div></td>
-		</tr>
-		<tr>
-			<td><div>方案选择&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="aproposalId" name="aproposalId" style="width: 170px;" required="true">
-				<option value="1">方案一</option>
-				<option value="2">方案二</option>
-				<option value="3">方案三</option>
-				<option value="4">方案四</option>
-			</select></div></td>
-			<td><div>受益人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="abeneficiary" name="abeneficiary" class="easyui-validatebox" required="true" onclick="openChooseBenefic()" readonly="true"/></div></td>
-		</tr>
-		<tr hidden="true">
-			<td><div>税&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input value="" type="text" id="atariff" name="atariff" class="easyui-validatebox"/></div></td>
-			<td><div>个税金额(元)：<input value="" type="text" id="ataxAmount" name="ataxAmount" class="easyui-validatebox" /></div></td>
-		</tr>
-	</table>
+			</tr>
+			<tr>
+				<td>签约日期&nbsp;：</td>
+				<td><input type="text" id="asigningDate" name="asigningDate" style="width: 140%" class="easyui-datebox" data-options="editable:false" /></td>
+				<td>楼层房号&nbsp;：</td>
+				<td><input value="1层-商10" type="text" id="abuildingInfo" name="abuildingInfo" style="width: 79%" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>建筑面积(m2)：</td><td><input value="221.71" type="text" id="abuildingSize" name="abuildingSize" style="width: 79%" class="easyui-validatebox" required="true"/></td>
+				<td>签约人&nbsp;：</td><td><input value="" type="text" id="asigner" name="asigner" style="width: 79%" class="easyui-validatebox" required="true"  onclick="openChooseMerchant()"  readonly="true"/></td>
+			</tr>
+			<tr>
+				<td>销售原价(元)&nbsp;：</td><td><input value="5200" type="text" id="aoriginalPrice" name="aoriginalPrice" style="width: 79%" class="easyui-validatebox" /></td>
+				<td>总价(元)&nbsp;：</td><td><input value="6000" type="text" id="atotalPrice" name="atotalPrice" style="width: 79%" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>签约总价(元)&nbsp;：</td><td><input value="5500" type="text" id="asignTotalPrice" name="asignTotalPrice" style="width: 79%" class="easyui-validatebox" /></td>
+				<td>返租基价(元)：</td><td><input value="4877620" type="text" id="aleasebackPrice" name="aleasebackPrice" style="width: 79%" class="easyui-validatebox" required="true"/></td>
+			</tr>
+			<tr>
+				<td>记租起始日&nbsp;：</td><td><input type="text" id="apayStartDate" name="apayStartDate" style="width: 140%" class="easyui-datebox" data-options="editable:false" required="true"/></td>
+				<td>回款时间&nbsp;：</td><td><input type="text" id="apaybackDate" name="apaybackDate" style="width: 140%" class="easyui-datebox" data-options="editable:false" required="true"/></td>
+			</tr>
+			<tr>
+				<td>签约状态&nbsp;：</td><td><select type="text" id="SigningStatus" name="SigningStatus"  style="width: 81%" >
+					<option value="UNSIGNED">未签</option>
+					<option value="SIGNED">已签</option>
+				</select></td>
+				<td>签约方式&nbsp;：</td><td><select type="text" id="asigningMode" name="asigningMode"   style="width: 81%" >
+					<option value="MORTGAGE">按揭贷款</option>
+					<option value="DISPOSABLE">一次性</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td>方案选择&nbsp;：</td><td><select type="text" id="aproposalId" name="aproposalId"   style="width: 81%" required="true">
+					<option value="1">方案一</option>
+					<option value="2">方案二</option>
+					<option value="3">方案三</option>
+					<option value="4">方案四</option>
+				</select></td>
+				<td>受益人&nbsp;：</td><td><input value="" type="text" id="abeneficiary" name="abeneficiary" style="width: 79%" class="easyui-validatebox" required="true" onclick="openChooseBenefic()" readonly="true"/></td>
+			</tr>
+		</table>
 	</form>
 	<div id="ac-buttons" align="center">
 		<a class="easyui-linkbutton" iconCls="icon-ok" onclick="addContract()">保存</a>
@@ -992,7 +920,6 @@
 		<a href="javascript:closeAddContract()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
 		<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
 		<a href="javascript:openAddContracts()" class="easyui-linkbutton" iconCls="icon-folder">批量导入</a>
-		<!--<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批量导入：<input name="userfile1" type="file" value=""></a>-->
 	</div>
 </div>
 
@@ -1000,7 +927,6 @@
 	 closed="true">
 	<div  align="center">
 		<form id= "uploadForm">
-			<!--<p >指定文件名： <input type="text" name="filename" value= ""/></p >-->
 			 <input type="file" name="contracts"/><input type="button" value="上传" onclick="doUpload()" />
 		</form>
 	</div>
@@ -1016,7 +942,6 @@
 				&nbsp;签约人搜索：&nbsp;<input type="text" id="s_codeOrName" size="30" onkeydown="if(event.keyCode==13) searchMerchant($('#s_codeOrName').val(),'merchant')"/>
 				<a class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="searchMerchant($('#s_codeOrName').val(),'merchant')">搜索</a>
 				<a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="openAddMerchant()">添加新商户</a>
-				<!--<a href="javascript:openAddMerchant()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新增</a>-->
 			</div>
 		</div>
 		<div region="west" style="width: 200px" title="已选签约人" split="true" data-options="collapsible:false">
@@ -1030,7 +955,6 @@
 				</tr>
 				</thead>
 			</table>
-			<!--<ul id="tree" class="easyui-tree" style="padding: 10px"></ul>-->
 			<div style="position:absolute;bottom: 10px;" align="center">
 				<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" data-options="iconCls:'icon-ok'">添加</a>
 				<a id="del" href="javascript:deleteSelected('selectedMerchants')" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
@@ -1046,17 +970,10 @@
 					<th field="merchantName" width="25" align="center">姓名</th>
 					<th field="merchantPhone" width="30" align="center">电话</th>
 					<th field="merchantIdNo" width="40" align="center">身份证</th>
-					<!--<th field="bankInfo" width="50" align="center" >开户行</th>-->
-					<!--<th field="bankAccount" width="50" align="center" formatter="formatPurchasingPrice">开户行账号</th>-->
 					<th field="merchantAddress" width="60" align="center">通讯地址</th>
 				</tr>
 				</thead>
 			</table>
-			<!--<div>-->
-				<!--<div>-->
-					<!--<a href="javascript:chooseSelectMerchant()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>-->
-				<!--</div>-->
-			<!--</div>-->
 		</div>
 	</div>
 </div>
@@ -1084,7 +1001,6 @@
 				</tr>
 				</thead>
 			</table>
-			<!--<ul id="tree" class="easyui-tree" style="padding: 10px"></ul>-->
 			<div style="position:absolute;bottom: 10px;left: 4px">
 				<a href="javascript:chooseSelectBenefic()" class="easyui-linkbutton" data-options="iconCls:'icon-ok'">添加</a>
 				<a id="del_benefic" href="javascript:deleteSelected('dg_benefic_selected')" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
@@ -1100,17 +1016,10 @@
 					<th field="merchantName" width="25" align="center">姓名</th>
 					<th field="merchantPhone" width="30" align="center">电话</th>
 					<th field="merchantIdNo" width="40" align="center">身份证</th>
-					<!--<th field="bankInfo" width="50" align="center" >开户行</th>-->
-					<!--<th field="bankAccount" width="50" align="center" formatter="formatPurchasingPrice">开户行账号</th>-->
 					<th field="merchantAddress" width="60" align="center">通讯地址</th>
 				</tr>
 				</thead>
 			</table>
-			<!--<div id="tb3_benefic">-->
-				<!--<div>-->
-					<!--<a href="javascript:chooseSelectBenefic()" class="easyui-linkbutton" iconCls="icon-ok" plain="true">选择</a>-->
-				<!--</div>-->
-			<!--</div>-->
 		</div>
 	</div>
 
@@ -1124,9 +1033,6 @@
 		<tr><td><div>商户姓名：&nbsp;<input value="张三" type="text" id="newMerchantName" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
 		<tr><td><div>商户电话：&nbsp;<input value="15688888888" type="text" id="newMmerchantPhone" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
 		<tr><td><div>身份证号：&nbsp;<input value="360424199999999999" type="text" id="newMmerchantIdNo" name="name" class="easyui-validatebox" required="true"/></div></td></tr>
-		<!--<tr><td><div>开&nbsp;户&nbsp;&nbsp;行：&nbsp;<input value="建设银行" type="text" id="newBankInfo" name="name" class="easyui-validatebox" required="true"/></div></td></tr>-->
-		<!--<tr><td><div>银行卡号：&nbsp;<input value="6227002035461234" type="text" id="newBankAcount" name="name" class="easyui-validatebox" required="true"/></div></td></tr>-->
-		<!--<tr><td><div>通讯地址：&nbsp;<input value="江西省九江市修水县" type="text" id="newMerchnatAddress" name="name" class="easyui-validatebox" required="true"/></div></td></tr>-->
 	</table>
 </div>
 
