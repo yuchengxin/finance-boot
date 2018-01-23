@@ -217,31 +217,37 @@
 				<legend>查询设置</legend>
 				<table align="center" width="100%">
 					<tr>
-						<td>签约日期范围：<input type="text" id="filterStartTime" name="filterStartTime"  size="8" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" size="8" class="easyui-datebox"/></td>
-						<td>合同版本：<select type="text" id="contractVersion" name="contractVersion" style="width: 150px;" >
+						<td style="width: 8%;">签约日期：</td>
+						<td  style="width: 20%;"><input type="text" id="filterStartTime" name="filterStartTime"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" style="width: 84%" class="easyui-datebox"/></td>
+						<td style="width: 8%;">合同版本：</td>
+						<td style="width: 17%;"><select type="text" id="contractVersion" name="contractVersion" style="width: 150px;" >
 							<option value="">所有版本</option>
 							<option value="1">1</option>
 							<option value="2">2</option>
 							<option value="3">3</option>
 							<option value="4">4</option>
 						</select></td>
-						<td>建筑面积范围：<input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 50px;"/>-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 50px;"/></td>
-						<td></td>
+						<td style="width: 8%;">建筑面积：</td>
+						<td style="width: 10%;"><input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 50px;"/>-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 50px;"/></td>
+						<td style="width: 12%;"></td>
 					</tr>
 					<tr>
-						<td>签约方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<select type="text" id="signMode" name="signMode" style="width: 175px;" >
+						<td>签约方式：</td>
+						<td><select type="text" id="signMode" name="signMode" style="width: 72%" >
 							<option value="">所有方式</option>
 							<option value="MORTGAGE">按揭贷款</option>
 							<option value="DISPOSABLE">一次性</option>
 						</select></td>
-						<td>合同状态：<select type="text" id="contractStatus" name="contractStatus" style="width: 150px;" >
+						<td style="width: 8%;">合同状态：</td>
+						<td><select type="text" id="contractStatus" name="contractStatus" style="width: 150px;" >
 							<option value="UNSTARTED">未开始</option>
 							<option value="PENDINGRENTAL">已签约，市场培育期</option>
 							<option value="RENTAL">已签约，返租期</option>
 							<option value="NORMALEND">正常结束</option>
 							<option value="ABNORMALEND">非正常结束</option>
 						</select></td>
-						<td>房号信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：<input type="text" id="buildingInfo" name="buildingInfo" style="width: 110px;"/></td>
+						<td style="width: 8%;">房号信息：</td>
+						<td><input type="text" id="buildingInfo" name="buildingInfo" style="width: 110px;"/></td>
 						<td>
 							<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
 					</tr>
