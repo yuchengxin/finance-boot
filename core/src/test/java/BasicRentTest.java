@@ -1,4 +1,4 @@
-import com.gilab.wjj.core.FinanceCoreBootConfig;
+import com.gilab.wjj.core.*;
 import com.gilab.wjj.core.basicrent.BasicRentManager;
 import com.gilab.wjj.core.contract.ContractManager;
 import com.gilab.wjj.core.merchant.MerchantManager;
@@ -28,16 +28,16 @@ import java.util.List;
 @SpringBootTest(classes = {FinanceCoreBootConfig.class})
 public class BasicRentTest {
     @Autowired
-    private ContractManager contractMgr;
+    private ContractAgent contractMgr;
 
     @Autowired
-    private MerchantManager merchantMgr;
+    private MerchantAgent merchantMgr;
 
     @Autowired
-    private ProposalManager proposalMgr;
+    private ProposalAgent proposalMgr;
 
     @Autowired
-    private BasicRentManager basicRentMgr;
+    private BasicRentAgent basicRentMgr;
 
     @Test
     public void testCreateMerchants(){
@@ -294,19 +294,9 @@ public class BasicRentTest {
     @Ignore
     @Test
     public void testBasicRentCalculation(){
-
-        Contract newContract = contractMgr.getContract(1).getResult();
-
-        BasicRentMonthResult monthResult = basicRentMgr.calBasicRentMonth(newContract.getId(), DateUtils.parseDatetime("2018-12-1")).getResult();
-        System.out.println(monthResult);
-
-        BasicRentYearResult yearResult = basicRentMgr.calBasicRentYear(newContract.getId(), 2025).getResult();
-        System.out.println(yearResult);
-
-        BasicRentPeriodResult periodResult = basicRentMgr.calBasicRentPeriod(newContract.getId(), 3).getResult();
-        System.out.println(periodResult);
-
-        BasicRentResult allResult = basicRentMgr.calBasicRentDetail(newContract.getId()).getResult();
-        System.out.println(allResult);
+        List<BasicLedger> allResult = basicRentMgr.preCalBasicRentDetail(1448640000000L, 4877620, 1);
+        for (BasicLedger basicLedger : allResult){
+            System.out.println(basicLedger);
+        }
     }
 }

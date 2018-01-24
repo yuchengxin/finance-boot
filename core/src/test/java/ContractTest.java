@@ -35,7 +35,7 @@ public class ContractTest {
     @Autowired
     private ProposalManager proposalMgr;
 
-    @Ignore
+//    @Ignore
     @Test
     public void testContractOperating(){
         List<Merchant> signer = new ArrayList<>();

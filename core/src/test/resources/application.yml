@@ -9,4 +9,8 @@ app:
 # web container config
 server.port: 8080
 
+tax:
+  rate_min: 0.141
+  rate_max: 0.217
+  line: 30000
 

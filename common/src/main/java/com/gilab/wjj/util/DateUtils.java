@@ -7,6 +7,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
+import javax.xml.crypto.Data;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -115,6 +118,33 @@ public class DateUtils {
 
     public static String currDatetimeString() {
         return currDateString("yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static int getDaysOfMonth(long dateTime) {
+        Date date = convertUtilDate(dateTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    public static long getFirstDayOfMonth(long dateTime){
+        Date date = convertUtilDate(dateTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime().getTime();
+    }
+
+    public static long getLastDayOfMonth(long dateTime){
+        Date date = convertUtilDate(dateTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return calendar.getTime().getTime();
+    }
+
+    public static long getSomeDayOfMonth(long dateTime, int day){
+        return convertJodaTime(getFirstDayOfMonth(dateTime)).plusDays(day-1).getMillis();
     }
 
 }
