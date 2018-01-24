@@ -209,8 +209,8 @@ CREATE TABLE finance_basic_ledger (
   planPayDate      DATETIME(3)           NOT NULL ,
   planPayCountPre     DOUBLE                NOT NULL ,
   planPayCountPost     DOUBLE                NOT NULL ,
-  actualPayDate    DATETIME(3)           NOT NULL ,
-  actualPayCount   DOUBLE                NOT NULL ,
+  actualPayDate    DATETIME(3)           ,
+  actualPayCount   DOUBLE                ,
   payStatus        SMALLINT              NOT NULL ,
   createTime        DATETIME(3)       DEFAULT current_timestamp(3),
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)

@@ -1,8 +1,10 @@
 package com.gilab.wjj.core.contract;
 
+import com.gilab.wjj.core.BasicRentAgent;
 import com.gilab.wjj.core.ContractAgent;
 import com.gilab.wjj.exception.FinanceErrMsg;
 import com.gilab.wjj.exception.FinanceRuntimeException;
+import com.gilab.wjj.persistence.dao.BasicLedgerDao;
 import com.gilab.wjj.persistence.dao.ContractDao;
 import com.gilab.wjj.persistence.dao.MerchantDao;
 import com.gilab.wjj.persistence.dao.ProposalDao;
@@ -40,6 +42,12 @@ public class ContractManager implements ContractAgent {
     @Autowired
     private ProposalDao proposalDao;
 
+    @Autowired
+    private BasicRentAgent basicRentMgr;
+
+    @Autowired
+    private BasicLedgerDao basicLedgerDao;
+
     @Override
     public ReqResult<Contract> getContract(long contractId) {
         Contract contract = contractDao.getContract(contractId);
@@ -58,6 +66,7 @@ public class ContractManager implements ContractAgent {
     }
 
     @Override
+    @Transactional
     public ReqResult<Contract> createContract(Contract contract) {
         ReqResult<Contract> preCheckResult = preCheckCreate(contract);
         if (!preCheckResult.isSuccess()) {
@@ -66,6 +75,8 @@ public class ContractManager implements ContractAgent {
         long id = contractDao.createContract(contract);
         Contract newContract = contract.clone();
         newContract.setId(id);
+        List<BasicLedger> basicLedgers = basicRentMgr.calBasicRentDetail(id);
+        basicLedgerDao.batchCreateBasicLedgers(basicLedgers);
         return ReqResult.success(newContract, "contract[%d] created.", id);
     }
 
@@ -139,7 +150,7 @@ public class ContractManager implements ContractAgent {
                     throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
                 }
                 long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
-                long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife()).getMillis();
+                long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife() - proposal.getMarketCulLife()).getMillis();
                 long currentTime = System.currentTimeMillis();
                 if(currentTime < payStartTime && currentTime > basicRentInfo.getPaybackDate().getTime()){
                     status = ContractStatus.PENDINGRENTAL;
@@ -290,7 +301,7 @@ public class ContractManager implements ContractAgent {
         } else {
             Proposal proposal = proposalDao.getProposal(contract.getProposalId());
             long payStartTime = DateUtils.convertJodaTime(contract.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
-            long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife()).getMillis();
+            long contractTerTime = DateUtils.convertJodaTime(payStartTime).plusYears(proposal.getLeasebackLife() - proposal.getMarketCulLife()).getMillis();
             contract.setPayStartDate(payStartTime);
             contract.setContractTerDate(contractTerTime);
             for(Merchant m : contract.getSigner()){

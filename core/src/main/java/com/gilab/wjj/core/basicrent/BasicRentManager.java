@@ -71,8 +71,13 @@ public class BasicRentManager implements BasicRentAgent {
         long date = contract.getPayStartDate();
         int i =0;
         List<BasicLedger> result = new ArrayList<>();
+        System.out.println(DateUtils.datetimeString(contract.getPayStartDate()) + DateUtils.datetimeString(contract.getContractTerDate()));
         while(date <= contract.getContractTerDate()){
-            result.add(calBasicRentMonth(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, date));
+            BasicLedger basicLedger = calBasicRentMonth(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, date);
+            basicLedger.setContractId(contractId);
+            basicLedger.setContractNo(contract.getContractNo());
+            basicLedger.setBeneficiaryId(contract.getBeneficiary().getId());
+            result.add(basicLedger);
             i++;
             date = DateUtils.convertJodaTime(contract.getPayStartDate()).plusMonths(i).getMillis();
         }
@@ -109,7 +114,7 @@ public class BasicRentManager implements BasicRentAgent {
         long contractTerDate = calContractTerDate(payStartTime, proposal);
         if (!isDateLegal(payStartTime, contractTerDate, date)) {
             logger.error("date is illegal");
-            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "date is illegal");
+            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "date " + DateUtils.datetimeString(date) + " is illegal");
         }
         PeriodCalStandard actualPeriodStart = getPeriod(payStartTime, proposal, DateUtils.getFirstDayOfMonth(date));
         PeriodCalStandard actualPeriodEnd = getPeriod(payStartTime, proposal, DateUtils.getLastDayOfMonth(date));

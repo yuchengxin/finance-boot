@@ -2,8 +2,11 @@ package com.gilab.wjj.persistence.spring;
 
 import com.gilab.wjj.persistence.dao.BasicLedgerDao;
 import com.gilab.wjj.persistence.mapper.BasicLedgerMapper;
+import com.gilab.wjj.persistence.model.BasicLedger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Created by yuankui on 12/17/17.
@@ -16,4 +19,40 @@ import org.springframework.stereotype.Repository;
 public class BasicLedgerDaoImpl implements BasicLedgerDao {
     @Autowired
     private BasicLedgerMapper mapper;
+
+    @Override
+    public BasicLedger getBasicLedger(long basicLedgerId) {
+        return mapper.selectBasicLedger(basicLedgerId);
+    }
+
+    @Override
+    public List<BasicLedger> getBasicLedgerWithContract(long contractId) {
+        return mapper.selectBasicLedgerWithContract(contractId);
+    }
+
+    @Override
+    public List<BasicLedger> getBasicLedgerWithContractNo(String contractNo) {
+        return mapper.selectBasicLedgerWithContractNo(contractNo);
+    }
+
+    @Override
+    public long createBasicLedger(BasicLedger basicLedger) {
+        mapper.insertBasicLedger(basicLedger);
+        return basicLedger.getId();
+    }
+
+    @Override
+    public void batchCreateBasicLedgers(List<BasicLedger> basicLedgers) {
+        mapper.batchInsertBasicLedgers(basicLedgers);
+    }
+
+    @Override
+    public void updateBasicLedger(BasicLedger basicLedger) {
+        mapper.updateBasicLedger(basicLedger);
+    }
+
+    @Override
+    public void deleteBasicLedger(long basicLedgerId) {
+        mapper.deleteBasicLedger(basicLedgerId);
+    }
 }
