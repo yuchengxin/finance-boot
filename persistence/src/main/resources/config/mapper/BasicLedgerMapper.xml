@@ -5,7 +5,7 @@
 <mapper namespace="com.gilab.wjj.persistence.mapper.BasicLedgerMapper">
 
 
-        <select id="getLedger" resultType="com.gilab.wjj.persistence.model.BasicLedger">
+        <select id="getLedger" resultMap="BasicLedgerMap">
                 select * from finance_basic_ledger where contractId = #{contractId,typeHandler=LongTypeHandler}
         </select>
 
@@ -14,10 +14,26 @@
                   update
                     finance_basic_ledger
                   set
-                    actualPayDate = #{item.actualPayDate,typeHandler=TimestampLongHandler},actualPayCount=#{item.actualPayCount}
+                    actualPayDate = #{item.actualPayDate,typeHandler=TimestampLongHandler},
+                    payStatus = #{item.payStatus, javaType=PayStatus, typeHandler=PayStatusHandler},
+                    actualPayCount=#{item.actualPayCount}
                   where
-                  planPayDate=#{item.planPayDate,typeHandler=TimestampLongHandler} and contractId = #{item.contractId};
+                  planPayDate=#{item.planPayDate,typeHandler=TimestampLongHandler}
+                  and contractId = (select contractId from finance_contract where contractNo=#{item.contractNo});
           </foreach>
 
         </insert>
+    <resultMap id="BasicLedgerMap" type="BasicLedger">
+        <id property="id" column="id"/>
+        <result property="contractId" column="contractId"/>
+        <result property="beneficiaryId" column="beneficiaryId"/>
+        <result property="contractNo" column="contractNo"/>
+        <result property="calFormula" column="calFormula"/>
+        <result property="planPayDate" column="planPayDate" typeHandler="TimestampLongHandler"/>
+        <result property="planPayCountPre" column="planPayCountPre"/>
+        <result property="planPayCountPost" column="planPayCountPost"/>
+        <result property="actualPayDate" column="actualPayDate" typeHandler="TimestampLongHandler"/>
+        <result property="actualPayCount" column="actualPayCount"/>
+        <result property="payStatus" column="payStatus" javaType="PayStatus" typeHandler="PayStatusHandler"/>
+    </resultMap>
 </mapper>

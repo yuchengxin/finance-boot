@@ -8,6 +8,7 @@
 <script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.min.js"></script>
 <script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="/static/js/basicFun.js"></script>
 <script type="text/javascript">
 
 	var ledgerList = [];
@@ -16,13 +17,13 @@
 	$(function(){
 
 		searchContract();
-
+		searchLedger(1);
 		$("#dg").datagrid({
 			//双击事件
 			onDblClickRow: function (index, row) {
 
 				searchLedger(row.id);
-				contractIdonLedger = row.id;
+
 			}
 		});
 	})
@@ -105,6 +106,7 @@
 	}
 
 	function searchLedger(contractId){
+		contractIdonLedger = contractId;
 		clearGrid("dg3");
 		ledgerList = [];
 		var geturl = "/api/v1/ledgers/"+contractId;
@@ -115,6 +117,25 @@
 			success: function (data) {
 				if (data.length > 0) {
 					for(var i = 0; i<data.length;i++) {
+						data[i].planPayDate = getMoth(data[i].planPayDate);
+
+						if(data[i].payStatus=='UNPAID'){
+							data[i].payStatus="未支付"
+						}
+						if(data[i].payStatus=='SUCCESSFULPAID'){
+							data[i].payStatus="支付成功"
+						}
+						if(data[i].payStatus=='FAILEDPAID'){
+							data[i].payStatus="支付失败"
+						}
+						if(data[i].actualPayDate==null || data[i].actualPayDate==0){
+							data[i].actualPayDate="尚未支付";
+						}else{
+							data[i].actualPayDate = getMoth(data[i].actualPayDate);
+						}
+						if(data[i].actualPayCount==null || data[i].actualPayCount==0){
+							data[i].actualPayCount="尚未支付";
+						}
 						ledgerList.push(data[i]);
 						$('#dg3').datagrid('appendRow',data[i]);
 					}
@@ -131,18 +152,7 @@
 		})
 	}
 
-	function getMoth(str){
-		var oDate = new Date(str),
-				oYear = oDate.getFullYear(),
-				oMonth = oDate.getMonth()+1,
-				oDay = oDate.getDate(),
-				oHours = oDate.getHours(),
-				oMinutes = oDate.getMinutes(),
-				oSeconds = oDate.getSeconds();
-//				oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
-		oTime =oYear+"-"+oMonth+"-"+oDay;//最后拼接时间
-		return oTime;
-	};
+
 
 	function clearGrid(gridId){
 		var item = $( '#'+gridId).datagrid('getRows');
@@ -193,12 +203,19 @@
 	function filterLedger(){
 		clearGrid("dg3");
 
+
+
 		for(var i = 0; i<ledgerList.length;i++) {
 			var validbool = true;
-			if(ledgerList[i].actualPayCount==0 && ( $("#payStatus").val()=="PAY" )){
+			if($("#payStatus").val() != "" && ledgerList[i].payStatus != $("#payStatus").val() ){
 				 validbool=false;
 			}
-			if(ledgerList[i].actualPayCount>0 && ( $("#payStatus").val()=="FAIELD" || $("#payStatus").val()=="UNPAY" )){
+			var startDate = new Date($("#payStartDate").datebox("getValue"));
+
+			var endDate = new Date($("#payEndDate").datebox("getValue"));
+			var planPayDate =  new Date(ledgerList[i].planPayDate);
+
+			if( planPayDate < startDate||endDate < planPayDate ){
 				validbool=false;
 			}
 
@@ -315,10 +332,12 @@
 		<thead>
 		<tr>
 			<th field="id" width="30" hidden=true align="center">编号</th>
-			<th field="planPayDate" width="25" align="center">计划支付时间</th>
-			<th field="planPayCount" width="30" align="center">计划支付金额(元)</th>
-			<th field="actualPayDate" width="30" align="center">实际支付时间</th>
-			<th field="actualPayCount" width="40" align="center">实际支付金额(元)</th>
+			<th field="planPayDate" width="20" align="center">计划支付时间</th>
+			<th field="planPayCountPre" width="20" align="center">税前计划支付金额(元)</th>
+			<th field="planPayCountPost" width="20" align="center">税后计划支付金额(元)</th>
+			<th field="actualPayDate" width="20" align="center">实际支付时间</th>
+			<th field="actualPayCount" width="20" align="center">实际支付金额(元)</th>
+			<th field="payStatus" width="20" align="center">支付状态</th>
 			<!--<th field="bankInfo" width="50" align="center" >开户行</th>-->
 			<!--<th field="bankAccount" width="50" align="center" formatter="formatPurchasingPrice">开户行账号</th>-->
 		</tr>
@@ -332,14 +351,14 @@
 				<table align="center" width="100%">
 					<tr>
 						<td style="width: 8%;">支付状态：</td>
-						<td style="width: 20%;"><select type="text" id="payStatus" name="signMode" style="width: 72%" >
+						<td style="width: 20%;"><select type="text" id="payStatus" name="signMode" style="width: 72%" onchange="filterLedger()">
 							<option value="">所有状态</option>
-							<option value="PAY">已支付</option>
-							<option value="UNPAY">未支付</option>
-							<option value="FAIELD">支付失败</option>
+							<option value="支付成功">支付成功</option>
+							<option value="未支付">未支付</option>
+							<option value="支付失败">支付失败</option>
 						</select></td>
-						<td style="width: 8%;">支付时间：</td>
-						<td  style="width: 20%;"><input type="text" id="payStartData" name="filterStartTime"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="payEndData" name="filterEndTime" style="width: 84%" class="easyui-datebox"/></td>
+						<td style="width: 8%;">计划支付时间：</td>
+						<td  style="width: 20%;"><input type="text" id="payStartDate" name="payStartDate"  style="width: 84%" class="easyui-datebox" data-options="onSelect:filterLedger"/>-<input type="text" id="payEndDate" name="payEndDate" style="width: 84%" class="easyui-datebox" data-options="onSelect:filterLedger"   /></td>
 						<td>
 							<a href="javascript:filterLedger()" class="easyui-linkbutton" iconCls="icon-search" plain="true">筛选</a>
 							<a href="javascript:openAddLedgers()" class="easyui-linkbutton" iconCls="icon-folder">台账导入</a>

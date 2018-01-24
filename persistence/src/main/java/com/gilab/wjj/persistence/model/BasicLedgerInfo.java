@@ -15,32 +15,41 @@ import java.util.Date;
 public class BasicLedgerInfo {
     @Excel(name = "id", width = 10)
     private Long id;
-    @Excel(name = "合同编号", width = 10)
+    @Excel(name = "合同ID", width = 10)
     private Long contractId;
-    @Excel(name = "商户", width = 10)
-    private Long merchantId;
+    @Excel(name = "受益人ID", width = 10)
+    private Long beneficiaryId;
+    @Excel(name = "合同编号", width = 10)
+    private String contractNo;
     @Excel(name = "计算公式", width = 10)
     private String calFormula;
     @Excel(name = "计划支付时间", width = 10)
     private Date planPayDate;
-    @Excel(name = "计划支付金额", width = 10)
-    private Double planPayCount;
+    @Excel(name = "税前计划支付金额", width = 10)
+    private Double planPayCountPre;
+    @Excel(name = "税后计划支付金额", width = 10)
+    private Double planPayCountPost;
     @Excel(name = "实际支付时间", width = 10)
     private Date actualPayDate;
     @Excel(name = "实际支付金额", width = 10)
     private Double actualPayCount;
+    @Excel(name = "支付状态", width = 10)
+    private String payStatus;
 
     public BasicLedgerInfo(){}
 
-    public BasicLedgerInfo(Long id, Long contractId, Long merchantId, String calFormula, Date planPayDate, Double planPayCount, Date actualPayDate, Double actualPayCount) {
+    public BasicLedgerInfo(Long id, Long contractId, Long beneficiaryId, String contractNo, String calFormula, Date planPayDate, Double planPayCountPre, Double planPayCountPost, Date actualPayDate, Double actualPayCount, String payStatus) {
         this.id = id;
         this.contractId = contractId;
-        this.merchantId = merchantId;
+        this.beneficiaryId = beneficiaryId;
+        this.contractNo = contractNo;
         this.calFormula = calFormula;
         this.planPayDate = planPayDate;
-        this.planPayCount = planPayCount;
+        this.planPayCountPre = planPayCountPre;
+        this.planPayCountPost = planPayCountPost;
         this.actualPayDate = actualPayDate;
         this.actualPayCount = actualPayCount;
+        this.payStatus = payStatus;
     }
 
     public Long getId() {
@@ -59,12 +68,20 @@ public class BasicLedgerInfo {
         this.contractId = contractId;
     }
 
-    public Long getMerchantId() {
-        return merchantId;
+    public Long getBeneficiaryId() {
+        return beneficiaryId;
     }
 
-    public void setMerchantId(Long merchantId) {
-        this.merchantId = merchantId;
+    public void setBeneficiaryId(Long beneficiaryId) {
+        this.beneficiaryId = beneficiaryId;
+    }
+
+    public String getContractNo() {
+        return contractNo;
+    }
+
+    public void setContractNo(String contractNo) {
+        this.contractNo = contractNo;
     }
 
     public String getCalFormula() {
@@ -83,12 +100,20 @@ public class BasicLedgerInfo {
         this.planPayDate = planPayDate;
     }
 
-    public Double getPlanPayCount() {
-        return planPayCount;
+    public Double getPlanPayCountPre() {
+        return planPayCountPre;
     }
 
-    public void setPlanPayCount(Double planPayCount) {
-        this.planPayCount = planPayCount;
+    public void setPlanPayCountPre(Double planPayCountPre) {
+        this.planPayCountPre = planPayCountPre;
+    }
+
+    public Double getPlanPayCountPost() {
+        return planPayCountPost;
+    }
+
+    public void setPlanPayCountPost(Double planPayCountPost) {
+        this.planPayCountPost = planPayCountPost;
     }
 
     public Date getActualPayDate() {
@@ -107,17 +132,30 @@ public class BasicLedgerInfo {
         this.actualPayCount = actualPayCount;
     }
 
+    public String getPayStatus() {
+        return payStatus;
+    }
+
+    public void setPayStatus(String payStatus) {
+        this.payStatus = payStatus;
+    }
+
     @Override
     public String toString() {
         return "BasicLedgerInfo{" +
                 "id=" + id +
                 ", contractId=" + contractId +
-                ", merchantId=" + merchantId +
+                ", beneficiaryId=" + beneficiaryId +
+                ", contractNo='" + contractNo + '\'' +
                 ", calFormula='" + calFormula + '\'' +
                 ", planPayDate=" + planPayDate +
-                ", planPayCount=" + planPayCount +
+                ", planPayCountPre=" + planPayCountPre +
+                ", planPayCountPost=" + planPayCountPost +
                 ", actualPayDate=" + actualPayDate +
                 ", actualPayCount=" + actualPayCount +
+                ", payStatus=" + payStatus +
                 '}';
     }
+
+
 }

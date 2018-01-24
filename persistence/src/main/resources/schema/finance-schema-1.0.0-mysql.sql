@@ -209,8 +209,8 @@ CREATE TABLE finance_basic_ledger (
   planPayDate      DATETIME(3)           NOT NULL ,
   planPayCountPre     DOUBLE                NOT NULL ,
   planPayCountPost     DOUBLE                NOT NULL ,
-  actualPayDate    DATETIME(3)           NOT NULL ,
-  actualPayCount   DOUBLE                NOT NULL ,
+  actualPayDate    DATETIME(3)            ,
+  actualPayCount   DOUBLE               ,
   payStatus        SMALLINT              NOT NULL ,
   createTime        DATETIME(3)       DEFAULT current_timestamp(3),
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
@@ -311,7 +311,7 @@ INSERT INTO `finance_contract` VALUES ('1', '22', 'No01', '1', '2018-01-24 11:29
 
 INSERT INTO `finance_merchants` VALUES ('1', '李四', '15688888888', '360424199999999999', '建设银行', '6227002020200008', '湖北省武汉市', '2018-01-24 11:29:08.324', null);
 
-INSERT INTO `finance_basic_ledger` VALUES ('1', '1', '1', '1+1', '2018-01-24 00:00:00.000', '10000', '2018-01-24 12:22:42.000', '0', '2018-01-24 12:22:49.811', null);
-INSERT INTO `finance_basic_ledger` VALUES ('2', '1', '1', '2/8', '2018-01-25 00:00:00.000', '10001', '2018-02-01 12:23:13.000', '10002', '2018-01-24 12:23:20.832', null);
+INSERT INTO `finance_basic_ledger` VALUES ('1', '1', 'No01', '1' , '1+1','2018-01-24 00:00:00.000', '10000', '10010', null, null, '1', '2018-01-24 12:22:49.811', null);
+INSERT INTO `finance_basic_ledger` VALUES ('2', '1', 'No01', '1' , '2/8','2018-01-25 00:00:00.000', '10001', '10011', null, null, '1','2018-01-24 12:23:20.832', null);
 
 SET SESSION SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';

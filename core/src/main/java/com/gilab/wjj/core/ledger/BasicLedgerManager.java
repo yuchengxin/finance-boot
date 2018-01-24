@@ -2,10 +2,7 @@ package com.gilab.wjj.core.ledger;
 
 import com.gilab.wjj.core.BasicLedgerAgent;
 import com.gilab.wjj.persistence.dao.BasicLedgerDao;
-import com.gilab.wjj.persistence.model.BasicLedger;
-import com.gilab.wjj.persistence.model.BasicLedgerInfo;
-import com.gilab.wjj.persistence.model.BasicRentInfo;
-import com.gilab.wjj.persistence.model.ReqResultMap;
+import com.gilab.wjj.persistence.model.*;
 import com.gilab.wjj.util.logback.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +33,27 @@ public class BasicLedgerManager implements BasicLedgerAgent{
         List<BasicLedger> ledgers = new ArrayList<>();
         for(int i = 0 ; i < basicLedgerInfos.size(); i++){
             BasicLedger basicLedger = new BasicLedger();
-            basicLedger.setContractId(basicLedgerInfos.get(i).getContractId());
+//            basicLedger.setId(basicLedgerInfos.get(i).getId());
+//            basicLedger.setContractId(basicLedgerInfos.get(i).getContractId());
+//            basicLedger.setBeneficiaryId(basicLedgerInfos.get(i).getBeneficiaryId());
+            basicLedger.setContractNo(basicLedgerInfos.get(i).getContractNo());
+//            basicLedger.setCalFormula(basicLedgerInfos.get(i).getCalFormula());
             basicLedger.setPlanPayDate(basicLedgerInfos.get(i).getPlanPayDate().getTime());
-            basicLedger.setPlanPayCount(basicLedgerInfos.get(i).getPlanPayCount());
+            basicLedger.setPlanPayCountPre(basicLedgerInfos.get(i).getPlanPayCountPre());
+            basicLedger.setPlanPayCountPost(basicLedgerInfos.get(i).getPlanPayCountPost());
             basicLedger.setActualPayDate(basicLedgerInfos.get(i).getActualPayDate().getTime());
             basicLedger.setActualPayCount(basicLedgerInfos.get(i).getActualPayCount());
+//            basicLedger.setPayStatus(PayStatus.strLookup(basicLedgerInfos.get(i).getPayStatus()));
+            if(basicLedgerInfos.get(i).getActualPayCount()>0){
+                basicLedger.setPayStatus(PayStatus.SUCCESSFULPAID);
+            }else{
+                basicLedger.setPayStatus(PayStatus.FAILEDPAID);
+            }
             ledgers.add(basicLedger);
         }
 
         Map<BasicRentInfo, String> resultFailed = new HashMap<>();
         Map<BasicRentInfo, String> resultSucceed = new HashMap<>();
-        System.out.println(ledgers);
-        System.out.println(ledgers.get(0).getPlanPayDate());
         basicLedgerDao.batchUpdateLedgers(ledgers);
         return ReqResultMap.success(resultSucceed,"导入成功");
     }
