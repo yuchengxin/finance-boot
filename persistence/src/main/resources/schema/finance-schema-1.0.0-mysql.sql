@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS finance_user, finance_permission;
 DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status, finance_signing_status;
 DROP TABLE IF EXISTS finance_merchants;
 DROP TABLE IF EXISTS finance_leaseback_proposal, finance_proposal_history;
-DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger;
+DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger, finance_pay_status;
 
 SET SESSION SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 
@@ -203,17 +203,35 @@ CREATE TABLE finance_proposal_history (
 CREATE TABLE finance_basic_ledger (
   id               BIGINT                NOT NULL   AUTO_INCREMENT  PRIMARY KEY ,
   contractId       BIGINT                NOT NULL ,
-  merchantId       BIGINT                NOT NULL ,
-  calFormula       VARCHAR(100)          NOT NULL ,
+  contractNo       VARCHAR(100)          NOT NULL ,
+  beneficiaryId    BIGINT                NOT NULL ,
+  calFormula       VARCHAR(200)          NOT NULL ,
   planPayDate      DATETIME(3)           NOT NULL ,
-  planPayCount     DOUBLE                NOT NULL ,
+  planPayCountPre     DOUBLE                NOT NULL ,
+  planPayCountPost     DOUBLE                NOT NULL ,
   actualPayDate    DATETIME(3)           NOT NULL ,
   actualPayCount   DOUBLE                NOT NULL ,
+  payStatus        SMALLINT              NOT NULL ,
   createTime        DATETIME(3)       DEFAULT current_timestamp(3),
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;
 
-CREATE INDEX idx_merchants_basic_ledger ON finance_basic_ledger (merchantId);
+CREATE TABLE finance_pay_status (
+  id               SMALLINT           NOT NULL PRIMARY KEY ,
+  payStatusName     VARCHAR(100)       NOT NULL ,
+  payStatusDes      VARCHAR(200) ,
+  createTime        DATETIME(3)       DEFAULT current_timestamp(3),
+  lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
+) charset=utf8;
+
+INSERT INTO finance_pay_status (id, payStatusName, payStatusDes)
+VALUES
+  (1 , 'UNPAID' , 'has not paid'),
+  (2 , 'SUCCESSFULPAID', 'has been paid successful'),
+  (3 , 'FAILEDPAID', 'has been paid failed');
+
+
+CREATE INDEX idx_contractNo_basic_ledger ON finance_basic_ledger (contractNo);
 
 CREATE TABLE finance_added_ledger (
   id               BIGINT                NOT NULL   AUTO_INCREMENT  PRIMARY KEY ,

@@ -13,15 +13,15 @@ import java.util.List;
  */
 public interface BasicRentAgent extends Agent {
 
-     ReqResult<BasicRentResult>  calBasicRentDetail(long contractId);
+     List<BasicLedger> calBasicRentDetail(long contractId);
 
-     ReqResult<BasicRentMonthResult> calBasicRentMonth(long contractId, long date);
+//     ReqResult<BasicRentMonthResult> calBasicRentMonth(long contractId, long date);
+//
+//     ReqResult<BasicRentYearResult> calBasicRentYear(long contractId, int year);
+//
+//     ReqResult<BasicRentPeriodResult> calBasicRentPeriod(long contractId, int period);
 
-     ReqResult<BasicRentYearResult> calBasicRentYear(long contractId, int year);
-
-     ReqResult<BasicRentPeriodResult> calBasicRentPeriod(long contractId, int period);
-
-     ReqResult<BasicRentResult> preCalBasicRentDetail(long paybackDate, int leasebackPrice, long proposalId);
+     List<BasicLedger> preCalBasicRentDetail(long paybackDate, int leasebackPrice, long proposalId);
 
      List<BasicRentMonthResult> monthlyRentReport(long date);
 }

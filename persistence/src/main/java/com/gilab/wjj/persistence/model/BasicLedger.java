@@ -12,25 +12,35 @@ import com.gilab.wjj.util.DateUtils;
 public class BasicLedger implements Entity {
     private long id;
     private long contractId;
-    private long merchantId;
+    private long beneficiaryId;
+    private String contractNo;
     private String calFormula;
     private long planPayDate;
-    private double planPayCount;
+    private double planPayCountPre;
+    private double planPayCountPost;
     private long actualPayDate;
     private double actualPayCount;
+    private PayStatus payStatus;
 
     public BasicLedger(){}
 
-    public BasicLedger(long id, long contractId, long merchantId, String calFormula, long planPayDate,
-                       double planPayCount, long actualPayDate, double actualPayCount) {
+    public BasicLedger(long id, long contractId, long beneficiaryId, String contractNo, String calFormula, long planPayDate, double planPayCountPre, double planPayCountPost, long actualPayDate, double actualPayCount, PayStatus payStatus) {
         this.id = id;
         this.contractId = contractId;
-        this.merchantId = merchantId;
+        this.beneficiaryId = beneficiaryId;
+        this.contractNo = contractNo;
         this.calFormula = calFormula;
         this.planPayDate = planPayDate;
-        this.planPayCount = planPayCount;
+        this.planPayCountPre = planPayCountPre;
+        this.planPayCountPost = planPayCountPost;
         this.actualPayDate = actualPayDate;
         this.actualPayCount = actualPayCount;
+        this.payStatus = payStatus;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     public void setId(long id) {
@@ -45,12 +55,12 @@ public class BasicLedger implements Entity {
         this.contractId = contractId;
     }
 
-    public long getMerchantId() {
-        return merchantId;
+    public long getBeneficiaryId() {
+        return beneficiaryId;
     }
 
-    public void setMerchantId(long merchantId) {
-        this.merchantId = merchantId;
+    public void setBeneficiaryId(long beneficiaryId) {
+        this.beneficiaryId = beneficiaryId;
     }
 
     public String getCalFormula() {
@@ -69,12 +79,20 @@ public class BasicLedger implements Entity {
         this.planPayDate = planPayDate;
     }
 
-    public double getPlanPayCount() {
-        return planPayCount;
+    public double getPlanPayCountPre() {
+        return planPayCountPre;
     }
 
-    public void setPlanPayCount(double planPayCount) {
-        this.planPayCount = planPayCount;
+    public void setPlanPayCountPre(double planPayCountPre) {
+        this.planPayCountPre = planPayCountPre;
+    }
+
+    public double getPlanPayCountPost() {
+        return planPayCountPost;
+    }
+
+    public void setPlanPayCountPost(double planPayCountPost) {
+        this.planPayCountPost = planPayCountPost;
     }
 
     public long getActualPayDate() {
@@ -93,9 +111,20 @@ public class BasicLedger implements Entity {
         this.actualPayCount = actualPayCount;
     }
 
-    @Override
-    public long getId() {
-        return id;
+    public PayStatus getPayStatus() {
+        return payStatus;
+    }
+
+    public void setPayStatus(PayStatus payStatus) {
+        this.payStatus = payStatus;
+    }
+
+    public String getContractNo() {
+        return contractNo;
+    }
+
+    public void setContractNo(String contractNo) {
+        this.contractNo = contractNo;
     }
 
     @Override
@@ -103,24 +132,30 @@ public class BasicLedger implements Entity {
         return "BasicLedger{" +
                 "id=" + id +
                 ", contractId=" + contractId +
-                ", merchantId=" + merchantId +
+                ", beneficiaryId=" + beneficiaryId +
+                ", contractNo='" + contractNo + '\'' +
                 ", calFormula='" + calFormula + '\'' +
                 ", planPayDate=" + DateUtils.datetimeString(planPayDate, "yyyy-MM-dd") +
-                ", planPayCount=" + planPayCount +
+                ", planPayCountPre=" + planPayCountPre +
+                ", planPayCountPost=" + planPayCountPost +
                 ", actualPayDate=" + DateUtils.datetimeString(actualPayDate, "yyyy-MM-dd") +
                 ", actualPayCount=" + actualPayCount +
+                ", payStatus=" + payStatus +
                 '}';
     }
 
     public static class Builder{
         private long id;
         private long contractId;
-        private long merchantId;
+        private long beneficiaryId;
+        private String contractNo;
         private String calFormula;
         private long planPayDate;
-        private double planPayCount;
+        private double planPayCountPre;
+        private double planPayCountPost;
         private long actualPayDate;
         private double actualPayCount;
+        private PayStatus payStatus;
 
         public Builder id(long id){
             this.id = id;
@@ -132,8 +167,13 @@ public class BasicLedger implements Entity {
             return this;
         }
 
-        public Builder merchantId(long merchantId){
-            this.merchantId = merchantId;
+        public Builder beneficiaryId(long beneficiaryId){
+            this.beneficiaryId = beneficiaryId;
+            return this;
+        }
+
+        public Builder contractNo(String contractNo){
+            this.contractNo = contractNo;
             return this;
         }
 
@@ -148,8 +188,13 @@ public class BasicLedger implements Entity {
         }
 
 
-        public Builder planPayCount(double planPayCount){
-            this.planPayCount = planPayCount;
+        public Builder planPayCountPre(double planPayCountPre){
+            this.planPayCountPre = planPayCountPre;
+            return this;
+        }
+
+        public Builder planPayCountPost(double planPayCountPost){
+            this.planPayCountPost = planPayCountPost;
             return this;
         }
 
@@ -163,8 +208,14 @@ public class BasicLedger implements Entity {
             return this;
         }
 
+        public Builder payStatus(PayStatus payStatus){
+            this.payStatus = payStatus;
+            return this;
+        }
+
         public BasicLedger build(){
-            return new BasicLedger(id, contractId, merchantId, calFormula, planPayDate, planPayCount, actualPayDate, actualPayCount);
+            return new BasicLedger(id, contractId, beneficiaryId, contractNo, calFormula, planPayDate, planPayCountPre,
+                    planPayCountPost, actualPayDate, actualPayCount, payStatus);
         }
     }
 }
