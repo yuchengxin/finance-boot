@@ -71,7 +71,6 @@ public class BasicRentManager implements BasicRentAgent {
         long date = contract.getPayStartDate();
         int i =0;
         List<BasicLedger> result = new ArrayList<>();
-        System.out.println(DateUtils.datetimeString(contract.getPayStartDate()) + DateUtils.datetimeString(contract.getContractTerDate()));
         while(date <= contract.getContractTerDate()){
             BasicLedger basicLedger = calBasicRentMonth(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, date);
             basicLedger.setContractId(contractId);
