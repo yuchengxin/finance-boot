@@ -4,4 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gilab.wjj.persistence.mapper.BasicLedgerMapper">
 
+
+        <select id="getLedger" resultType="com.gilab.wjj.persistence.model.BasicLedger">
+                select * from finance_basic_ledger where contractId = #{contractId,typeHandler=LongTypeHandler}
+        </select>
+
+        <insert id="batchUpdateLedgers" parameterType="java.util.List">
+          <foreach collection="list" item="item" index="index" separator=" ">
+                  update
+                    finance_basic_ledger
+                  set
+                    actualPayDate = #{item.actualPayDate,typeHandler=TimestampLongHandler},actualPayCount=#{item.actualPayCount}
+                  where
+                  planPayDate=#{item.planPayDate,typeHandler=TimestampLongHandler} and contractId = #{item.contractId};
+          </foreach>
+
+        </insert>
 </mapper>

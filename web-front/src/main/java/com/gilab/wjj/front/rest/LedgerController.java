@@ -1,5 +1,6 @@
 package com.gilab.wjj.front.rest;
 
+import com.gilab.wjj.core.BasicLedgerAgent;
 import com.gilab.wjj.core.ContractAgent;
 import com.gilab.wjj.exception.FinanceErrMsg;
 import com.gilab.wjj.front.utils.RestUtils;
@@ -27,7 +28,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Created by yuankui on 12/21/17.
+ * Created by che on 18/1/24.
  * <p>
  * Desc:
  * <p>
@@ -40,14 +41,30 @@ public class LedgerController {
     private static final Logger logger = LoggerFactory.getLogger(LedgerController.class);
 
     @Autowired
-    private ContractAgent contractMgr;
+    private BasicLedgerAgent basicLedgerMgr;
 
-    @Autowired
-    private ContractDao contractDao;
+    @ApiOperation(value = "查询台账", notes = "根据ID查询台账", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contractId", value = "contractId", dataType = "Long", paramType = "query"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/ledgers/{contractId}", method = { RequestMethod.GET }, produces = "application/json")
+    public List<BasicLedger> getLedger(final HttpServletResponse response,
+                                    @PathVariable long contractId) throws IOException {
+        //TODO
+        //登录判断
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
+        //TODO
+        //权限判断
+        return basicLedgerMgr.getLedger(contractId);
+    }
 
 
     @ApiOperation(value = "批量导入台账", notes = "批量导入台账支付信息", produces = "application/json")
@@ -63,7 +80,7 @@ public class LedgerController {
     })
     @ResponseBody
     @RequestMapping(value = "/upload-ledgers", method = { RequestMethod.POST }, produces = "application/json")
-    public Map<String, String> uploadContracts(final HttpServletResponse response,
+    public Map uploadContracts(final HttpServletResponse response,
                                            @RequestParam("ledgers")MultipartFile ledgers) throws Exception {
         //TODO
         //登录判断
@@ -76,7 +93,8 @@ public class LedgerController {
         System.out.println(f.getPath());
         ExcelDataFormatter edf = new ExcelDataFormatter();
 
-        List<BasicLedgerInfo> basicRentInfos = new ExcelUtils<>(new BasicLedgerInfo()).readFromFile(null, f);
+        List<BasicLedgerInfo> basicLedgerInfos = new ExcelUtils<>(new BasicLedgerInfo()).readFromFile(null, f);
+        basicLedgerMgr.batchUpdateLedgers(basicLedgerInfos);
         HashMap resMap = new HashMap();
         resMap.put("SUCCESS",true);
         return resMap;
