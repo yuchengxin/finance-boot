@@ -4,7 +4,10 @@ import com.gilab.wjj.persistence.IntEnumTypeHandler;
 import com.gilab.wjj.persistence.model.PayStatus;
 
 /**
- * Created by che on 2018/1/24.
+ * Created by yuankui on 1/24/18.
+ * <p>
+ * Desc:
+ * <p>
  */
 public class PayStatusHandler extends IntEnumTypeHandler<PayStatus> {
     public PayStatusHandler() {

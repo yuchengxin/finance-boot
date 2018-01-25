@@ -18,13 +18,13 @@ public class BasicLedger implements Entity {
     private long planPayDate;
     private double planPayCountPre;
     private double planPayCountPost;
-    private long actualPayDate;
+    private Long actualPayDate;
     private double actualPayCount;
     private PayStatus payStatus;
 
     public BasicLedger(){}
 
-    public BasicLedger(long id, long contractId, long beneficiaryId, String contractNo, String calFormula, long planPayDate, double planPayCountPre, double planPayCountPost, long actualPayDate, double actualPayCount, PayStatus payStatus) {
+    public BasicLedger(long id, long contractId, long beneficiaryId, String contractNo, String calFormula, long planPayDate, double planPayCountPre, double planPayCountPost, Long actualPayDate, double actualPayCount, PayStatus payStatus) {
         this.id = id;
         this.contractId = contractId;
         this.beneficiaryId = beneficiaryId;
@@ -95,11 +95,11 @@ public class BasicLedger implements Entity {
         this.planPayCountPost = planPayCountPost;
     }
 
-    public long getActualPayDate() {
+    public Long getActualPayDate() {
         return actualPayDate;
     }
 
-    public void setActualPayDate(long actualPayDate) {
+    public void setActualPayDate(Long actualPayDate) {
         this.actualPayDate = actualPayDate;
     }
 
@@ -153,7 +153,7 @@ public class BasicLedger implements Entity {
         private long planPayDate;
         private double planPayCountPre;
         private double planPayCountPost;
-        private long actualPayDate;
+        private Long actualPayDate;
         private double actualPayCount;
         private PayStatus payStatus;
 
@@ -198,7 +198,7 @@ public class BasicLedger implements Entity {
             return this;
         }
 
-        public Builder actualPayDate(long actualPayDate){
+        public Builder actualPayDate(Long actualPayDate){
             this.actualPayDate = actualPayDate;
             return this;
         }

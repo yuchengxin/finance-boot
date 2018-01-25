@@ -16,4 +16,18 @@ public interface BasicLedgerDao {
     List<BasicLedger> getLedger(long contractId);
 
     void batchUpdateLedgers(List<BasicLedger> ledgers);
+
+    BasicLedger getBasicLedger(long basicLedgerId);
+
+    List<BasicLedger> getBasicLedgerWithContract(long contractId);
+
+    List<BasicLedger> getBasicLedgerWithContractNo(String contractNo);
+
+    long createBasicLedger(BasicLedger basicLedger);
+
+    void batchCreateBasicLedgers(List<BasicLedger> basicLedgers);
+
+    void updateBasicLedger(BasicLedger basicLedger);
+
+    void deleteBasicLedger(long basicLedgerId);
 }

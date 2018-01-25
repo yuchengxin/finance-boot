@@ -29,4 +29,39 @@ public class BasicLedgerDaoImpl implements BasicLedgerDao {
     public void batchUpdateLedgers(List<BasicLedger> ledgers) {
         mapper.batchUpdateLedgers(ledgers);
     }
+
+    public BasicLedger getBasicLedger(long basicLedgerId) {
+        return mapper.selectBasicLedger(basicLedgerId);
+    }
+
+    @Override
+    public List<BasicLedger> getBasicLedgerWithContract(long contractId) {
+        return mapper.selectBasicLedgerWithContract(contractId);
+    }
+
+    @Override
+    public List<BasicLedger> getBasicLedgerWithContractNo(String contractNo) {
+        return mapper.selectBasicLedgerWithContractNo(contractNo);
+    }
+
+    @Override
+    public long createBasicLedger(BasicLedger basicLedger) {
+        mapper.insertBasicLedger(basicLedger);
+        return basicLedger.getId();
+    }
+
+    @Override
+    public void batchCreateBasicLedgers(List<BasicLedger> basicLedgers) {
+        mapper.batchInsertBasicLedgers(basicLedgers);
+    }
+
+    @Override
+    public void updateBasicLedger(BasicLedger basicLedger) {
+        mapper.updateBasicLedger(basicLedger);
+    }
+
+    @Override
+    public void deleteBasicLedger(long basicLedgerId) {
+        mapper.deleteBasicLedger(basicLedgerId);
+    }
 }
