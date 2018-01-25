@@ -62,4 +62,9 @@ public class BasicLedgerManager implements BasicLedgerAgent{
         basicLedgerDao.batchUpdateLedgers(ledgers);
         return ReqResultMap.success(resultSucceed,"导入成功");
     }
+
+    @Override
+    public List<HashMap> getLedgerWithFilter(String contractNo) {
+        return basicLedgerDao.getLedgerWithFilter(contractNo);
+    }
 }

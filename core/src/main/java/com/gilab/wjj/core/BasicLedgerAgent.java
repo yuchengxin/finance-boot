@@ -2,6 +2,7 @@ package com.gilab.wjj.core;
 
 import com.gilab.wjj.persistence.model.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,5 +17,7 @@ public interface BasicLedgerAgent extends Agent {
     List<BasicLedger> getLedger(long contractId);
 
     ReqResultMap batchUpdateLedgers(List<BasicLedgerInfo> basicLedgerInfos);
+
+    List<HashMap> getLedgerWithFilter(String contractNo);
 
 }

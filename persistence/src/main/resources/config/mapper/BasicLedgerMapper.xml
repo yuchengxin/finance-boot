@@ -35,7 +35,7 @@
                     actualPayCount=#{item.actualPayCount}
                   where
                   planPayDate=#{item.planPayDate,typeHandler=TimestampLongHandler}
-                  and contractId = (select contractId from finance_contract where contractNo=#{item.contractNo});
+                  and contractNo = #{item.contractNo};
           </foreach>
 
         </insert>
@@ -130,6 +130,10 @@
         )
     </foreach>
     </insert>
+
+    <select id="getLedgerWithFilter" resultType="map">
+      select * FROM (select * from finance_basic_ledger WHERE contractNo = #{contractNo}) AS l LEFT JOIN finance_contract c on l.contractNo=c.contractNo;
+    </select>
 
     <resultMap id="BasicLedgerMap" type="BasicLedger">
         <id property="id" column="id"/>

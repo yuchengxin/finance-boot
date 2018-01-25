@@ -100,4 +100,27 @@ public class LedgerController {
         return resMap;
 //        return RestUtils.getOrSendError(response, contractMgr.batchCreateContracts(basicRentInfos));
     }
+
+    @ApiOperation(value = "多条件查询台账", notes = "台账筛选", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contractNo", value = "合同编号", dataType = "String", paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/ledger_filter", method = { RequestMethod.GET }, produces = "application/json")
+    public List<HashMap> getLedgerWithFilter(final HttpServletResponse response,
+                                          @RequestParam(name = "contractNo", required = false) String contractNo) throws IOException {
+        //TODO
+        //登录判断
+
+        //TODO
+        //权限判断
+        return basicLedgerMgr.getLedgerWithFilter(contractNo);
+    }
 }

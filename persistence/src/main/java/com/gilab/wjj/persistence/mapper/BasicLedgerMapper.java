@@ -4,6 +4,7 @@ import com.gilab.wjj.persistence.model.BasicLedger;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface BasicLedgerMapper {
     void updateBasicLedger(BasicLedger basicLedger);
 
     void deleteBasicLedger(@Param("id") long basicLedgerId);
+
+    List<HashMap> getLedgerWithFilter(@Param("contractNo") String contractNo);
 }
