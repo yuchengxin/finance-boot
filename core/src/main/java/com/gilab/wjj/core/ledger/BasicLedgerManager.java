@@ -31,6 +31,7 @@ public class BasicLedgerManager implements BasicLedgerAgent{
     @Override
     public ReqResultMap batchUpdateLedgers(List<BasicLedgerInfo> basicLedgerInfos) {
         List<BasicLedger> ledgers = new ArrayList<>();
+        System.out.println(basicLedgerInfos);
         for(int i = 0 ; i < basicLedgerInfos.size(); i++){
             BasicLedger basicLedger = new BasicLedger();
 //            basicLedger.setId(basicLedgerInfos.get(i).getId());
@@ -38,6 +39,10 @@ public class BasicLedgerManager implements BasicLedgerAgent{
 //            basicLedger.setBeneficiaryId(basicLedgerInfos.get(i).getBeneficiaryId());
             basicLedger.setContractNo(basicLedgerInfos.get(i).getContractNo());
 //            basicLedger.setCalFormula(basicLedgerInfos.get(i).getCalFormula());
+            System.out.println("-chejian----"+i+"--:"+basicLedgerInfos.get(i)+"-----");
+            System.out.println("-chejian----"+i+"--:"+basicLedgerInfos.get(i).getPlanPayDate()+"-----");
+            if(basicLedgerInfos.get(i).getPlanPayDate()==null)continue;
+            System.out.println("-chejian----"+i+"--:"+basicLedgerInfos.get(i).getPlanPayDate().getTime()+"-----");
             basicLedger.setPlanPayDate(basicLedgerInfos.get(i).getPlanPayDate().getTime());
             basicLedger.setPlanPayCountPre(basicLedgerInfos.get(i).getPlanPayCountPre());
             basicLedger.setPlanPayCountPost(basicLedgerInfos.get(i).getPlanPayCountPost());
