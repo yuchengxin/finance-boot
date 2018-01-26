@@ -19,7 +19,7 @@ public interface ContractAgent extends Agent {
     List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo,
                                          SigningMode signMode, ContractStatus contractStatus);
 
-    Map<Contract, AllBasicRentResult> getContractAndCalResultWithFilter(String contractNo, Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo,
+    List<AllBasicRentResult> getContractAndCalResultWithFilter(String contractNo, Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo,
                                                     SigningMode signMode, ContractStatus contractStatus, String beneficiaryName, String beneficiaryPhone,
                                                     String beneficiaryIDNO, String beneficiaryAccount);
 
