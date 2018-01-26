@@ -77,8 +77,8 @@ public class ContractManager implements ContractAgent {
     }
 
     @Override
-    public Map<Contract, AllBasicRentResult> getContractAndCalResultWithFilter(String contractNo, Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo, SigningMode signMode, ContractStatus contractStatus, String beneficiaryName, String beneficiaryPhone, String beneficiaryIDNO, String beneficiaryAccount) {
-        Map<Contract, AllBasicRentResult> result = new HashMap<>();
+    public List<AllBasicRentResult> getContractAndCalResultWithFilter(String contractNo, Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo, SigningMode signMode, ContractStatus contractStatus, String beneficiaryName, String beneficiaryPhone, String beneficiaryIDNO, String beneficiaryAccount) {
+        List<AllBasicRentResult> allBasicRentResults = new ArrayList<>();
         List<Contract> contracts = new ArrayList<>();
         if(contractNo != null && !contractNo.isEmpty()){
             Contract contract = contractDao.getContractWithNo(contractNo);
@@ -109,10 +109,11 @@ public class ContractManager implements ContractAgent {
         for(Contract c : contracts){
             List<BasicLedger> basicLedgers = basicLedgerDao.getBasicLedgerWithContract(c.getId());
             AllBasicRentResult calResult = calResultStr(c, basicLedgers);
-            result.put(c, calResult);
+            calResult.setContract(c);
+            allBasicRentResults.add(calResult);
         }
 
-        return result;
+        return allBasicRentResults;
     }
 
     private AllBasicRentResult calResultStr(Contract contract, List<BasicLedger> basicLedgers){
@@ -323,11 +324,11 @@ public class ContractManager implements ContractAgent {
         }
         contractDao.batchCreateContracts(contracts);
         List<BasicLedger> basicLedgerAll = new ArrayList<>();
-//        for(Contract contract : contracts){
-//            List<BasicLedger> basicLedgers = basicRentMgr.calBasicRentDetail(contract.getContractNo());
-//            if(basicLedgers != null && basicLedgers.size() != 0)basicLedgerAll.addAll(basicLedgers);
-//        }
-//        basicLedgerDao.batchCreateBasicLedgers(basicLedgerAll);
+        for(Contract contract : contracts){
+            List<BasicLedger> basicLedgers = basicRentMgr.calBasicRentDetail(contract.getContractNo());
+            if(basicLedgers != null && basicLedgers.size() != 0)basicLedgerAll.addAll(basicLedgers);
+        }
+        basicLedgerDao.batchCreateBasicLedgers(basicLedgerAll);
         return ReqResultMap.success(null, "导入成功");
     }
 

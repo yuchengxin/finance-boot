@@ -10,6 +10,7 @@ import java.util.List;
  * Change:
  */
 public class AllBasicRentResult {
+    private Contract contract;
     private SpecialMonthBasicRentResult firstMonthBasicRentResult;
     private List<SpecialMonthBasicRentResult> extendMonthRentResults;
     private List<NormalMonthBasicRentResult> normalMonthBasicRentResults;
@@ -21,13 +22,14 @@ public class AllBasicRentResult {
 
     }
 
-    public AllBasicRentResult(SpecialMonthBasicRentResult firstMonthBasicRentResult, List<SpecialMonthBasicRentResult> extendMonthRentResults, List<NormalMonthBasicRentResult> normalMonthBasicRentResults, SpecialMonthBasicRentResult lastMonthBasicRentResult, List<BasicLedger> basicLedgerDetails, double total) {
+    public AllBasicRentResult(Contract contract, SpecialMonthBasicRentResult firstMonthBasicRentResult, List<SpecialMonthBasicRentResult> extendMonthRentResults, List<NormalMonthBasicRentResult> normalMonthBasicRentResults, SpecialMonthBasicRentResult lastMonthBasicRentResult, List<BasicLedger> basicLedgerDetails, double total) {
         this.firstMonthBasicRentResult = firstMonthBasicRentResult;
         this.extendMonthRentResults = extendMonthRentResults;
         this.normalMonthBasicRentResults = normalMonthBasicRentResults;
         this.lastMonthBasicRentResult = lastMonthBasicRentResult;
         this.basicLedgerDetails = basicLedgerDetails;
         this.total = total;
+        this.contract = contract;
     }
 
     public SpecialMonthBasicRentResult getFirstMonthBasicRentResult() {
@@ -78,9 +80,18 @@ public class AllBasicRentResult {
         this.total = total;
     }
 
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
+    }
+
     @Override
     public String toString() {
         return "AllBasicRentResult{" +
+                "contract=" + contract +
                 "firstMonthBasicRentResult=" + firstMonthBasicRentResult +
                 ", extendMonthRentResults=" + extendMonthRentResults +
                 ", normalMonthBasicRentResults=" + normalMonthBasicRentResults +

@@ -143,7 +143,7 @@ public class ContractController {
     })
     @ResponseBody
     @RequestMapping(value = "/contracts", method = { RequestMethod.GET }, produces = "application/json")
-    public Map<Contract, AllBasicRentResult> getContractList(final HttpServletResponse response,
+    public List<AllBasicRentResult> getContractList(final HttpServletResponse response,
                                     @RequestParam(name = "contractNo", required = false) String contractNo,
                                     @RequestParam(name = "filterStartTime", required = false) Long filterStartTime,
                                     @RequestParam(name = "filterEndTime", required = false) Long filterEndTime,
