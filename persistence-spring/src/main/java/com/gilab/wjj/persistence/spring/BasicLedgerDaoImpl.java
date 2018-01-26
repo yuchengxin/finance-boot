@@ -6,6 +6,7 @@ import com.gilab.wjj.persistence.model.BasicLedger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,6 +22,15 @@ public class BasicLedgerDaoImpl implements BasicLedgerDao {
     private BasicLedgerMapper mapper;
 
     @Override
+    public List<BasicLedger> getLedger(long contractId) {
+        return mapper.getLedger(contractId);
+    }
+
+    @Override
+    public void batchUpdateLedgers(List<BasicLedger> ledgers) {
+        mapper.batchUpdateLedgers(ledgers);
+    }
+
     public BasicLedger getBasicLedger(long basicLedgerId) {
         return mapper.selectBasicLedger(basicLedgerId);
     }
@@ -54,5 +64,10 @@ public class BasicLedgerDaoImpl implements BasicLedgerDao {
     @Override
     public void deleteBasicLedger(long basicLedgerId) {
         mapper.deleteBasicLedger(basicLedgerId);
+    }
+
+    @Override
+    public List<HashMap> getLedgerWithFilter(String contractNo) {
+        return mapper.getLedgerWithFilter(contractNo);
     }
 }

@@ -312,8 +312,9 @@ insert into `finance_menu`(`id`,`icon`,`name`,`state`,`url`,`p_id`) values
 (80,'menu-3','台账管理',1,NULL,1),
 (7020,'menu-13','资料查询',0,'/contract/contractSearch.html',70),
 (7030,'menu-4','返租计算',0,'/contract/calculator.html',70),
-(8010,'menu-32','添加台账',0,'/ledger/addLedger.html',80),
-(8020,'menu-13','查询台账',0,'/ledger/searchLedger.html',80),
+-- (8010,'menu-32','添加台账',0,'/ledger/addLedger.html',80),
+-- (8020,'menu-13','查询台账',0,'/ledger/searchLedger.html',80),
+(8010,'menu-54','台账管理',0,'/ledger/ledgerManage.html',80),
 (9010,'menu-61','用户管理',0,'/power/userManage.html',90),
 (9020,'menu-62','权限管理',0,'/power/permissionManage.html',90),
 (9030,'menu-63','方案管理',0,'/power/proposalManage.html',90),
@@ -321,5 +322,15 @@ insert into `finance_menu`(`id`,`icon`,`name`,`state`,`url`,`p_id`) values
 (9050,'menu-63','修改密码',0,NULL,90),
 (9060,'menu-64','安全退出',0,NULL,90);
 
+
+INSERT INTO `finance_contract` VALUES ('1', '22', 'No01', '1', '2018-01-24 11:29:21.241', '1', '1', '1', '2018-01-24 11:29:21.241', '1层-商10', '221.71', '5200', '6000', '5500', '4877620', null, '2018-01-24 11:29:21.241', '2021-01-25 11:29:21.241', '2036-01-25 11:29:21.241', '{\"id\":1,\"merchantName\":\"李四\",\"merchantPhone\":\"15688888888\",\"merchantIdNo\":\"360424199999999999\",\"bankInfo\":\"建设银行\",\"bankAccount\":\"6227002020200008\",\"merchantAddress\":\"湖北省武汉市\"}', '1', '2', 'mylog', '2018-01-24 11:29:21.566', null);
+INSERT INTO `finance_contract` VALUES ('2', '22', 'No02', '1', '2018-01-24 11:29:21.241', '1', '1', '1', '2018-01-24 11:29:21.241', '3层-商11', '231.71', '5200', '6000', '5500', '4877620', null, '2018-01-24 11:29:21.241', '2021-01-25 11:29:21.241', '2036-01-25 11:29:21.241', '{\"id\":1,\"merchantName\":\"李四\",\"merchantPhone\":\"15688888888\",\"merchantIdNo\":\"360424199999999999\",\"bankInfo\":\"建设银行\",\"bankAccount\":\"6227002020200008\",\"merchantAddress\":\"湖北省武汉市\"}', '1', '2', 'mylog', '2018-01-24 11:29:21.566', null);
+
+INSERT INTO `finance_merchants` VALUES ('1', '李四', '15688888888', '360424199999999999', '建设银行', '6227002020200008', '湖北省武汉市', '2018-01-24 11:29:08.324', null);
+
+INSERT INTO `finance_basic_ledger` VALUES ('1', '1', 'No01', '1' , '1+1','2018-03-28 00:00:00.000', '12000', '10010', null, null, '1', '2018-03-24 12:22:49.811', null);
+INSERT INTO `finance_basic_ledger` VALUES ('2', '1', 'No01', '1' , '2/8','2018-04-28 00:00:00.000', '12001', '10011', null, null, '1','2018-01-24 12:23:20.832', null);
+INSERT INTO `finance_basic_ledger` VALUES ('3', '2', 'No02', '1' , '1+1+2','2018-03-28 00:00:00.000', '10100', '10005', null, null, '1', '2018-03-24 12:22:49.811', null);
+INSERT INTO `finance_basic_ledger` VALUES ('4', '2', 'No02', '1' , '2/8+2','2018-04-28 00:00:00.000', '10101', '10011', null, null, '1','2018-01-24 12:23:20.832', null);
 
 SET SESSION SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';

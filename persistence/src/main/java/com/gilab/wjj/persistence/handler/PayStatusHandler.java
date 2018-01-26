@@ -8,7 +8,6 @@ import com.gilab.wjj.persistence.model.PayStatus;
  * <p>
  * Desc:
  * <p>
- * Change:
  */
 public class PayStatusHandler extends IntEnumTypeHandler<PayStatus> {
     public PayStatusHandler() {

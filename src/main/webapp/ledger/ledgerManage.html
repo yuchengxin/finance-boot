@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>台账管理</title>
+	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/default/easyui.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/icon.css"/>
+	<!--<link rel="stylesheet" type="text/css" href="/static/layer/theme/default/layer.css"/>-->
+
+	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="/static/js/basicFun.js"></script>
+	<script type="text/javascript" src="/static/layer/layer.js"></script>
+	<script type="text/javascript">
+
+	var ledgerList = [];
+	var contractIdonLedger = 0;
+
+	$(function() {
+
+		searchLedger();
+
+
+
+
+
+
+//		searchLedger(1);
+//		$("#dg").datagrid({
+//			//双击事件
+//			onDblClickRow: function (index, row) {
+//
+//				searchLedger(row.id);
+//
+//			}
+//		});
+
+	$("#ledger_confirm_table").datagrid({
+		onSelect: function (index, row) {
+//			$.messager.alert("selected:"+index,row.planPayCountPost);
+			$("#selected_total").val(Number($("#selected_total").val())+row.planPayCountPost);
+			$("#selected_total_number").val(Number($("#selected_total_number").val())+1);
+		},
+		onUnselect:function (index, row) {
+//			$.messager.alert("unSelected:"+index,row.planPayCountPost);
+			$("#selected_total").val(Number($("#selected_total").val())-row.planPayCountPost);
+			$("#selected_total_number").val(Number($("#selected_total_number").val())-1);
+		},
+		onCheckAll:function (rows) {
+//			$.messager.alert("selectedAll:",rows.length);
+			$("#selected_total").val($("#total").val());
+			$("#selected_total_number").val($("#total_number").val());
+		},
+		onUncheckAll:function (rows) {
+//			$.messager.alert("unSelectedAll:",rows.length);
+			$("#selected_total").val(0);
+			$("#selected_total_number").val(0);
+		}
+	});
+	})
+	
+	function closeGoodsTypeChooseDialog(){
+		$("#dlg2").dialog("close");
+	}
+	
+	function searchLedger(){
+//		layer.tips('上', '#search', {
+//			tips: [1, '#0FA6D8'] //还可配置颜色
+//		});
+
+		clearGrid("ledger_list");
+		var geturl = "/api/v1/ledger_filter?test=test";
+		if($("#contractNo").val()!=""){
+			geturl+="&contractNo="+$("#contractNo").val();
+		}
+//		if($("#filterStartTime").datebox("getValue")!=""){
+//			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
+//		}
+//		if($("#filterEndTime").datebox("getValue")!=""){
+//			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
+//		}
+//		if($("#contractVersion").val()!=""){
+//			geturl+="&contractVersion="+$("#contractVersion").val();
+//		}
+//		if($("#buildingStartSize").val()!=""){
+//			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
+//		}
+//		if($("#buildingEndSize").val()!=""){
+//			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
+//		}
+//		if($("#signMode").val()!=""){
+//			geturl+="&signMode="+$("#signMode").val();
+//		}
+//		if($("#contractStatus").val()!=""){
+//			geturl+="&contractStatus="+$("#contractStatus").val();
+//		}
+
+		$.ajax({
+			url: geturl,
+			type: 'GET',
+			contentType: 'application/json',
+			success: function (data) {
+				if (data.length > 0) {
+					for(var i = 0; i<data.length;i++) {
+						if(data[i].payStatus=='1'){
+							data[i].payStatus="<font color='black'>未支付</font>"
+						}
+						if(data[i].payStatus=='2'){
+							data[i].payStatus="<font color='#00fa9a'>支付成功</font>"
+						}
+						if(data[i].payStatus=='3'){
+							data[i].payStatus="<font color='red'>支付失败</font>"
+						}
+						if(data[i].actualPayDate==null || data[i].actualPayDate==0){
+							data[i].actualPayDate="尚未支付";
+						}else{
+							data[i].actualPayDate = getMoth(data[i].actualPayDate);
+						}
+						if(data[i].actualPayCount==null || data[i].actualPayCount==0){
+							data[i].actualPayCount="尚未支付";
+						}
+						data[i].planPayDate = getMoth(data[i].planPayDate);
+//						data[i].actualPayDate = getMoth(data[i].actualPayDate);
+						data[i].signingDate = getMoth(data[i].signingDate);
+//						var beneficObj = JSON.parse(data[i].beneficiary);
+						data[i].beneficiaryDetail = data[i].merchantName+"("+data[i].merchantPhone+")";
+						$('#ledger_list').datagrid('appendRow', data[i]);
+					}
+				}
+
+				layer.msg('查询到'+data.length+'条记录');
+//				openLedgerConfirm();
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
+			}
+		})
+	}
+
+
+
+	function addLedger(){
+//		$('#dg3').datagrid('appendRow', {
+//			planPayDate:row.planPayDate,
+//			planPayCount:row.planPayCount,
+//			actualPayDate:row.actualPayDate,
+//			actualPayCount:row.actualPayCount
+//		});
+		var selecteds = $("#ledger_confirm_table").datagrid("getSelections");
+		var selectedids = [];
+		for(var i =0; i< selecteds.length; i++){
+			selectedids.push(selecteds[i].id);
+		}
+
+		var tmpitems = $('#ledger_list').datagrid('getRows');
+		var tmpitems2 = [];
+		for(var i =0; i< tmpitems.length; i++){
+			if($.inArray(tmpitems[i].id,selectedids)>-1){
+				tmpitems[i].payStatus="<font color='#00fa9a'>支付成功</font>";
+			}
+
+			tmpitems2.push(tmpitems[i]);
+		}
+		$("#ledger_confirm").dialog("close");
+		clearGrid("ledger_list");
+		for(var i =0; i< tmpitems2.length; i++){
+			$('#ledger_list').datagrid('appendRow', tmpitems2[i]);
+		}
+
+
+
+
+	}
+
+	function openAddLedgers(){
+		$("#addledgers").dialog("open").dialog("setTitle","台账导入");
+	}
+	function doUpload() {
+		var formData = new FormData($( "#uploadForm" )[0]);
+		$.ajax({
+			url: '/api/v1/upload-ledgers' ,
+			type: 'POST',
+			data: formData,
+			async: false,
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function (returndata) {
+				$.messager.alert("上传成功",'');
+				$("#addledgers").dialog("close");
+				searchLedger();
+			},
+			error: function (returndata) {
+				$.messager.alert("上传失败",returndata);
+				$("#addledgers").dialog("close");
+			}
+		});
+	}
+
+
+	function openLedgerConfirm(){
+		clearGrid("ledger_confirm_table")
+		$("#ledger_confirm").dialog("open").dialog("setTitle","台账结算确认 ");
+		var items = $("#ledger_list").datagrid('getRows');
+		if (items) {
+			var total = 0;
+			var total_number = 0;
+			for (var i = 0; i < items.length; i++) {
+				if(items[i].payStatus.indexOf("支付成功") != -1)continue;
+				$('#ledger_confirm_table').datagrid('appendRow', items[i]);
+				total+=items[i].planPayCountPost;
+				total_number++;
+			}
+			$("#total").val(total);
+			$("#total_number").val(total_number);
+			$("#selected_total").val(0);
+			$("#selected_total_number").val(0);
+		}
+	}
+
+	function updateLedgerConfirmSelected(){
+	}
+</script>
+</head>
+<!--<body style="margin: 1px">-->
+
+
+<body class="easyui-layout" style="margin: 1px">
+<div  style="height: 100%;">
+	<table id="ledger_list"  class="easyui-datagrid" fit=true
+		   fitColumns="true"  rownumbers="true" singleSelect="true"
+		   toolbar="#tb" >
+		<thead>
+		<tr>
+			<th hidden="true" field="contractId" width="30" align="center">合同ID</th>
+			<th field="contractNo" width="30" align="center">合同编号</th>
+			<th field="buildingInfo" width="30" align="center" >楼层房号</th>
+			<th field="beneficiaryDetail" width="50" align="center" >受益人信息</th>
+			<th hidden="true" field="beneficiary" width="50" align="center" >受益人信息</th>
+			<th field="signingDate" width="30" align="center" >签约日期</th>
+			<th hidden="true" field="contractVersion" width="20" align="center">合同版本</th>
+			<th hidden="true" field="buildingSize" width="50" align="center" >建筑面积(m2)</th>
+			<th hidden="true" field="subscriptionDate" width="50" align="center">认购日期</th>
+			<th hidden="true" field="region" width="40" align="center" >所在区域</th>
+			<th hidden="true" field="signingMode" width="40" align="center" >签约方式</th>
+			<th hidden="true" field="originalPrice" width="40" align="center" >销售原价(元)</th>
+			<th hidden="true" field="totalPrice" width="40" align="center" >总价(元)</th>
+			<th hidden="true" field="signTotalPrice" width="40" align="center" >签约总价(元)</th>
+			<th hidden="true" field="leasebackPrice" width="40" align="center" >返租基价(元)</th>
+			<th hidden="true" field="backPremium" width="40" align="center" >返租溢价(元)</th>
+			<th hidden="true" field="payStartDate" width="40" align="center" >记租起始时日期</th>
+			<th hidden="true" field="contractTerDate" width="40" align="center" >合同期</th>
+			<th hidden="true" field="paybackDate" width="40" align="center" >回款时间</th>
+			<th hidden="true" field="signer" width="50" align="center" >商户姓名</th>
+			<th hidden="true" field="proposalId" width="40" align="center" >方案</th>
+			<th hidden="true" field="contractStatus" width="40" align="center" >合同状态</th>
+			<th hidden="true" field="tariff" width="40" align="center" >税率</th>
+			<th hidden="true" field="taxAmount" width="40" align="center" >个税金额(元)</th>
+			<th hidden="true" field="id" width="30" align="center">台账ID</th>
+			<th field="planPayDate" width="30" align="center">计划支付时间</th>
+			<th field="planPayCountPre" width="50" align="center">税前计划支付金额(元)</th>
+			<th field="planPayCountPost" width="50" align="center">税后计划支付金额(元)</th>
+			<th field="actualPayDate" width="30" align="center">实际支付时间</th>
+			<th field="actualPayCount" width="40" align="center">实际支付金额(元)</th>
+			<th field="payStatus" width="20" align="center">支付状态</th>
+		</tr>
+		</thead>
+	</table>
+
+	<div id="tb">
+		<div style="padding-bottom: 5px">
+			<fieldset style="border-color: #E7F0FF">
+				<legend>台账</legend>
+				<table align="center" width="100%">
+					<tr>
+						<td style="width: 8%;">支付状态：</td>
+						<td style="width: 17%;"><select type="text" id="payStatus" name="payStatus" style="width: 80%" >
+							<option value="">所有状态</option>
+							<option value="支付成功">支付成功</option>
+							<option value="未支付">未支付</option>
+							<option value="支付失败">支付失败</option>
+						</select></td>
+						<td style="width: 8%;">计划支付时间：</td>
+						<td  style="width: 20%;"><input type="text" id="planPayDateStart" name="planPayDateStart"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="planPayDateEnd" name="planPayDateEnd" style="width: 84%" class="easyui-datebox"/></td>
+						<td style="width: 8%;">房号信息：</td>
+						<td  style="width: 10%;"><input type="text" id="buildingInfo" name="buildingInfo" style="width: 90%"/></td>
+						<td style="width: 12%;"></td>
+					</tr>
+					<tr>
+						<td>合同编号:</td>
+						<td><input type="text" id="contractNo" name="contractNo" style="width: 80%" value=""/></td>
+						<td style="width: 8%;">实际支付时间：</td>
+						<td><input type="text" id="actualPayDateStart" name="actualPayDateStart"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="actualPayDateEnd" name="actualPayDateEnd" style="width: 84%" class="easyui-datebox"/></td>
+						<td style="width: 8%;">受益人卡号：</td>
+						<td><input type="text" id="benefitBankAccount" name="benefitBankAccount" style="width: 90%"/></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>受益人姓名:</td>
+						<td><input type="text" id="benefitName" name="benefitName" style="width: 80%"/></td>
+						<td>受益人电话:</td>
+						<td><input type="text" id="benefitPhone" name="benefitPhone" style="width: 70%"/></td>
+						<td></td>
+						<td>
+							<a href="javascript:searchLedger()" id="search" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+							<a href="javascript:openLedgerConfirm()" class="easyui-linkbutton" iconCls="icon-sum" plain="true">结算</a>
+						</td>
+						<td>
+							<a href="javascript:openAddLedgers()" class="easyui-linkbutton" iconCls="icon-folder" plain="true">台账导入</a>
+						</td>
+					</tr>
+					<tr>
+
+					<td>
+
+					</td>
+					</tr>
+				</table>
+
+
+				<!--&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>-->
+				<!--&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>-->
+				<!--&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>-->
+				<!--<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>-->
+			</fieldset>
+		</div>
+	</div>
+</div>
+
+
+
+
+<div id="addledgers" class="easyui-dialog" style="width:450px;height:100px;padding: 10px 10px"
+	 closed="true">
+	<div  align="center">
+		<form id= "uploadForm">
+			<input type="file" name="ledgers"/><input type="button" value="上传" onclick="doUpload()" />
+		</form>
+	</div>
+</div>
+
+<script>
+	$('#ledger_confirm_table').datagrid({
+		selectOnCheck:function(index,row){
+		$(this).is(':checked')
+//			$.messager.alert("selected:"+index,row.contractNo);
+		},
+		checkOnSelect:function(index,row){
+			$(this).is(':checked')
+//			$.messager.alert("selected:"+index,row.contractNo);
+		}
+	})
+
+//	$("#ledger_confirm_table").datagrid({
+//		//双击事件
+//		onSelect: function (index, row) {
+//
+//			$.messager("selected:"+index,row.contractNo);
+//
+//		},
+//		onUnselect:function (index, row) {
+//
+//			$.messager("unSelected:"+index,row.contractNo);
+//
+//		}
+//	});
+//
+//	$("#ledger_confirm_table").datagrid({
+//		//双击事件
+//		onCheck: function (index, row) {
+//
+//			$.messager("selected:"+index,row.contractNo);
+//
+//		}
+//	});
+
+//	$('#ledger_confirm_table').datagrid({checkOnSelect:$(this).is(':checked')})
+
+
+</script>
+<div id="ledger_confirm" class="easyui-dialog" style="width:950px;height:420px;" closed="true">
+	<div class="easyui-layout" style="width:100%;height:100%;">
+		<div region="north" style="height: 80%" >
+
+			<div>
+				<fieldset style="border-color: #E7F0FF">
+					<legend>信息确认</legend>
+					<div style="padding-top: 8px;padding-left: 10px;">
+
+						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共有：</a><input type="text" id="total_number" size="3" disabled="true"/><a>&nbsp;&nbsp;&nbsp;条</a>
+						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总计</a><input type="text" id="total" size="5" disabled="true"/><a>元</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中：</a><input type="text" id="selected_total_number" size="3" disabled="true"/><a>&nbsp;&nbsp;&nbsp;条</a>
+						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中台账合计</a><input type="text" id="selected_total" size="5" disabled="true"/><a>元</a>
+						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="addLedger()">保存台账</a>
+
+					</div>
+
+				</fieldset>
+			</div>
+		</div>
+		<div region="center">
+
+			<table id="ledger_confirm_table" title=""  class="easyui-datagrid" style="height: 1000px"
+				   fitColumns="true"  rownumbers="true" singleSelect="false"
+				   fit="true" toolbar="" >
+				<thead>
+				<tr>
+					<th data-options="field:'ck',checkbox:true"></th>
+					<th hidden="true" field="contractId" width="30" align="center">合同ID</th>
+					<th field="contractNo" width="30" align="center">合同编号</th>
+					<th field="buildingInfo" width="30" align="center" >楼层房号</th>
+					<th field="beneficiaryDetail" width="50" align="center" >受益人信息</th>
+					<th hidden="true" field="beneficiary" width="50" align="center" >受益人信息</th>
+					<th field="signingDate" width="30" align="center" >签约日期</th>
+					<th hidden="true" field="contractVersion" width="20" align="center">合同版本</th>
+					<th hidden="true" field="buildingSize" width="50" align="center" >建筑面积(m2)</th>
+					<th hidden="true" field="subscriptionDate" width="50" align="center">认购日期</th>
+					<th hidden="true" field="region" width="40" align="center" >所在区域</th>
+					<th hidden="true" field="signingMode" width="40" align="center" >签约方式</th>
+					<th hidden="true" field="originalPrice" width="40" align="center" >销售原价(元)</th>
+					<th hidden="true" field="totalPrice" width="40" align="center" >总价(元)</th>
+					<th hidden="true" field="signTotalPrice" width="40" align="center" >签约总价(元)</th>
+					<th hidden="true" field="leasebackPrice" width="40" align="center" >返租基价(元)</th>
+					<th hidden="true" field="backPremium" width="40" align="center" >返租溢价(元)</th>
+					<th hidden="true" field="payStartDate" width="40" align="center" >记租起始时日期</th>
+					<th hidden="true" field="contractTerDate" width="40" align="center" >合同期</th>
+					<th hidden="true" field="paybackDate" width="40" align="center" >回款时间</th>
+					<th hidden="true" field="signer" width="50" align="center" >商户姓名</th>
+					<th hidden="true" field="proposalId" width="40" align="center" >方案</th>
+					<th hidden="true" field="contractStatus" width="40" align="center" >合同状态</th>
+					<th hidden="true" field="tariff" width="40" align="center" >税率</th>
+					<th hidden="true" field="taxAmount" width="40" align="center" >个税金额(元)</th>
+					<th hidden="true" field="id" width="30" align="center">台账ID</th>
+					<th field="planPayDate" width="30" align="center">计划支付时间</th>
+					<th hidden="true" field="planPayCountPre" width="50" align="center">税前计划支付金额(元)</th>
+					<th field="planPayCountPost" width="50" align="center">税后计划支付金额(元)</th>
+					<th hidden="true" field="actualPayDate" width="30" align="center">实际支付时间</th>
+					<th hidden="true" field="actualPayCount" width="40" align="center">实际支付金额(元)</th>
+					<th field="payStatus" width="20" align="center">支付状态</th>
+				</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+</select><br/>
+
+</div>
+
+</body>
+
+</html>

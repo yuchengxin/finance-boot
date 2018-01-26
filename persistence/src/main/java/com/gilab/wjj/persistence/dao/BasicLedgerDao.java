@@ -2,6 +2,7 @@ package com.gilab.wjj.persistence.dao;
 
 import com.gilab.wjj.persistence.model.BasicLedger;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -12,6 +13,10 @@ import java.util.List;
  * Change:
  */
 public interface BasicLedgerDao {
+
+    List<BasicLedger> getLedger(long contractId);
+
+    void batchUpdateLedgers(List<BasicLedger> ledgers);
 
     BasicLedger getBasicLedger(long basicLedgerId);
 
@@ -26,4 +31,6 @@ public interface BasicLedgerDao {
     void updateBasicLedger(BasicLedger basicLedger);
 
     void deleteBasicLedger(long basicLedgerId);
+
+    List<HashMap> getLedgerWithFilter(String contractNo);
 }
