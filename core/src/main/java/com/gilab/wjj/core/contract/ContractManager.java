@@ -122,7 +122,7 @@ public class ContractManager implements ContractAgent {
         }
         Proposal proposal = proposalDao.getProposal(contract.getProposalId());
         if(proposal == null){
-            logger.error("can't find proposal[d%]", contract.getProposalId());
+            logger.error("can't find proposal[{}]", contract.getProposalId());
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Cannot find contract[" + contract.getId() +"]'s proposal");
         }
         double total = 0;
@@ -238,10 +238,12 @@ public class ContractManager implements ContractAgent {
     }
 
     @Override
-    @Transactional
+//    @Transactional
+    @SuppressWarnings("这里应该加声明时事务，以保证出错时能进行回滚，然而加了事务后，只能在一个数据库连接中进行操作，" +
+            "但是MerchantHandler和ListMerchant2StringHandler中建立了新的数据库连接，新的连接实际上是查不到值的，所以会出错，" +
+            "解决方法是修改Contract类，不要建立Merchant实体与数据库中id的映射.")
     public ReqResultMap batchCreateContracts(List<BasicRentInfo> basicRentInfos) {
         List<Contract> contracts = new ArrayList<>();
-
         Map<BasicRentInfo, String> resultFailed = new HashMap<>();
         Map<BasicRentInfo, String> resultSucceed = new HashMap<>();
         for(BasicRentInfo basicRentInfo : basicRentInfos){
@@ -297,7 +299,7 @@ public class ContractManager implements ContractAgent {
                 ContractStatus status;
                 Proposal proposal = proposalDao.getProposal(contract.getProposalId());
                 if(proposal == null){
-                    logger.error("can't find proposal[d%]", contract.getProposalId());
+                    logger.error("can't find proposal[{}]", contract.getProposalId());
                     throw new FinanceRuntimeException(FinanceErrMsg.NAMED_RESOURCE_NOT_CAPABLE, "proposal isn't exist");
                 }
                 long payStartTime = DateUtils.convertJodaTime(basicRentInfo.getPaybackDate()).plusYears(proposal.getMarketCulLife()).plusDays(1).getMillis();
