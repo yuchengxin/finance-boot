@@ -132,7 +132,12 @@
     </insert>
 
     <select id="getLedgerWithFilter" resultType="map">
-      select * FROM (select * from finance_basic_ledger WHERE contractNo = #{contractNo}) AS l LEFT JOIN finance_contract c on l.contractNo=c.contractNo;
+      select * FROM (select * from finance_basic_ledger WHERE 1=1
+        <if test="contractNo !=null">
+            and  contractNo = #{contractNo}
+        </if>
+
+      ) AS l LEFT JOIN finance_contract c on l.contractNo=c.contractNo;
     </select>
 
     <resultMap id="BasicLedgerMap" type="BasicLedger">
