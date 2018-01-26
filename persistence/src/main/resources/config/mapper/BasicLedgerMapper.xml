@@ -15,7 +15,9 @@
         planPayCountPost,
         actualPayDate,
         actualPayCount,
-        payStatus
+        payStatus,
+        taxRate,
+        rentMonthMode
         from finance_basic_ledger
         where id = #{id,typeHandler=LongTypeHandler}
     </select>
@@ -32,7 +34,9 @@
         planPayCountPost,
         actualPayDate,
         actualPayCount,
-        payStatus
+        payStatus,
+        taxRate,
+        rentMonthMode
         from finance_basic_ledger
         where contractId = #{contractId,typeHandler=LongTypeHandler}
     </select>
@@ -49,7 +53,9 @@
         planPayCountPost,
         actualPayDate,
         actualPayCount,
-        payStatus
+        payStatus,
+        taxRate,
+        rentMonthMode
         from finance_basic_ledger
         where contractNo = #{contractNo}
     </select>
@@ -65,7 +71,9 @@
         planPayCountPost,
         actualPayDate,
         actualPayCount,
-        payStatus
+        payStatus,
+        taxRate,
+        rentMonthMode
         )
         values (
         #{contractId,typeHandler=LongTypeHandler},
@@ -77,7 +85,9 @@
         #{planPayCountPost},
         #{actualPayDate,typeHandler=TimestampLongHandler},
         #{actualPayCount},
-        #{payStatus,typeHandler=PayStatusHandler}
+        #{payStatus,typeHandler=PayStatusHandler},
+        #{taxRate},
+        #{rentMonthMode,typeHandler=RentMonthModeHandler}
         )
     </insert>
 
@@ -92,7 +102,9 @@
     planPayCountPost,
     actualPayDate,
     actualPayCount,
-    payStatus
+    payStatus,
+    taxRate,
+    rentMonthMode
     )
     values
     <foreach collection="list" item="item" index="index" separator=",">
@@ -106,7 +118,9 @@
         #{item.planPayCountPost},
         #{item.actualPayDate,typeHandler=TimestampLongHandler},
         #{item.actualPayCount},
-        #{item.payStatus,typeHandler=PayStatusHandler}
+        #{item.payStatus,typeHandler=PayStatusHandler},
+        #{item.taxRate},
+        #{item.rentMonthMode,typeHandler=RentMonthModeHandler}
         )
     </foreach>
     </insert>
@@ -123,5 +137,7 @@
         <result property="actualPayDate" column="actualPayDate" typeHandler="TimestampLongHandler"/>
         <result property="actualPayCount" column="actualPayCount"/>
         <result property="payStatus" column="payStatus" javaType="PayStatus" typeHandler="PayStatusHandler"/>
+        <result property="taxRate" column="taxRate"/>
+        <result property="rentMonthMode" column="rentMonthMode" javaType="RentMonthMode" typeHandler="RentMonthModeHandler"/>
     </resultMap>
 </mapper>

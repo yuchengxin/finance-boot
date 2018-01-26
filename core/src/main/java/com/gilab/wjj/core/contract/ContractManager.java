@@ -13,9 +13,11 @@ import com.gilab.wjj.util.DateUtils;
 import com.gilab.wjj.util.logback.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +50,15 @@ public class ContractManager implements ContractAgent {
     @Autowired
     private BasicLedgerDao basicLedgerDao;
 
+    @Value("${tax.rate_min}")
+    private double tax_rate_min;
+
+    @Value("${tax.rate_max}")
+    private double tax_rate_max;
+
+    @Value("${tax.line}")
+    private int tax_rate_line ;
+
     @Override
     public ReqResult<Contract> getContract(long contractId) {
         Contract contract = contractDao.getContract(contractId);
@@ -59,10 +70,145 @@ public class ContractManager implements ContractAgent {
     }
 
     @Override
-    public List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion, Double buildingStartSize,
-                                                Double buildingEndSize, SigningMode signMode, ContractStatus contractStatus) {
-        return contractDao.getContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingStartSize, buildingEndSize,
+    public List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo,
+                                                SigningMode signMode, ContractStatus contractStatus) {
+        return contractDao.getContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingInfo,
                 signMode, contractStatus);
+    }
+
+    @Override
+    public Map<Contract, AllBasicRentResult> getContractAndCalResultWithFilter(String contractNo, Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo, SigningMode signMode, ContractStatus contractStatus, String beneficiaryName, String beneficiaryPhone, String beneficiaryIDNO, String beneficiaryAccount) {
+        Map<Contract, AllBasicRentResult> result = new HashMap<>();
+        List<Contract> contracts = new ArrayList<>();
+        if(contractNo != null && !contractNo.isEmpty()){
+            Contract contract = contractDao.getContractWithNo(contractNo);
+            if(contract != null){
+                contracts.add(contract);
+            }
+        } else if((beneficiaryName != null && !beneficiaryName.isEmpty()) ||
+                (beneficiaryPhone != null && !beneficiaryPhone.isEmpty()) ||
+                (beneficiaryIDNO != null && !beneficiaryIDNO.isEmpty()) ||
+                (beneficiaryAccount != null && !beneficiaryAccount.isEmpty())){
+            List<Merchant> merchantList = merchantDao.getMerchantWithFilter(beneficiaryName, beneficiaryPhone, beneficiaryIDNO, beneficiaryAccount);
+            if(merchantList != null && !merchantList.isEmpty()){
+                List<Long> merchantIdList = new ArrayList<>();
+                for (Merchant m : merchantList){
+                    merchantIdList.add(m.getId());
+                }
+                List<Contract> contractWithBeneficiary = contractDao.getContractWithBeneficiaryList(merchantIdList);
+                if(contractWithBeneficiary != null && !contractWithBeneficiary.isEmpty()){
+                    contracts.addAll(contractWithBeneficiary);
+                }
+            }
+        } else {
+            List<Contract> contractWithFilter = contractDao.getContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingInfo, signMode, contractStatus);
+            if(contractWithFilter != null && !contractWithFilter.isEmpty()){
+                contracts.addAll(contractWithFilter);
+            }
+        }
+        for(Contract c : contracts){
+            List<BasicLedger> basicLedgers = basicLedgerDao.getBasicLedgerWithContract(c.getId());
+            AllBasicRentResult calResult = calResultStr(c, basicLedgers);
+            result.put(c, calResult);
+        }
+
+        return result;
+    }
+
+    private AllBasicRentResult calResultStr(Contract contract, List<BasicLedger> basicLedgers){
+        if(basicLedgers == null || basicLedgers.isEmpty()){
+            return null;
+        }
+        Proposal proposal = proposalDao.getProposal(contract.getProposalId());
+        if(proposal == null){
+            logger.error("can't find proposal[d%]", contract.getProposalId());
+            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Cannot find contract[" + contract.getId() +"]'s proposal");
+        }
+        double total = 0;
+        long preRentDate = 0;
+        double preRentCountPre = 0;
+        double preRentCountPost = 0;
+        double normalTaxRate = 0;
+        int flag = 0;
+        AllBasicRentResult result = new AllBasicRentResult();
+        List<SpecialMonthBasicRentResult> extendMonthRentResults = new ArrayList<>();
+        List<NormalMonthBasicRentResult> normalMonthBasicRentResults = new ArrayList<>();
+        for(BasicLedger b : basicLedgers){
+            total += b.getPlanPayCountPost();
+            if(b.getRentMonthMode() == RentMonthMode.FIRSTMONTH){
+                SpecialMonthBasicRentResult firstMonthBasicRentResult = new SpecialMonthBasicRentResult.Builder()
+                        .rentMonthMode(RentMonthMode.FIRSTMONTH)
+                        .planPayDate(b.getPlanPayDate())
+                        .planPayCountPre(b.getPlanPayCountPre())
+                        .planPayCountPost(b.getPlanPayCountPost())
+                        .calFormula(b.getCalFormula())
+                        .taxRate(b.getTaxRate())
+                        .build();
+                result.setFirstMonthBasicRentResult(firstMonthBasicRentResult);
+            }
+            if(b.getRentMonthMode() == RentMonthMode.EXTENDMONTH){
+                SpecialMonthBasicRentResult extendMonthBasicRentResult = new SpecialMonthBasicRentResult.Builder()
+                        .rentMonthMode(RentMonthMode.EXTENDMONTH)
+                        .planPayDate(b.getPlanPayDate())
+                        .planPayCountPre(b.getPlanPayCountPre())
+                        .planPayCountPost(b.getPlanPayCountPost())
+                        .calFormula(b.getCalFormula())
+                        .taxRate(b.getTaxRate())
+                        .build();
+                extendMonthRentResults.add(extendMonthBasicRentResult);
+            }
+            if(b.getRentMonthMode() == RentMonthMode.LASTMONTH){
+                SpecialMonthBasicRentResult lastMonthBasicRentResult = new SpecialMonthBasicRentResult.Builder()
+                        .rentMonthMode(RentMonthMode.LASTMONTH)
+                        .planPayDate(b.getPlanPayDate())
+                        .planPayCountPre(b.getPlanPayCountPre())
+                        .planPayCountPost(b.getPlanPayCountPost())
+                        .calFormula(b.getCalFormula())
+                        .taxRate(b.getTaxRate())
+                        .build();
+                result.setLastMonthBasicRentResult(lastMonthBasicRentResult);
+            }
+
+            if(b.getRentMonthMode() == RentMonthMode.NORMALMONTH){
+                flag++;
+                if(preRentDate == 0){
+                    preRentDate = b.getPlanPayDate();
+                }
+                if(preRentCountPre == 0){
+                    preRentCountPre = b.getPlanPayCountPre();
+                }
+                if(preRentCountPost == 0){
+                    preRentCountPost = b.getPlanPayCountPost();
+                }
+                if(normalTaxRate == 0){
+                    normalTaxRate = b.getTaxRate();
+                }
+            } else if(b.getRentMonthMode() != RentMonthMode.FIRSTMONTH) {
+                String normalStr = "从" + DateUtils.datetimeString(preRentDate, "yyyy-MM") + "月到" +
+                        DateUtils.datetimeString(DateUtils.convertJodaTime(preRentDate).plusMonths(flag-1).getMillis(), "yyyy-MM") +
+                        "月，每月的28号或之后的５个工作日之内返还该月下一个月的基本租金，应返还的基本租金税前为"+preRentCountPre+"元，税率为"+normalTaxRate+
+                        "，所以税后应返还金额为"+preRentCountPost+"元;";
+                NormalMonthBasicRentResult normalMonthBasicRentResult = new NormalMonthBasicRentResult.Builder()
+                        .planPayCountPre(preRentCountPre)
+                        .planPayCountPost(preRentCountPost)
+                        .startTime(preRentDate)
+                        .endTime(DateUtils.convertJodaTime(preRentDate).plusMonths(flag-1).getMillis())
+                        .taxRate(normalTaxRate)
+                        .calFormula(normalStr)
+                        .build();
+                normalMonthBasicRentResults.add(normalMonthBasicRentResult);
+                flag = 0;
+                preRentCountPre = 0;
+                preRentCountPost = 0;
+                preRentDate = 0;
+                normalTaxRate = 0;
+            }
+        }
+        result.setExtendMonthRentResults(extendMonthRentResults);
+        result.setNormalMonthBasicRentResults(normalMonthBasicRentResults);
+        result.setBasicLedgerDetails(basicLedgers);
+        result.setTotal(new BigDecimal(total).setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue());
+        return result;
     }
 
     @Override
@@ -115,23 +261,27 @@ public class ContractManager implements ContractAgent {
             }
             Contract contract = basicRentInfo2Contract(basicRentInfo);
             if(contract.getContractVersion() == null){
-                contract.setContractVersion("1.0");
+                contract.setContractVersion("1");
             }
             switch (contract.getContractVersion()){
                 case "1.0" :
                 case "1" :
+                    contract.setContractVersion("1");
                     contract.setProposalId(1L);
                     break;
                 case "2" :
                 case "2.0" :
+                    contract.setContractVersion("2");
                     contract.setProposalId(2L);
                     break;
                 case "3" :
                 case "3.0" :
+                    contract.setContractVersion("3");
                     contract.setProposalId(1L);
                     break;
                 case "4" :
                 case "4.0" :
+                    contract.setContractVersion("4");
                     contract.setProposalId(1L);
                     break;
                 default:
@@ -172,7 +322,13 @@ public class ContractManager implements ContractAgent {
             return ReqResultMap.create(false, resultFailed, "部分数据有问题，请确认之后重新导入");
         }
         contractDao.batchCreateContracts(contracts);
-        return ReqResultMap.success(resultSucceed, "导入成功");
+        List<BasicLedger> basicLedgerAll = new ArrayList<>();
+//        for(Contract contract : contracts){
+//            List<BasicLedger> basicLedgers = basicRentMgr.calBasicRentDetail(contract.getContractNo());
+//            if(basicLedgers != null && basicLedgers.size() != 0)basicLedgerAll.addAll(basicLedgers);
+//        }
+//        basicLedgerDao.batchCreateBasicLedgers(basicLedgerAll);
+        return ReqResultMap.success(null, "导入成功");
     }
 
     private Contract basicRentInfo2Contract(BasicRentInfo basicRentInfo){

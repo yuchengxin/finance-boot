@@ -116,9 +116,6 @@ public class StringUtils {
     }
 
     public static <T> T string2Entity(String str, Class<T> entity){
-        System.out.println(str);
-//        return JSON.parseObject(str,entity);
-
         ObjectMapper om = new ObjectMapper();
         T readValue = null;
         try {

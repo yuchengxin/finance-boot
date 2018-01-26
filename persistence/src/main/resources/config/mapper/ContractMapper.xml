@@ -63,6 +63,39 @@
         where contractNo = #{contractNo}
     </select>
 
+    <select id="selectContractWithBeneficiaryList" resultMap="ContractMap">
+        select
+        id,
+        region,
+        contractNo,
+        contractVersion,
+        subscriptionDate,
+        signer,
+        signingMode,
+        signingStatus,
+        signingDate,
+        buildingInfo,
+        buildingSize,
+        originalPrice,
+        totalPrice,
+        signTotalPrice,
+        leasebackPrice,
+        backPremium,
+        payStartDate,
+        contractTerDate,
+        paybackDate,
+        beneficiary,
+        proposalId,
+        contractStatus,
+        logs
+        from finance_contract
+        where  beneficiary in
+            <foreach item="beneficiary" index="idx" collection="beneficiaryList"
+                     open="(" separator="," close=")">
+                #{beneficiary,typeHandler=LongTypeHandler}
+            </foreach>
+    </select>
+
     <select id="selectContractWithFilter" resultMap="ContractMap">
         select
         id,
@@ -99,11 +132,8 @@
         <if test="contractVersion != null">
             and contractVersion = #{contractVersion}
         </if>
-        <if test="buildingStartSize != null">
-            and buildingSize &gt;= #{buildingStartSize}
-        </if>
-        <if test="buildingEndSize != null">
-            and buildingSize &lt; #{buildingEndSize}
+        <if test="buildingInfo != null">
+            and buildingInfo regexp #{buildingInfo}
         </if>
         <if test="signingMode != null">
             and signingMode = #{signingMode,javaType=SigningMode,typeHandler=SigningModeHandler}

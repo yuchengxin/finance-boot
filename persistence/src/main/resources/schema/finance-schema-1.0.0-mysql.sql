@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS finance_user, finance_permission;
 DROP TABLE IF EXISTS finance_contract, finance_contract_history, finance_signing_mode, finance_contract_status, finance_signing_status;
 DROP TABLE IF EXISTS finance_merchants;
 DROP TABLE IF EXISTS finance_leaseback_proposal, finance_proposal_history;
-DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger, finance_pay_status;
+DROP TABLE IF EXISTS finance_basic_ledger, finance_added_ledger, finance_pay_status, finance_month_mode;
 
 SET SESSION SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 
@@ -58,7 +58,7 @@ CREATE TABLE finance_contract (
   paybackDate      DATETIME(3)        ,
   payStartDate     DATETIME(3)        ,
   contractTerDate  DATETIME(3)        ,
-  beneficiary      VARCHAR(200)       ,
+  beneficiary      BIGINT             ,
   proposalId       INT                ,
   contractStatus   SMALLINT           NOT NULL ,
   logs             TEXT               NOT NULL ,
@@ -90,7 +90,7 @@ CREATE TABLE finance_contract_history (
   paybackDate      DATETIME(3)        ,
   payStartDate     DATETIME(3)        ,
   contractTerDate  DATETIME(3)        ,
-  beneficiary      VARCHAR(200)       ,
+  beneficiary      BIGINT             ,
   proposalId       INT                ,
   contractStatus   SMALLINT           NOT NULL ,
   logs             TEXT               NOT NULL ,
@@ -212,9 +212,13 @@ CREATE TABLE finance_basic_ledger (
   actualPayDate    DATETIME(3)           ,
   actualPayCount   DOUBLE                ,
   payStatus        SMALLINT              NOT NULL ,
+  taxRate          DOUBLE                NOT NULL ,
+  rentMonthMode    SMALLINT              NOT NULL ,
   createTime        DATETIME(3)       DEFAULT current_timestamp(3),
   lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
 ) charset=utf8;
+
+CREATE INDEX idx_contractNo_basic_ledger ON finance_basic_ledger (contractNo);
 
 CREATE TABLE finance_pay_status (
   id               SMALLINT           NOT NULL PRIMARY KEY ,
@@ -230,8 +234,20 @@ VALUES
   (2 , 'SUCCESSFULPAID', 'has been paid successful'),
   (3 , 'FAILEDPAID', 'has been paid failed');
 
+CREATE TABLE finance_month_mode (
+  id               SMALLINT           NOT NULL PRIMARY KEY ,
+  monthModeName     VARCHAR(100)       NOT NULL ,
+  monthModeDes      VARCHAR(200) ,
+  createTime        DATETIME(3)       DEFAULT current_timestamp(3),
+  lastUpdateTime    DATETIME(3)       on update current_timestamp(3)
+) charset=utf8;
 
-CREATE INDEX idx_contractNo_basic_ledger ON finance_basic_ledger (contractNo);
+INSERT INTO finance_month_mode (id, monthModeName, monthModeDes)
+VALUES
+  (1 , 'FIRSTMONTH' , 'first month'),
+  (2 , 'NORMALMONTH', 'normal month'),
+  (3 , 'EXTENDMONTH', 'extend into next month'),
+  (4 , 'LASTMONTH', 'last month');
 
 CREATE TABLE finance_added_ledger (
   id               BIGINT                NOT NULL   AUTO_INCREMENT  PRIMARY KEY ,

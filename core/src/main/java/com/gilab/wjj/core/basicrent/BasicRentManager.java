@@ -55,29 +55,46 @@ public class BasicRentManager implements BasicRentAgent {
             logger.error("can't find contract[d%]", contractId);
             throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Cannot find contract[" + contractId + "]");
         }
+        return calBasicRentAllLife(contract);
+    }
+
+    @Override
+    public List<BasicLedger> calBasicRentDetail(String contractNo) {
+        Contract contract = contractDao.getContractWithNo(contractNo);
+        if(contract == null) {
+            logger.error("can't find contract[d%]", contractNo);
+            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Cannot find contract[" + contractNo + "]");
+        }
+        return calBasicRentAllLife(contract);
+    }
+
+    private List<BasicLedger> calBasicRentAllLife(Contract contract){
         if(contract.getLeasebackPrice() == null || contract.getLeasebackPrice() <= 0
                 || contract.getPaybackDate() == null || contract.getPaybackDate() <= 0
                 || contract.getPayStartDate() == null || contract.getPayStartDate() <= 0
                 || contract.getContractTerDate() == null || contract.getContractTerDate() <= 0
                 || contract.getContractStatus() == ContractStatus.UNSTARTED){
-            logger.error("can't cal contract[d%]", contractId);
-            throw new FinanceRuntimeException(FinanceErrMsg.PRECONDITION_MISMATCH, "条件未达成，不允许计算[" + contract.getContractNo()+ "]");
+            logger.warn("can't cal contract[%d]", contract.getId());
+            return null;
         }
         Proposal proposal = proposalDao.getProposal(contract.getProposalId());
         if(proposal == null){
             logger.error("can't find proposal[d%]", contract.getProposalId());
-            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Cannot find contract[" + contractId +"]'s proposal");
+            throw new FinanceRuntimeException(FinanceErrMsg.NAMED_INPUT_ILLEGAL, "Cannot find contract[" + contract.getId() +"]'s proposal");
         }
         long date = contract.getPayStartDate();
         int i =0;
         List<BasicLedger> result = new ArrayList<>();
         while(date <= contract.getContractTerDate()){
             BasicLedger basicLedger = calBasicRentMonth(contract.getPayStartDate(), contract.getLeasebackPrice(), proposal, date);
-            basicLedger.setContractId(contractId);
+            basicLedger.setContractId(contract.getId());
             basicLedger.setContractNo(contract.getContractNo());
             basicLedger.setBeneficiaryId(contract.getBeneficiary().getId());
             result.add(basicLedger);
-            i++;
+            if(date == contract.getPayStartDate() && contract.getPayStartDate() != DateUtils.getFirstDayOfMonth(contract.getPayStartDate())){
+                i+=2;
+            } else
+                i++;
             date = DateUtils.convertJodaTime(contract.getPayStartDate()).plusMonths(i).getMillis();
         }
         return result;
@@ -98,7 +115,10 @@ public class BasicRentManager implements BasicRentAgent {
         List<BasicLedger> result = new ArrayList<>();
         while(date <= contractTerDate){
             result.add(calBasicRentMonth(payStartTime, leasebackPrice, proposal, date));
-            i++;
+            if(date == payStartTime && payStartTime != DateUtils.getFirstDayOfMonth(payStartTime)){
+                i+=2;
+            } else
+                i++;
             date = DateUtils.convertJodaTime(payStartTime).plusMonths(i).getMillis();
         }
         return result;
@@ -131,9 +151,16 @@ public class BasicRentManager implements BasicRentAgent {
             calendar.setTime(dateTime);
             int month = calendar.get(Calendar.MONTH);
             int lineDaysPre = calendar.get(Calendar.DATE) - 1;
-            if (month == 2) {
-                days = 28;
-                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = 28;
+            //记租起始日期是二月，则固定按２８天计算
+//            if (month == 2) {
+//                days = 28;
+//                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = 28;
+//            }
+            //记租起始日期是二月，则按每一期第一个二月的天数计算
+            if(month == 2){
+                long preStartTime = DateUtils.convertJodaTime(date).plusYears(-actualPeriodStart.getDuration()).getMillis();
+                days = DateUtils.getDaysOfMonth(preStartTime);
+                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = days;
             }
             int lineDaysPost = days - lineDaysPre;
             double resultTaxPre = roundingNum((lineDaysPre * annualRentStart) / (12 * days) + (lineDaysPost * annualRentEnd) / (12 * days));
@@ -148,6 +175,8 @@ public class BasicRentManager implements BasicRentAgent {
                     .planPayCountPost(resultTaxPost)
                     .calFormula(calFormula)
                     .payStatus(PayStatus.UNPAID)
+                    .taxRate(finalTaxRate)
+                    .rentMonthMode(RentMonthMode.EXTENDMONTH)
                     .build();
         }
         PeriodCalStandard actualPeriod = actualPeriodStart == null ? actualPeriodEnd : actualPeriodStart;
@@ -164,6 +193,15 @@ public class BasicRentManager implements BasicRentAgent {
                 resultTaxPost = roundingNum(resultTaxPre * (1- finalTaxRate));
                 calFormula = DateUtils.datetimeString(date, "yyyy-MM") + "月是返租第一个月，属于第" + actualPeriod.getPeriod() + "期，基本返租费率为" + actualPeriod.getProportion()
                         + ";税率为" + finalTaxRate;
+                return new BasicLedger.Builder()
+                        .planPayDate(DateUtils.getSomeDayOfMonth(DateUtils.convertJodaTime(date).plusMonths(-1).getMillis(), 28))
+                        .planPayCountPre(resultTaxPre)
+                        .planPayCountPost(resultTaxPost)
+                        .calFormula(calFormula)
+                        .payStatus(PayStatus.UNPAID)
+                        .taxRate(finalTaxRate)
+                        .rentMonthMode(RentMonthMode.FIRSTMONTH)
+                        .build();
             } else {
                 int days = DateUtils.getDaysOfMonth(date);
                 Date dateTime = DateUtils.convertUtilDate(date);
@@ -171,24 +209,34 @@ public class BasicRentManager implements BasicRentAgent {
                 calendar.setTime(dateTime);
                 int month = calendar.get(Calendar.MONTH);
                 int lineDaysPre = calendar.get(Calendar.DATE) - 1;
-                if (month == 2) {
-                    days = 28;
-                    if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = 28;
+                //记租起始日期是二月，则固定按２８天计算
+//            if (month == 2) {
+//                days = 28;
+//                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = 28;
+//            }
+                //记租起始日期是二月，则按每一期第一个二月的天数计算
+                if(month == 2){
+                    long preStartTime = DateUtils.convertJodaTime(date).plusYears(-actualPeriod.getDuration()).getMillis();
+                    days = DateUtils.getDaysOfMonth(preStartTime);
+                    if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = days;
                 }
                 int lineDaysPost = days - lineDaysPre;
                 resultTaxPre = roundingNum((lineDaysPost * annualRent) / (12 * days) + (annualRent / 12));
                 finalTaxRate = resultTaxPre <= tax_rate_line ? tax_rate_min : tax_rate_max;
                 resultTaxPost = roundingNum(resultTaxPre * (1- finalTaxRate));
-                calFormula = DateUtils.datetimeString(date, "yyyy-MM") + "月是返租第一个月，但是不足一整个月，该月剩余天数" + lineDaysPost + "天并入下月一起计算，该月属于第" + actualPeriod.getPeriod() + "期，基本返租费率为" + actualPeriod.getProportion()
+                calFormula = DateUtils.datetimeString(date, "yyyy-MM") + "月是返租第一个月，但是不足一整个月，该月剩余天数" + lineDaysPost + "天并入下月一起计算，该月及下一月属于第" + actualPeriod.getPeriod() + "期，基本返租费率为" + actualPeriod.getProportion()
                         + ";税率为" + finalTaxRate;
+                return new BasicLedger.Builder()
+                        .planPayDate(DateUtils.getSomeDayOfMonth(date, 28))
+                        .planPayCountPre(resultTaxPre)
+                        .planPayCountPost(resultTaxPost)
+                        .calFormula(calFormula)
+                        .payStatus(PayStatus.UNPAID)
+                        .taxRate(finalTaxRate)
+                        .rentMonthMode(RentMonthMode.FIRSTMONTH)
+                        .build();
             }
-            return new BasicLedger.Builder()
-                    .planPayDate(DateUtils.getSomeDayOfMonth(date, 28))
-                    .planPayCountPre(resultTaxPre)
-                    .planPayCountPost(resultTaxPost)
-                    .calFormula(calFormula)
-                    .payStatus(PayStatus.UNPAID)
-                    .build();
+
         }
         //最后一个月
         if(date == contractTerDate){
@@ -198,9 +246,16 @@ public class BasicRentManager implements BasicRentAgent {
             calendar.setTime(dateTime);
             int month = calendar.get(Calendar.MONTH);
             int lineDaysPre = calendar.get(Calendar.DATE) - 1;
-            if (month == 2) {
-                days = 28;
-                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = 28;
+            //记租起始日期是二月，则固定按２８天计算
+//            if (month == 2) {
+//                days = 28;
+//                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = 28;
+//            }
+            //记租起始日期是二月，则按每一期第一个二月的天数计算
+            if(month == 2){
+                long preStartTime = DateUtils.convertJodaTime(date).plusYears(-actualPeriod.getDuration()).getMillis();
+                days = DateUtils.getDaysOfMonth(preStartTime);
+                if (date == DateUtils.getLastDayOfMonth(date)) lineDaysPre = days;
             }
             double  resultTaxPre = roundingNum((lineDaysPre * annualRent) / (12 * days));
             double finalTaxRate = resultTaxPre <= tax_rate_line ? tax_rate_min : tax_rate_max;
@@ -208,11 +263,13 @@ public class BasicRentManager implements BasicRentAgent {
             String calFormula = DateUtils.datetimeString(date, "yyyy-MM") + "月是返租最后一个月，但不足一整个月，该月剩余天数为" + lineDaysPre + "天，该月属于第" + actualPeriod.getPeriod() + "期，基本返租费率为" + actualPeriod.getProportion()
                     + ";税率为" + finalTaxRate;
             return new BasicLedger.Builder()
-                    .planPayDate(DateUtils.getSomeDayOfMonth(date, 28))
+                    .planPayDate(DateUtils.getSomeDayOfMonth(DateUtils.convertJodaTime(date).plusMonths(-1).getMillis(), 28))
                     .planPayCountPre(resultTaxPre)
                     .planPayCountPost(resultTaxPost)
                     .calFormula(calFormula)
                     .payStatus(PayStatus.UNPAID)
+                    .taxRate(finalTaxRate)
+                    .rentMonthMode(RentMonthMode.LASTMONTH)
                     .build();
         }
 
@@ -222,11 +279,13 @@ public class BasicRentManager implements BasicRentAgent {
         String calFormula = DateUtils.datetimeString(date, "yyyy-MM") + "月属于第" + actualPeriod.getPeriod() + "期，基本返租费率为" + actualPeriod.getProportion()
                 + ";税率为" + finalTaxRate;
         return new BasicLedger.Builder()
-                .planPayDate(DateUtils.getSomeDayOfMonth(date, 28))
+                .planPayDate(DateUtils.getSomeDayOfMonth(DateUtils.convertJodaTime(date).plusMonths(-1).getMillis(), 28))
                 .planPayCountPre(resultTaxPre)
                 .planPayCountPost(resultTaxPost)
                 .calFormula(calFormula)
                 .payStatus(PayStatus.UNPAID)
+                .taxRate(finalTaxRate)
+                .rentMonthMode(RentMonthMode.NORMALMONTH)
                 .build();
 
     }

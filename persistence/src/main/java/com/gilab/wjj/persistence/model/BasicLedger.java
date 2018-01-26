@@ -21,10 +21,14 @@ public class BasicLedger implements Entity {
     private Long actualPayDate;
     private double actualPayCount;
     private PayStatus payStatus;
+    private double taxRate;
+    private RentMonthMode rentMonthMode;
 
     public BasicLedger(){}
 
-    public BasicLedger(long id, long contractId, long beneficiaryId, String contractNo, String calFormula, long planPayDate, double planPayCountPre, double planPayCountPost, Long actualPayDate, double actualPayCount, PayStatus payStatus) {
+    public BasicLedger(long id, long contractId, long beneficiaryId, String contractNo, String calFormula, long planPayDate,
+                       double planPayCountPre, double planPayCountPost, Long actualPayDate, double actualPayCount,
+                       PayStatus payStatus, double taxRate, RentMonthMode rentMonthMode) {
         this.id = id;
         this.contractId = contractId;
         this.beneficiaryId = beneficiaryId;
@@ -36,6 +40,8 @@ public class BasicLedger implements Entity {
         this.actualPayDate = actualPayDate;
         this.actualPayCount = actualPayCount;
         this.payStatus = payStatus;
+        this.taxRate = taxRate;
+        this.rentMonthMode = rentMonthMode;
     }
 
     @Override
@@ -127,6 +133,22 @@ public class BasicLedger implements Entity {
         this.contractNo = contractNo;
     }
 
+    public double getTaxRate() {
+        return taxRate;
+    }
+
+    public void setTaxRate(double taxRate) {
+        this.taxRate = taxRate;
+    }
+
+    public RentMonthMode getRentMonthMode() {
+        return rentMonthMode;
+    }
+
+    public void setRentMonthMode(RentMonthMode rentMonthMode) {
+        this.rentMonthMode = rentMonthMode;
+    }
+
     @Override
     public String toString() {
         return "BasicLedger{" +
@@ -141,6 +163,8 @@ public class BasicLedger implements Entity {
                 ", actualPayDate=" + DateUtils.datetimeString(actualPayDate, "yyyy-MM-dd") +
                 ", actualPayCount=" + actualPayCount +
                 ", payStatus=" + payStatus +
+                ", rentMonthMode=" + rentMonthMode +
+                ", taxRate=" + taxRate +
                 '}';
     }
 
@@ -156,6 +180,8 @@ public class BasicLedger implements Entity {
         private Long actualPayDate;
         private double actualPayCount;
         private PayStatus payStatus;
+        private double taxRate;
+        private RentMonthMode rentMonthMode;
 
         public Builder id(long id){
             this.id = id;
@@ -213,9 +239,19 @@ public class BasicLedger implements Entity {
             return this;
         }
 
+        public Builder taxRate(double taxRate){
+            this.taxRate = taxRate;
+            return this;
+        }
+
+        public Builder rentMonthMode(RentMonthMode rentMonthMode){
+            this.rentMonthMode = rentMonthMode;
+            return this;
+        }
+
         public BasicLedger build(){
             return new BasicLedger(id, contractId, beneficiaryId, contractNo, calFormula, planPayDate, planPayCountPre,
-                    planPayCountPost, actualPayDate, actualPayCount, payStatus);
+                    planPayCountPost, actualPayDate, actualPayCount, payStatus, taxRate, rentMonthMode);
         }
     }
 }

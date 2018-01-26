@@ -3,6 +3,7 @@ package com.gilab.wjj.core;
 import com.gilab.wjj.persistence.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yuankui on 12/18/17.
@@ -15,8 +16,12 @@ public interface ContractAgent extends Agent {
 
     ReqResult<Contract> getContract(long contractId);
 
-    List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion, Double buildingStartSize,
-                                         Double buildingEndSize, SigningMode signMode, ContractStatus contractStatus);
+    List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo,
+                                         SigningMode signMode, ContractStatus contractStatus);
+
+    Map<Contract, AllBasicRentResult> getContractAndCalResultWithFilter(String contractNo, Long filterStartTime, Long filterEndTime, String contractVersion, String buildingInfo,
+                                                    SigningMode signMode, ContractStatus contractStatus, String beneficiaryName, String beneficiaryPhone,
+                                                    String beneficiaryIDNO, String beneficiaryAccount);
 
     ReqResult<Contract> createContract(Contract contract);
 
