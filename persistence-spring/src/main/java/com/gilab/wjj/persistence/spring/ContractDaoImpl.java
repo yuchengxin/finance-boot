@@ -29,10 +29,15 @@ public class ContractDaoImpl implements ContractDao {
 
     @Override
     public List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion,
-                                                Double buildingStartSize, Double buildingEndSize, SigningMode signingMode,
+                                                String buildingInfo, SigningMode signingMode,
                                                 ContractStatus status) {
-        return mapper.selectContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingStartSize, buildingEndSize,
+        return mapper.selectContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingInfo,
                 signingMode, status);
+    }
+
+    @Override
+    public List<Contract> getContractWithBeneficiaryList(List<Long> beneficiaryList) {
+        return mapper.selectContractWithBeneficiaryList(beneficiaryList);
     }
 
     @Override

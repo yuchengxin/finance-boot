@@ -22,10 +22,11 @@ public interface ContractMapper {
     List<Contract> selectContractWithFilter(@Param("filterStartTime") Long filterStartTime,
                                             @Param("filterEndTime") Long filterEndTime,
                                             @Param("contractVersion") String contractVersion,
-                                            @Param("buildingStartSize") Double buildingStartSize,
-                                            @Param("buildingEndSize") Double buildingEndSize,
+                                            @Param("buildingInfo") String buildingInfo,
                                             @Param("signingMode") SigningMode signingMode,
                                             @Param("status") ContractStatus status);
+
+    List<Contract> selectContractWithBeneficiaryList(List<Long> beneficiaryList);
 
     void insertContract(Contract contract);
 

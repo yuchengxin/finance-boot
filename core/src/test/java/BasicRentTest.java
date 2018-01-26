@@ -118,6 +118,36 @@ public class BasicRentTest {
         ReqResult<Merchant> result6 = merchantMgr.createMerchant(merF);
         Assert.assertTrue(result6.isSuccess());
         Assert.assertTrue(result6.getResult() != null);
+
+        List<Merchant> merchants = merchantMgr.getMerchantWithFilter(null, null, null, null);
+        Assert.assertTrue(!merchants.isEmpty());
+
+        Contract contract1 = new Contract.Builder()
+                .contractNo("NO01")
+                .contractVersion("1")
+                .region("22")
+                .contractTerDate(DateUtils.parseDate("2030-11-29"))
+                .backPremium(123)
+                .buildingInfo("1层-商10")
+                .buildingSize(221.71)
+                .originalPrice(5200)
+                .totalPrice(6000)
+                .signTotalPrice(5500)
+                .signingDate(DateUtils.parseDate("2015-08-24"))
+                .signingMode(SigningMode.MORTGAGE)
+                .signer(Collections.singletonList(merchants.get(0)))
+                .subscriptionDate(DateUtils.parseDate("1997-07-30"))
+                .leasebackPrice(4877620)
+                .paybackDate(DateUtils.parseDate("2015-11-28"))
+                .payStartDate(DateUtils.parseDate("2018-11-29"))
+                .beneficiary(merchants.get(0))
+                .logs("/home/yuankui/tmp/log1.log")
+                .proposalId(1L)
+                .contractStatus(ContractStatus.PENDINGRENTAL)
+                .build();
+
+        Contract newContract1 = contractMgr.createContract(contract1).getResult();
+        Assert.assertTrue(newContract1 != null);
     }
 
     @Test

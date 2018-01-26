@@ -17,8 +17,10 @@ public interface ContractDao {
     Contract getContract(long contractId);
 
     List<Contract> getContractWithFilter(Long filterStartTime, Long filterEndTime, String contractVersion,
-                                         Double buildingStartSize, Double buildingEndSize, SigningMode signingMode,
+                                         String buildingInfo, SigningMode signingMode,
                                          ContractStatus status);
+
+    List<Contract> getContractWithBeneficiaryList(List<Long> beneficiaryList);
 
     long createContract(Contract contract);
 

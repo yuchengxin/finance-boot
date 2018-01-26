@@ -93,7 +93,6 @@ public class ContractController {
         File f=File.createTempFile("tmp", null);
         contracts.transferTo(f);
         f.deleteOnExit();
-        System.out.println(f.getPath());
         List<BasicRentInfo> basicRentInfos = new ExcelUtils<>(new BasicRentInfo()).readFromFile(null, f);
         return RestUtils.getOrSendError(response, contractMgr.batchCreateContracts(basicRentInfos));
     }
@@ -121,15 +120,19 @@ public class ContractController {
         return RestUtils.getOrSendError(response, contractMgr.getContract(contractId));
     }
 
-    @ApiOperation(value = "查询多个合同", notes = "查询合同", produces = "application/json")
+    @ApiOperation(value = "查询多个合同及返租明细", notes = "查询多个合同及返租明细", produces = "application/json")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "contractNo", value = "合同编号", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "filterStartTime", value = "签约时间段的起始时间", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "filterEndTime", value = "签约时间段的结束时间", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "contractVersion", value = "合同版本", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "buildingStartSize", value = "建筑最小面积", dataType = "Double", paramType = "query"),
-            @ApiImplicitParam(name = "buildingEndSize", value = "建筑最大面积", dataType = "Double", paramType = "query"),
+            @ApiImplicitParam(name = "buildingInfo", value = "楼房信息", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "signMode", value = "签约方式", dataType = "SignMode", paramType = "query"),
-            @ApiImplicitParam(name = "contractStatus", value = "合同状态", dataType = "ContractStatus", paramType = "query")
+            @ApiImplicitParam(name = "contractStatus", value = "合同状态", dataType = "ContractStatus", paramType = "query"),
+            @ApiImplicitParam(name = "beneficiaryName", value = "受益人姓名", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "beneficiaryPhone", value = "受益人电话", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "beneficiaryIDNO", value = "受益人身份证号", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "beneficiaryAccount", value = "受益人银行账户", dataType = "String", paramType = "query")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "操作成功"),
@@ -140,21 +143,26 @@ public class ContractController {
     })
     @ResponseBody
     @RequestMapping(value = "/contracts", method = { RequestMethod.GET }, produces = "application/json")
-    public List<Contract> getContractList(final HttpServletResponse response,
+    public Map<Contract, AllBasicRentResult> getContractList(final HttpServletResponse response,
+                                    @RequestParam(name = "contractNo", required = false) String contractNo,
                                     @RequestParam(name = "filterStartTime", required = false) Long filterStartTime,
                                     @RequestParam(name = "filterEndTime", required = false) Long filterEndTime,
                                     @RequestParam(name = "contractVersion", required = false) String contractVersion,
-                                    @RequestParam(name = "buildingStartSize", required = false) Double buildingStartSize,
-                                    @RequestParam(name = "buildingEndSize", required = false) Double buildingEndSize,
+                                    @RequestParam(name = "buildingInfo", required = false) String buildingInfo,
                                     @RequestParam(name = "signMode", required = false) SigningMode signMode,
-                                    @RequestParam(name = "contractStatus", required = false) ContractStatus contractStatus) throws IOException {
+                                    @RequestParam(name = "contractStatus", required = false) ContractStatus contractStatus,
+                                    @RequestParam(name = "beneficiaryName", required = false) String beneficiaryName,
+                                    @RequestParam(name = "beneficiaryPhone", required = false) String beneficiaryPhone,
+                                    @RequestParam(name = "beneficiaryIDNO", required = false) String beneficiaryIDNO,
+                                    @RequestParam(name = "beneficiaryAccount", required = false) String beneficiaryAccount
+                                                 ) throws IOException {
         //TODO
         //登录判断
 
         //TODO
         //权限判断
-        return contractMgr.getContractWithFilter(filterStartTime, filterEndTime, contractVersion, buildingStartSize,
-                buildingEndSize, signMode, contractStatus);
+        return contractMgr.getContractAndCalResultWithFilter(contractNo, filterStartTime, filterEndTime, contractVersion,
+                buildingInfo, signMode, contractStatus, beneficiaryName, beneficiaryPhone, beneficiaryIDNO, beneficiaryAccount);
     }
 
     @ApiOperation(value = "导出返租基础信息表", notes = "导出返租基础信息表", produces = "application/octet-stream")
@@ -162,8 +170,7 @@ public class ContractController {
             @ApiImplicitParam(name = "filterStartTime", value = "签约时间段的起始时间", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "filterEndTime", value = "签约时间段的结束时间", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "contractVersion", value = "合同版本", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "buildingStartSize", value = "建筑最小面积", dataType = "Double", paramType = "query"),
-            @ApiImplicitParam(name = "buildingEndSize", value = "建筑最大面积", dataType = "Double", paramType = "query"),
+            @ApiImplicitParam(name = "buildingInfo", value = "楼房信息", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "signMode", value = "签约方式", dataType = "SignMode", paramType = "query"),
             @ApiImplicitParam(name = "contractStatus", value = "合同状态", dataType = "ContractStatus", paramType = "query")
     })
@@ -173,13 +180,12 @@ public class ContractController {
                                                      @RequestParam(name = "filterStartTime", required = false) Long filterStartTime,
                                                      @RequestParam(name = "filterEndTime", required = false) Long filterEndTime,
                                                      @RequestParam(name = "contractVersion", required = false) String contractVersion,
-                                                     @RequestParam(name = "buildingStartSize", required = false) Double buildingStartSize,
-                                                     @RequestParam(name = "buildingEndSize", required = false) Double buildingEndSize,
+                                                     @RequestParam(name = "buildingInfo", required = false) String buildingInfo,
                                                      @RequestParam(name = "signMode", required = false) SigningMode signMode,
                                                      @RequestParam(name = "contractStatus", required = false) ContractStatus contractStatus) throws Exception {
         // 检查权限
         List<Contract> contracts = contractDao.getContractWithFilter(filterStartTime, filterEndTime, contractVersion,
-                buildingStartSize, buildingEndSize, signMode, contractStatus);
+                buildingInfo, signMode, contractStatus);
         if (contracts == null || contracts.size() == 0) {
             return RestUtils.sendError(response, HttpServletResponse.SC_NOT_FOUND,
                     new AjaxErrorMessage(FinanceErrMsg.INFO_LOOKUP_MISS.getErrCode(), "合同都不存在"));

@@ -46,7 +46,7 @@ public class ContractStatusManager implements InitializingBean {
     @Scheduled(cron = "0 0 0 * * ?")
     private void calibrationStatus(){
         logger.info("start update status of contracts");
-        List<Contract> contracts = contractDao.getContractWithFilter(null, null, null, null, null, null, null);
+        List<Contract> contracts = contractDao.getContractWithFilter(null, null, null, null, null, null);
         if(contracts == null || contracts.size() == 0){
             logger.warn("there are no contracts");
             return;
