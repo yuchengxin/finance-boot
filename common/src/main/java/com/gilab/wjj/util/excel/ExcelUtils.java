@@ -402,6 +402,7 @@ public class ExcelUtils<E> {
                     break;
                 case XSSFCell.CELL_TYPE_NUMERIC:
                     o = cell.getNumericCellValue();
+                    o = new BigDecimal((double)o).toPlainString();
                     if (HSSFDateUtil.isCellDateFormatted(cell)) {
                         o = DateUtil.getJavaDate(cell.getNumericCellValue());
                     }

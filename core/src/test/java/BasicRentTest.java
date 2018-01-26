@@ -39,6 +39,7 @@ public class BasicRentTest {
     @Autowired
     private BasicRentAgent basicRentMgr;
 
+    @Ignore
     @Test
     public void testCreateMerchants(){
         Merchant merA = new Merchant.Builder()
@@ -150,6 +151,7 @@ public class BasicRentTest {
         Assert.assertTrue(newContract1 != null);
     }
 
+    @Ignore
     @Test
     public void testCreateContract(){
         List<Merchant> merchants = merchantMgr.getMerchantWithFilter(null, null, null, null);
@@ -179,149 +181,149 @@ public class BasicRentTest {
                 .contractStatus(ContractStatus.PENDINGRENTAL)
                 .build();
 
-//        Contract contract2 = new Contract.Builder()
-//                .contractNo("NO02")
-//                .contractVersion("2")
-//                .region("22")
-//                .contractTerDate(DateUtils.parseDate("2025-11-29"))
-//                .backPremium(123)
-//                .buildingInfo("1层-商10")
-//                .buildingSize(221.71)
-//                .originalPrice(5200)
-//                .totalPrice(6000)
-//                .signTotalPrice(5500)
-//                .signingDate(DateUtils.parseDate("2010-08-24"))
-//                .signingMode(SigningMode.MORTGAGE)
-//                .signer(Collections.singletonList(merchants.get(1)))
-//                .subscriptionDate(DateUtils.parseDate("1994-07-30"))
-//                .leasebackPrice(4877620)
-//                .paybackDate(DateUtils.parseDate("2010-11-30"))
-//                .payStartDate(DateUtils.parseDate("2013-11-29"))
-//                .beneficiary(merchants.get(1))
-//                .logs("/home/yuankui/tmp/log2.log")
-//                .proposalId(1L)
-//                .contractStatus(ContractStatus.PENDINGRENTAL)
-//                .build();
-//
-//        Contract contract3 = new Contract.Builder()
-//                .contractNo("NO01")
-//                .contractVersion("3")
-//                .region("22")
-//                .contractTerDate(DateUtils.parseDate("2023-11-29"))
-//                .backPremium(123)
-//                .buildingInfo("1层-商10")
-//                .buildingSize(221.71)
-//                .originalPrice(5200)
-//                .totalPrice(6000)
-//                .signTotalPrice(5500)
-//                .signingDate(DateUtils.parseDate("2008-08-24"))
-//                .signingMode(SigningMode.MORTGAGE)
-//                .signer(Collections.singletonList(merchants.get(2)))
-//                .subscriptionDate(DateUtils.parseDate("1993-07-30"))
-//                .leasebackPrice(4877620)
-//                .paybackDate(DateUtils.parseDate("2008-11-30"))
-//                .payStartDate(DateUtils.parseDate("2011-11-29"))
-//                .beneficiary(merchants.get(2))
-//                .logs("/home/yuankui/tmp/log3.log")
-//                .proposalId(1L)
-//                .contractStatus(ContractStatus.RENTAL)
-//                .build();
-//
-//        Contract contract4 = new Contract.Builder()
-//                .contractNo("NO01")
-//                .contractVersion("4")
-//                .region("22")
-//                .contractTerDate(DateUtils.parseDate("2010-11-29"))
-//                .backPremium(123)
-//                .buildingInfo("1层-商10")
-//                .buildingSize(221.71)
-//                .originalPrice(5200)
-//                .totalPrice(6000)
-//                .signTotalPrice(5500)
-//                .signingDate(DateUtils.parseDate("1995-08-24"))
-//                .signingMode(SigningMode.MORTGAGE)
-//                .signer(Collections.singletonList(merchants.get(3)))
-//                .subscriptionDate(DateUtils.parseDate("1992-07-30"))
-//                .leasebackPrice(4877620)
-//                .paybackDate(DateUtils.parseDate("1995-11-30"))
-//                .payStartDate(DateUtils.parseDate("1998-11-29"))
-//                .beneficiary(merchants.get(3))
-//                .logs("/home/yuankui/tmp/log4.log")
-//                .proposalId(1L)
-//                .contractStatus(ContractStatus.NORMALEND)
-//                .build();
-//
-//        Contract contract5 = new Contract.Builder()
-//                .contractNo("NO01")
-//                .contractVersion("1")
-//                .region("22")
-//                .contractTerDate(DateUtils.parseDate("2030-11-29"))
-//                .backPremium(123)
-//                .buildingInfo("1层-商10")
-//                .buildingSize(221.71)
-//                .originalPrice(5200)
-//                .totalPrice(6000)
-//                .signTotalPrice(5500)
-//                .signingDate(DateUtils.parseDate("2015-08-24"))
-//                .signingMode(SigningMode.MORTGAGE)
-//                .signer(Collections.singletonList(merchants.get(4)))
-//                .subscriptionDate(DateUtils.parseDate("1997-07-30"))
-//                .leasebackPrice(4877620)
-//                .paybackDate(DateUtils.parseDate("2015-11-30"))
-//                .payStartDate(DateUtils.parseDate("2018-11-29"))
-//                .beneficiary(merchants.get(4))
-//                .logs("/home/yuankui/tmp/log5.log")
-//                .proposalId(1L)
-//                .contractStatus(ContractStatus.ABNORMALEND)
-//                .build();
-//
-//        Contract contract6 = new Contract.Builder()
-//                .contractNo("NO06")
-//                .contractVersion("2")
-//                .region("22")
-//                .contractTerDate(DateUtils.parseDate("2030-11-29"))
-//                .backPremium(123)
-//                .buildingInfo("1层-商10")
-//                .buildingSize(221.71)
-//                .originalPrice(5200)
-//                .totalPrice(6000)
-//                .signTotalPrice(5500)
-//                .signingDate(DateUtils.parseDate("2015-08-24"))
-//                .signingMode(SigningMode.MORTGAGE)
-//                .signer(Collections.singletonList(merchants.get(5)))
-//                .subscriptionDate(DateUtils.parseDate("1997-07-30"))
-//                .leasebackPrice(4877620)
-//                .paybackDate(DateUtils.parseDate("2015-11-30"))
-//                .payStartDate(DateUtils.parseDate("2018-11-29"))
-//                .beneficiary(merchants.get(5))
-//                .logs("/home/yuankui/tmp/log6.log")
-//                .proposalId(1L)
-//                .contractStatus(ContractStatus.UNSTARTED)
-//                .build();
+        Contract contract2 = new Contract.Builder()
+                .contractNo("NO02")
+                .contractVersion("2")
+                .region("22")
+                .contractTerDate(DateUtils.parseDate("2025-11-29"))
+                .backPremium(123)
+                .buildingInfo("1层-商10")
+                .buildingSize(221.71)
+                .originalPrice(5200)
+                .totalPrice(6000)
+                .signTotalPrice(5500)
+                .signingDate(DateUtils.parseDate("2010-08-24"))
+                .signingMode(SigningMode.MORTGAGE)
+                .signer(Collections.singletonList(merchants.get(1)))
+                .subscriptionDate(DateUtils.parseDate("1994-07-30"))
+                .leasebackPrice(4877620)
+                .paybackDate(DateUtils.parseDate("2010-11-30"))
+                .payStartDate(DateUtils.parseDate("2013-11-29"))
+                .beneficiary(merchants.get(1))
+                .logs("/home/yuankui/tmp/log2.log")
+                .proposalId(1L)
+                .contractStatus(ContractStatus.PENDINGRENTAL)
+                .build();
+
+        Contract contract3 = new Contract.Builder()
+                .contractNo("NO01")
+                .contractVersion("3")
+                .region("22")
+                .contractTerDate(DateUtils.parseDate("2023-11-29"))
+                .backPremium(123)
+                .buildingInfo("1层-商10")
+                .buildingSize(221.71)
+                .originalPrice(5200)
+                .totalPrice(6000)
+                .signTotalPrice(5500)
+                .signingDate(DateUtils.parseDate("2008-08-24"))
+                .signingMode(SigningMode.MORTGAGE)
+                .signer(Collections.singletonList(merchants.get(2)))
+                .subscriptionDate(DateUtils.parseDate("1993-07-30"))
+                .leasebackPrice(4877620)
+                .paybackDate(DateUtils.parseDate("2008-11-30"))
+                .payStartDate(DateUtils.parseDate("2011-11-29"))
+                .beneficiary(merchants.get(2))
+                .logs("/home/yuankui/tmp/log3.log")
+                .proposalId(1L)
+                .contractStatus(ContractStatus.RENTAL)
+                .build();
+
+        Contract contract4 = new Contract.Builder()
+                .contractNo("NO01")
+                .contractVersion("4")
+                .region("22")
+                .contractTerDate(DateUtils.parseDate("2010-11-29"))
+                .backPremium(123)
+                .buildingInfo("1层-商10")
+                .buildingSize(221.71)
+                .originalPrice(5200)
+                .totalPrice(6000)
+                .signTotalPrice(5500)
+                .signingDate(DateUtils.parseDate("1995-08-24"))
+                .signingMode(SigningMode.MORTGAGE)
+                .signer(Collections.singletonList(merchants.get(3)))
+                .subscriptionDate(DateUtils.parseDate("1992-07-30"))
+                .leasebackPrice(4877620)
+                .paybackDate(DateUtils.parseDate("1995-11-30"))
+                .payStartDate(DateUtils.parseDate("1998-11-29"))
+                .beneficiary(merchants.get(3))
+                .logs("/home/yuankui/tmp/log4.log")
+                .proposalId(1L)
+                .contractStatus(ContractStatus.NORMALEND)
+                .build();
+
+        Contract contract5 = new Contract.Builder()
+                .contractNo("NO01")
+                .contractVersion("1")
+                .region("22")
+                .contractTerDate(DateUtils.parseDate("2030-11-29"))
+                .backPremium(123)
+                .buildingInfo("1层-商10")
+                .buildingSize(221.71)
+                .originalPrice(5200)
+                .totalPrice(6000)
+                .signTotalPrice(5500)
+                .signingDate(DateUtils.parseDate("2015-08-24"))
+                .signingMode(SigningMode.MORTGAGE)
+                .signer(Collections.singletonList(merchants.get(4)))
+                .subscriptionDate(DateUtils.parseDate("1997-07-30"))
+                .leasebackPrice(4877620)
+                .paybackDate(DateUtils.parseDate("2015-11-30"))
+                .payStartDate(DateUtils.parseDate("2018-11-29"))
+                .beneficiary(merchants.get(4))
+                .logs("/home/yuankui/tmp/log5.log")
+                .proposalId(1L)
+                .contractStatus(ContractStatus.ABNORMALEND)
+                .build();
+
+        Contract contract6 = new Contract.Builder()
+                .contractNo("NO06")
+                .contractVersion("2")
+                .region("22")
+                .contractTerDate(DateUtils.parseDate("2030-11-29"))
+                .backPremium(123)
+                .buildingInfo("1层-商10")
+                .buildingSize(221.71)
+                .originalPrice(5200)
+                .totalPrice(6000)
+                .signTotalPrice(5500)
+                .signingDate(DateUtils.parseDate("2015-08-24"))
+                .signingMode(SigningMode.MORTGAGE)
+                .signer(Collections.singletonList(merchants.get(5)))
+                .subscriptionDate(DateUtils.parseDate("1997-07-30"))
+                .leasebackPrice(4877620)
+                .paybackDate(DateUtils.parseDate("2015-11-30"))
+                .payStartDate(DateUtils.parseDate("2018-11-29"))
+                .beneficiary(merchants.get(5))
+                .logs("/home/yuankui/tmp/log6.log")
+                .proposalId(1L)
+                .contractStatus(ContractStatus.UNSTARTED)
+                .build();
 
 
         Contract newContract1 = contractMgr.createContract(contract1).getResult();
         Assert.assertTrue(newContract1 != null);
 
-//        Contract newContract2 = contractMgr.createContract(contract2).getResult();
-//        Assert.assertTrue(newContract2 != null);
-//
-//        Contract newContract3 = contractMgr.createContract(contract3).getResult();
-//        Assert.assertTrue(newContract3 != null);
-//
-//        Contract newContract4 = contractMgr.createContract(contract4).getResult();
-//        Assert.assertTrue(newContract4 != null);
-//
-//        Contract newContract5 = contractMgr.createContract(contract5).getResult();
-//        Assert.assertTrue(newContract5 != null);
-//
-//        Contract newContract6 = contractMgr.createContract(contract6).getResult();
-//        Assert.assertTrue(newContract6 != null);
+        Contract newContract2 = contractMgr.createContract(contract2).getResult();
+        Assert.assertTrue(newContract2 != null);
+
+        Contract newContract3 = contractMgr.createContract(contract3).getResult();
+        Assert.assertTrue(newContract3 != null);
+
+        Contract newContract4 = contractMgr.createContract(contract4).getResult();
+        Assert.assertTrue(newContract4 != null);
+
+        Contract newContract5 = contractMgr.createContract(contract5).getResult();
+        Assert.assertTrue(newContract5 != null);
+
+        Contract newContract6 = contractMgr.createContract(contract6).getResult();
+        Assert.assertTrue(newContract6 != null);
 
 
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void testBasicRentCalculation(){
         List<BasicLedger> allResult = basicRentMgr.preCalBasicRentDetail(1448640000000L, 4877620, 1);
