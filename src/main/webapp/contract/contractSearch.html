@@ -187,27 +187,27 @@
 	function searchContract(){
 //		clearGrid("dg");
 		var geturl = "/api/v1/contracts?test=test";
-		if($("#filterStartTime").datebox("getValue")!=""){
-			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
-		}
-		if($("#filterEndTime").datebox("getValue")!=""){
-			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
-		}
-		if($("#contractVersion").val()!=""){
-			geturl+="&contractVersion="+$("#contractVersion").val();
-		}
-//		if($("#buildingStartSize").val()!=""){
-//			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
+//		if($("#filterStartTime").datebox("getValue")!=""){
+//			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
 //		}
-//		if($("#buildingEndSize").val()!=""){
-//			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
+//		if($("#filterEndTime").datebox("getValue")!=""){
+//			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
 //		}
-		if($("#signMode").val()!=""){
-			geturl+="&signMode="+$("#signMode").val();
-		}
-		if($("#contractStatus").val()!=""){
-			geturl+="&contractStatus="+$("#contractStatus").val();
-		}
+//		if($("#contractVersion").val()!=""){
+//			geturl+="&contractVersion="+$("#contractVersion").val();
+//		}
+////		if($("#buildingStartSize").val()!=""){
+////			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
+////		}
+////		if($("#buildingEndSize").val()!=""){
+////			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
+////		}
+//		if($("#signMode").val()!=""){
+//			geturl+="&signMode="+$("#signMode").val();
+//		}
+//		if($("#contractStatus").val()!=""){
+//			geturl+="&contractStatus="+$("#contractStatus").val();
+//		}
 
 		$.ajax({
 			url: geturl,
@@ -215,47 +215,39 @@
 			contentType: 'application/json',
 			success: function (data) {
 
-				if (data.length > 0) {
+				if (Object.keys(data).length > 0) {
 					var tableObj = document.getElementById("contract_detail");
 //					var tableObj = $("#contract_detail");
 					tableObj.innerHTML="";
-					for(var i = 0; i<data.length+4;i++) {
-//						$('#dg').datagrid('appendRow', {
-//							id:data[i].id,
-//							contractNo:data[i].contractNo,
-//							contractVersion:data[i].contractVersion,
-//							buildingInfo:data[i].buildingInfo,
-//							buildingSize:data[i].buildingSize,
-//							merchantName:data[i].merchantName,
-//							subscriptionDate:getMoth(data[i].subscriptionDate),
-//							signingDate:getMoth(data[i].signingDate),
-//							detailButton:'<a href=\"javascript:openCalculateBacRent(\''+ data[i].id +'\',\''+data[i].contractNo+'\')\" class=\"easyui-linkbutton\" iconCls=\"icon-search\" plain=\"true\">计算<\/a>',
-//							region:data[i].region,
-//							signer:data[i].signer,
-//							signingMode:data[i].signingMode,
-//							originalPrice:data[i].originalPrice,
-//							totalPrice:data[i].totalPrice,
-//							signTotalPrice:data[i].signTotalPrice,
-//							leasebackPrice:data[i].leasebackPrice,
-//							backPremium:data[i].backPremium,
-//							payStartDate:getMoth(data[i].payStartDate),
-//							contractTerDate:getMoth(data[i].contractTerDate),
-//							paybackDate:getMoth(data[i].paybackDate),
-//							beneficiary:data[i].beneficiary.merchantName,
-//							proposalId:data[i].proposalId,
-//							contractStatus:data[i].contractStatus,
-//							tariff:data[i].tariff,
-//							taxAmount:data[i].taxAmount
-//						});
 
+					for(var i = 0; i < data.length; i++) {
 
 						var trObj = document.createElement("div");
-						var title = "TItle haha"
-						var content = "there are content haha\nhaha "
-						content +=content;
-						content +=content;
-						trObj.innerHTML=
-								"<div class='easyui-accordion accordion' data-options='multiple:true' style='width: 1030px;padding:10px;border:none;'>"+
+						var title = "";
+						title += "合同编号："+data[i].contract.contractNo+"&nbsp;&nbsp;&nbsp;&nbsp;";
+						title += "&nbsp;签约日期："+getMoth(data[i].contract.signingDate)+"&nbsp;&nbsp;&nbsp;&nbsp;";
+						title += "   受益人："+data[i].contract.beneficiary.merchantName+"("+data[i].contract.beneficiary.merchantPhone+")"+"&nbsp;&nbsp;&nbsp;&nbsp;";
+						title += "预计总返租金额："+data[i].total+"元";
+						var content = "";
+						var content1 = "第1期首月税后返租金额："+data[i].firstMonthBasicRentResult.planPayCountPost+"&nbsp;&nbsp;返租日期"+getMonth(data[i].firstMonthBasicRentResult.planPayDate)+"&nbsp;&nbsp;&nbsp;&nbsp;"
+						var content2 = "";
+						for(var j = 0; j < data[i].extendMonthRentResults.length; j++){
+							var k = Number(j)+2;
+							content2 += "第" + k +"期首月税后返租金额"+data[i].extendMonthRentResults[j].planPayCountPost+"&nbsp;&nbsp;返租日期"+getMonth(data[i].extendMonthRentResults[j].planPayDate)+"&nbsp;&nbsp;&nbsp;&nbsp;"
+
+						}
+						var content3 = "";
+						for(var j = 0; j < data[i].normalMonthBasicRentResults.length; j++){
+							var k = Number(j)+1;
+							content3 += "<p>第" + k +"期税后平均每月支付"+data[i].normalMonthBasicRentResults[j].planPayCountPost+"&nbsp;&nbsp;返租日期从"+getMonth(data[i].normalMonthBasicRentResults[j].startTime) + "到"+getMonth(data[i].normalMonthBasicRentResults[j].endTime)+"</p>"
+//							content3 += "第" + k +"期税后平均每月支付"+data[i].normalMonthBasicRentResults[j].planPayCountPost+"&nbsp;&nbsp;返租日期从"+getMonth(data[i].normalMonthBasicRentResults[j].startTime) + "到"+getMonth(data[i].normalMonthBasicRentResults[j].endTime)+"&nbsp;&nbsp;&nbsp;&nbsp;"
+
+						}
+						var content4 = "末月税后返租金额："+data[i].lastMonthBasicRentResult.planPayCountPost+"&nbsp;&nbsp;返租日期"+getMonth(data[i].lastMonthBasicRentResult.planPayDate)+"&nbsp;&nbsp;&nbsp;&nbsp;"
+//						var content5 = "合计："+data[i].total+"元";
+//						var content += "最后一月税后返租金额"
+						trObj.innerHTML =
+								"<div class='easyui-accordion accordion' data-options='multiple:true' style='width: 1020px;padding:10px;border:none;'>" +
 								"<div class='panel' style='width: 1048px;'>" +
 								"<div class='panel-header accordion-header accordion-header-selected' style='width: 1038px;'>" +
 								"<div class='panel-title'>" +
@@ -263,21 +255,20 @@
 								"</div><div class='panel-tool'>" +
 								"<a class='accordion-collapse' href='javascript:void(0)'>" +
 								"</a></div></div>" +
-								"<div title='' style='overflow: visible; padding: 10px; display: block; width: 1028px; height: auto;' class='panel-body accordion-body'>"+
+								"<div title='' style='overflow: visible; padding: 10px; display: block; width: 1028px; height: auto;' class='panel-body accordion-body'>" +
 								"<p>" +
-								content +
-								"</p>"+
+								content1 +
+//								"</p>" +
+//								"<p>" +
+								content2 +
+								"</p>" +
+								"<p>" +
+								content3 +
+								"</p>" +
+								"<p>" +
+								content4 +
+								"</p>" +
 								"</div></div></div>"
-//								"<div class='easyui-accordion' data-options='multiple:true' style='width:1050px;height:100px;'>"+
-//								"<div title='Language' style='overflow:auto;padding:10px;'>"+
-//								"<p>A programming language is a formal language designed to communicate instructions to a machine, particularly a computer. Programming languages can be used to create programs that control the behavior of a machine and/or to express algorithms precisely.</p>"+
-//								"</div>"+
-//								"</div>"
-
-
-
-
-//						$.messager.alert(i,i)
 						tableObj.appendChild(trObj);
 
 					}
@@ -663,44 +654,11 @@
 				</tr>
 			</table>
 		</fieldset>
-		<!--&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>-->
-		<!--&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>-->
-		<!--&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>		-->
+
 	</div>
-<!--<table id="dg" class="easyui-datagrid"  fit="true"-->
-	   <!--fitColumns="true" rownumbers="true" singleSelect="true"-->
-	   <!--toolbar="#tb" pagination="false">-->
-   <!--<thead>-->
-   	<!--<tr>-->
-		<!--<th hidden="true" field="id" width="30" align="center">合同ID</th>-->
-		<!--<th field="contractNo" width="30" align="center">合同编号</th>-->
-		<!--<th field="contractVersion" width="20" align="center">合同版本</th>-->
-		<!--<th field="buildingInfo" width="50" align="center" >楼层房号</th>-->
-		<!--<th field="buildingSize" width="50" align="center" >建筑面积(m2)</th>-->
-		<!--<th field="beneficiary" width="40" align="center" >受益人信息</th>-->
-		<!--<th field="subscriptionDate" width="50" align="center">认购日期</th>-->
-		<!--<th field="signingDate" width="50" align="center" >签约日期</th>-->
-		<!--<th field="detailButton" width="50" align="center" >计算返租</th>-->
-		<!--<th hidden="true" field="region" width="40" align="center" >所在区域</th>-->
-		<!--<th hidden="true" field="signingMode" width="40" align="center" >签约方式</th>-->
-		<!--<th hidden="true" field="originalPrice" width="40" align="center" >销售原价(元)</th>-->
-		<!--<th hidden="true" field="totalPrice" width="40" align="center" >总价(元)</th>-->
-		<!--<th hidden="true" field="signTotalPrice" width="40" align="center" >签约总价(元)</th>-->
-		<!--<th hidden="true" field="leasebackPrice" width="40" align="center" >返租基价(元)</th>-->
-		<!--<th hidden="true" field="backPremium" width="40" align="center" >返租溢价(元)</th>-->
-		<!--<th hidden="true" field="payStartDate" width="40" align="center" >记租起始时日期</th>-->
-		<!--<th hidden="true" field="contractTerDate" width="40" align="center" >合同期</th>-->
-		<!--<th hidden="true" field="paybackDate" width="40" align="center" >回款时间</th>-->
-		<!--<th hidden="true" field="signer" width="50" align="center" >签约人</th>-->
-		<!--<th hidden="true" field="proposalId" width="40" align="center" >方案</th>-->
-		<!--<th hidden="true" field="contractStatus" width="40" align="center" >合同状态</th>-->
-		<!--<th hidden="true" field="tariff" width="40" align="center" >税率</th>-->
-		<!--<th hidden="true" field="taxAmount" width="40" align="center" >个税金额(元)</th>-->
-	<!--</tr>-->
-   <!--</thead>-->
- <!--</table>-->
+
 </div>
-<div id="contract_detail" region="center" title="Detail" style='overflow:scroll;'>
+<div id="contract_detail" region="center" title="" style='overflow:scroll;'>
 
 
 <div>
@@ -710,80 +668,9 @@
 		</div>
 	</div>
 </div>
-	<!--<tbody id="contract_detail1">-->
-
-	<!--</tbody>-->
-
 
 </div>
 
- <!--<div id="tb">-->
- 	<!--<div style="padding: 5px">-->
-		<!--<fieldset style="border-color: #E7F0FF">-->
-			<!--<legend>查询设置</legend>-->
-		<!--<table align="center" width="100%">-->
-			<!--<tr>-->
-				<!--<td style="width: 8%;">合同版本：</td>-->
-				<!--<td style="width: 17%;"><select type="text" id="contractVersion" name="contractVersion" style="width: 80%">-->
-					<!--<option value="">所有版本</option>-->
-					<!--<option value="1">1</option>-->
-					<!--<option value="2">2</option>-->
-					<!--<option value="3">3</option>-->
-					<!--<option value="4">4</option>-->
-				<!--</select></td>-->
-				<!--<td style="width: 8%;">签约日期：</td>-->
-				<!--<td  style="width: 20%;"><input type="text" id="filterStartTime" name="filterStartTime"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="filterEndTime" name="filterEndTime" style="width: 84%" class="easyui-datebox"/></td>-->
-				<!--&lt;!&ndash;<td style="width: 8%;">建筑面积：</td>&ndash;&gt;-->
-				<!--&lt;!&ndash;<td style="width: 10%;"><input type="text" id="buildingStartSize" name="buildingStartSize" style="width: 40%"/>-<input type="text" id="buildingEndSize" name="buildingEndSize" style="width: 40%"/></td>&ndash;&gt;-->
-				<!--<td style="width: 8%;"></td>-->
-				<!--<td style="width: 10%;"></td>-->
-				<!--<td style="width: 12%;"></td>-->
-			<!--</tr>-->
-			<!--<tr>-->
-				<!--&lt;!&ndash;<td>签约方式：<select type="text" id="signMode" name="signMode" style="width: 175px;" >&ndash;&gt;-->
-				<!--<td style="width: 8%;">合同状态：</td>-->
-				<!--<td><select type="text" id="contractStatus" name="contractStatus" style="width: 80%" >-->
-					<!--<option value="">所有状态</option>-->
-					<!--<option value="UNSTARTED">未开始</option>-->
-					<!--<option value="PENDINGRENTAL">已签约，市场培育期</option>-->
-					<!--<option value="RENTAL">已签约，返租期</option>-->
-					<!--<option value="NORMALEND">正常结束</option>-->
-					<!--<option value="ABNORMALEND">非正常结束</option>-->
-				<!--</select></td>-->
-				<!--<td>签约方式：</td>-->
-				<!--<td><select type="text" id="signMode" name="signMode" style="width: 72%" >-->
-					<!--<option value="">所有方式</option>-->
-					<!--<option value="MORTGAGE">按揭贷款</option>-->
-					<!--<option value="DISPOSABLE">一次性</option>-->
-				<!--</select></td>-->
-				<!--<td style="width: 8%;">房号信息：</td>-->
-				<!--<td><input type="text" id="buildingInfo" name="buildingInfo" style="width: 90%"/></td>-->
-				<!--&lt;!&ndash;<td>房号信息：<input type="text" id="buildingInfo" name="buildingInfo" style="width: 22%"/></td>&ndash;&gt;-->
-				<!--<td></td>-->
-
-			<!--</tr>-->
-			<!--<tr>-->
-				<!--<td>合同编号:</td>-->
-				<!--<td><input type="text" id="contractNo" name="contractNo" style="width: 80%"/></td>-->
-				<!--<td>受益人姓名:</td>-->
-				<!--<td><input type="text" id="benefitName" name="benefitName" style="width: 70%"/></td>-->
-				<!--<td>受益人电话:</td>-->
-				<!--<td><input type="text" id="benefitPhone" name="benefitPhone" style="width: 90%"/></td>-->
-				<!--<td align="center" >-->
-					<!--<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>-->
-					<!--<a href="javascript:openAddContract()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增记录</a></td>-->
-			<!--</tr>-->
-		<!--</table>-->
-		<!--</fieldset>-->
-		<!--&lt;!&ndash;&nbsp;合同编号&nbsp;<input type="text" id="contractNo" name="contractNo" style="width: 90px;"/>&ndash;&gt;-->
-		<!--&lt;!&ndash;&nbsp;姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：&nbsp;<input type="text" id="signer" name="signer" style="width: 90px;"/>&ndash;&gt;-->
-		<!--&lt;!&ndash;&nbsp;手机号：&nbsp;<input type="text" id="phone" name="phone" style="width: 90px;"/>		&ndash;&gt;-->
-	<!--</div>-->
-	 <!--<div  style="padding: 5px">-->
- 	<!--</div>-->
- <!--</div>-->
-
- 
   <div id="dlg2" class="easyui-dialog" style="width:180px;height:300px;padding: 10px 10px;top: 52px;left: 80px"
    closed="true" buttons="#dlg-buttons2">
    

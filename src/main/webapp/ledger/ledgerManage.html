@@ -123,8 +123,8 @@
 						data[i].planPayDate = getMoth(data[i].planPayDate);
 //						data[i].actualPayDate = getMoth(data[i].actualPayDate);
 						data[i].signingDate = getMoth(data[i].signingDate);
-						var beneficObj = JSON.parse(data[i].beneficiary);
-						data[i].beneficiaryDetail = beneficObj.merchantName+"("+beneficObj.merchantPhone+")";
+//						var beneficObj = JSON.parse(data[i].beneficiary);
+						data[i].beneficiaryDetail = data[i].merchantName+"("+data[i].merchantPhone+")";
 						$('#ledger_list').datagrid('appendRow', data[i]);
 					}
 				}
@@ -388,11 +388,11 @@
 					<legend>信息确认</legend>
 					<div style="padding-top: 8px;padding-left: 10px;">
 
-						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总计(元)：</a><input type="text" id="total" size="5" disabled="true"/>
 						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共有：</a><input type="text" id="total_number" size="3" disabled="true"/><a>&nbsp;&nbsp;&nbsp;条</a>
-						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中(元)：</a><input type="text" id="selected_total" size="5" disabled="true"/>
+						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总计</a><input type="text" id="total" size="5" disabled="true"/><a>元</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中：</a><input type="text" id="selected_total_number" size="3" disabled="true"/><a>&nbsp;&nbsp;&nbsp;条</a>
-						<a class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="addLedger()">提交</a>
+						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中台账合计</a><input type="text" id="selected_total" size="5" disabled="true"/><a>元</a>
+						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="addLedger()">保存台账</a>
 
 					</div>
 

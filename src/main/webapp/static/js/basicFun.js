@@ -16,6 +16,19 @@ function getMoth(str){
     return oTime;
 };
 
+function getMonth(str){
+    var oDate = new Date(str),
+        oYear = oDate.getFullYear(),
+        oMonth = oDate.getMonth()+1,
+        oDay = oDate.getDate(),
+        oHours = oDate.getHours(),
+        oMinutes = oDate.getMinutes(),
+        oSeconds = oDate.getSeconds();
+//				oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
+    oTime =oYear+"-"+oMonth;//最后拼接时间
+    return oTime;
+};
+
 
 function clearGrid(gridId){
     var item = $( '#'+gridId).datagrid('getRows');

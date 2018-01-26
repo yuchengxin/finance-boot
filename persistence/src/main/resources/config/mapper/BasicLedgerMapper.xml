@@ -151,7 +151,7 @@
             and  contractNo = #{contractNo}
         </if>
 
-      ) AS l LEFT JOIN finance_contract c on l.contractNo=c.contractNo;
+      ) AS l LEFT JOIN finance_contract c on l.contractNo=c.contractNo LEFT JOIN finance_merchants m ON c.beneficiary=m.id;
     </select>
 
     <resultMap id="BasicLedgerMap" type="BasicLedger">
