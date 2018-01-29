@@ -1,6 +1,7 @@
 package com.gilab.wjj.persistence.dao;
 
 import com.gilab.wjj.persistence.model.BasicLedger;
+import com.gilab.wjj.persistence.model.PayStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,5 +33,8 @@ public interface BasicLedgerDao {
 
     void deleteBasicLedger(long basicLedgerId);
 
-    List<HashMap> getLedgerWithFilter(String contractNo);
+    List<HashMap> getLedgerWithFilter(PayStatus payStatus,String contractNo,String benefitName,String benefitPhone,String buildingInfo,String benefitBankAccount,
+                                      Long planPayDateStart,Long planPayDateEnd,Long actualPayDateStart,Long actualPayDateEnd);
+
+    void payLedger(List<Long> selectedidList);
 }

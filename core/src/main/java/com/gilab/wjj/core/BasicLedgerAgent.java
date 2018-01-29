@@ -18,6 +18,9 @@ public interface BasicLedgerAgent extends Agent {
 
     ReqResultMap batchUpdateLedgers(List<BasicLedgerInfo> basicLedgerInfos);
 
-    List<HashMap> getLedgerWithFilter(String contractNo);
+    List<HashMap> getLedgerWithFilter(PayStatus payStatus,String contractNo,String benefitName,String benefitPhone,String buildingInfo,String benefitBankAccount,
+                                      Long planPayDateStart,Long planPayDateEnd,Long actualPayDateStart,Long actualPayDateEnd);
+
+    void payLedger(List<Long> selectedidList);
 
 }

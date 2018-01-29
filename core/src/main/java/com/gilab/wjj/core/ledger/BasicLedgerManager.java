@@ -64,7 +64,13 @@ public class BasicLedgerManager implements BasicLedgerAgent{
     }
 
     @Override
-    public List<HashMap> getLedgerWithFilter(String contractNo) {
-        return basicLedgerDao.getLedgerWithFilter(contractNo);
+    public List<HashMap> getLedgerWithFilter(PayStatus payStatus,String contractNo,String benefitName,String benefitPhone,String buildingInfo,String benefitBankAccount,
+                                             Long planPayDateStart,Long planPayDateEnd,Long actualPayDateStart,Long actualPayDateEnd) {
+        return basicLedgerDao.getLedgerWithFilter(payStatus,contractNo,benefitName,benefitPhone,buildingInfo,benefitBankAccount,planPayDateStart,planPayDateEnd,actualPayDateStart,actualPayDateEnd);
+    }
+
+    @Override
+    public void payLedger(List<Long> selectedidList) {
+        basicLedgerDao.payLedger(selectedidList);
     }
 }

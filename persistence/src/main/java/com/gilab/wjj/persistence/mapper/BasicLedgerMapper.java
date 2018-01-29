@@ -1,6 +1,7 @@
 package com.gilab.wjj.persistence.mapper;
 
 import com.gilab.wjj.persistence.model.BasicLedger;
+import com.gilab.wjj.persistence.model.PayStatus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -36,5 +37,16 @@ public interface BasicLedgerMapper {
 
     void deleteBasicLedger(@Param("id") long basicLedgerId);
 
-    List<HashMap> getLedgerWithFilter(@Param("contractNo") String contractNo);
+    List<HashMap> getLedgerWithFilter(@Param("payStatus") PayStatus payStatus,
+                                      @Param("contractNo") String contractNo,
+                                      @Param("benefitName") String benefitName,
+                                      @Param("benefitPhone") String benefitPhone,
+                                      @Param("buildingInfo") String buildingInfo,
+                                      @Param("benefitBankAccount") String benefitBankAccount,
+                                      @Param("planPayDateStart") Long planPayDateStart,
+                                      @Param("planPayDateEnd") Long planPayDateEnd,
+                                      @Param("actualPayDateStart") Long actualPayDateStart,
+                                      @Param("actualPayDateEnd") Long actualPayDateEnd);
+
+    void payLedger(List<Long> selectedidList);
 }
