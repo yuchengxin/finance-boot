@@ -115,12 +115,53 @@ public class LedgerController {
     @ResponseBody
     @RequestMapping(value = "/ledger_filter", method = { RequestMethod.GET }, produces = "application/json")
     public List<HashMap> getLedgerWithFilter(final HttpServletResponse response,
-                                          @RequestParam(name = "contractNo", required = false) String contractNo) throws IOException {
+                                          @RequestParam(name = "payStatus", required = false) PayStatus payStatus,
+                                          @RequestParam(name = "contractNo", required = false) String contractNo,
+                                          @RequestParam(name = "benefitName", required = false) String benefitName,
+                                          @RequestParam(name = "benefitPhone", required = false) String benefitPhone,
+                                          @RequestParam(name = "buildingInfo", required = false) String buildingInfo,
+                                          @RequestParam(name = "benefitBankAccount", required = false) String benefitBankAccount,
+                                          @RequestParam(name = "planPayDateStart", required = false) Long planPayDateStart,
+                                          @RequestParam(name = "planPayDateEnd", required = false) Long planPayDateEnd,
+                                          @RequestParam(name = "actualPayDateStart", required = false) Long actualPayDateStart,
+                                          @RequestParam(name = "actualPayDateEnd", required = false) Long actualPayDateEnd) throws IOException {
         //TODO
         //登录判断
 
         //TODO
         //权限判断
-        return basicLedgerMgr.getLedgerWithFilter(contractNo);
+        return basicLedgerMgr.getLedgerWithFilter(payStatus,contractNo,benefitName,benefitPhone,buildingInfo,benefitBankAccount,planPayDateStart,planPayDateEnd,actualPayDateStart,actualPayDateEnd);
+    }
+
+    @ApiOperation(value = "多条件查询台账", notes = "台账筛选", produces = "application/json")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "contractNo", value = "合同编号", dataType = "String", paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "操作成功"),
+            @ApiResponse(code = 400, message = "错误请求"),
+            @ApiResponse(code = 401, message = "用户未授权"),
+            @ApiResponse(code = 403, message = "用户被禁止"),
+            @ApiResponse(code = 500, message = "服务器错误")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/payLedger", method = { RequestMethod.POST }, produces = "application/json")
+    public HashMap payLedger(final HttpServletResponse response,
+                                             @RequestParam(name = "selectedids", required = false) String selectedids) throws IOException {
+        //TODO
+        //登录判断
+
+        //TODO
+        //权限判断
+        System.out.println(selectedids);
+        List<Long> selectedidList = new ArrayList<>();
+        for(int i = 0;i < selectedids.split(",").length; i++){
+            selectedidList.add(Long.valueOf(selectedids.split(",")[i]));
+        }
+        basicLedgerMgr.payLedger(selectedidList);
+        HashMap resMap = new HashMap();
+        resMap.put("SUCCESS",true);
+        return resMap;
+//        return basicLedgerMgr.getLedgerWithFilter(payStatus,contractNo,benefitName,benefitPhone,buildingInfo,benefitBankAccount,planPayDateStart,planPayDateEnd,actualPayDateStart,actualPayDateEnd);
     }
 }

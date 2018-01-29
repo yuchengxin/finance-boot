@@ -19,41 +19,32 @@
 
 	$(function() {
 
-		searchLedger();
+//		searchLedger();
+		init_yearMonth("planPayDateStart");
+		init_yearMonth("planPayDateEnd");
+
+		var curr_time = new Date();
+
+		//设置前当月
+		$("#planPayDateStart").datebox("setValue", myformatter(curr_time));
+		$("#planPayDateEnd").datebox("setValue", myformatter(curr_time));
 
 
-
-
-
-
-//		searchLedger(1);
-//		$("#dg").datagrid({
-//			//双击事件
-//			onDblClickRow: function (index, row) {
-//
-//				searchLedger(row.id);
-//
-//			}
-//		});
 
 	$("#ledger_confirm_table").datagrid({
 		onSelect: function (index, row) {
-//			$.messager.alert("selected:"+index,row.planPayCountPost);
 			$("#selected_total").val(Number($("#selected_total").val())+row.planPayCountPost);
 			$("#selected_total_number").val(Number($("#selected_total_number").val())+1);
 		},
 		onUnselect:function (index, row) {
-//			$.messager.alert("unSelected:"+index,row.planPayCountPost);
 			$("#selected_total").val(Number($("#selected_total").val())-row.planPayCountPost);
 			$("#selected_total_number").val(Number($("#selected_total_number").val())-1);
 		},
 		onCheckAll:function (rows) {
-//			$.messager.alert("selectedAll:",rows.length);
 			$("#selected_total").val($("#total").val());
 			$("#selected_total_number").val($("#total_number").val());
 		},
 		onUncheckAll:function (rows) {
-//			$.messager.alert("unSelectedAll:",rows.length);
 			$("#selected_total").val(0);
 			$("#selected_total_number").val(0);
 		}
@@ -71,12 +62,36 @@
 
 		clearGrid("ledger_list");
 		var geturl = "/api/v1/ledger_filter?test=test";
+		if($("#payStatus").val()!=""){
+			geturl+="&payStatus="+$("#payStatus").val();
+		}
 		if($("#contractNo").val()!=""){
 			geturl+="&contractNo="+$("#contractNo").val();
 		}
-//		if($("#filterStartTime").datebox("getValue")!=""){
-//			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
-//		}
+		if($("#benefitName").val()!=""){
+			geturl+="&benefitName="+$("#benefitName").val();
+		}
+		if($("#benefitPhone").val()!=""){
+			geturl+="&benefitPhone="+$("#benefitPhone").val();
+		}
+		if($("#buildingInfo").val()!=""){
+			geturl+="&buildingInfo="+$("#buildingInfo").val();
+		}
+		if($("#benefitBankAccount").val()!=""){
+			geturl+="&benefitBankAccount="+$("#benefitBankAccount").val();
+		}
+		if($("#planPayDateStart").datebox("getValue")!=""){
+			geturl+="&planPayDateStart="+dateToLong($("#planPayDateStart").datebox("getValue")+"-1");
+		}
+		if($("#planPayDateEnd").datebox("getValue")!=""){
+			geturl+="&planPayDateEnd="+dateToLong($("#planPayDateEnd").datebox("getValue")+"-31");
+		}
+		if($("#actualPayDateStart").datebox("getValue")!=""){
+			geturl+="&actualPayDateStart="+dateToLong($("#actualPayDateStart").datebox("getValue"));
+		}
+		if($("#actualPayDateEnd").datebox("getValue")!=""){
+			geturl+="&actualPayDateEnd="+dateToLong($("#actualPayDateEnd").datebox("getValue"));
+		}
 //		if($("#filterEndTime").datebox("getValue")!=""){
 //			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
 //		}
@@ -140,33 +155,46 @@
 
 
 
-	function addLedger(){
-//		$('#dg3').datagrid('appendRow', {
-//			planPayDate:row.planPayDate,
-//			planPayCount:row.planPayCount,
-//			actualPayDate:row.actualPayDate,
-//			actualPayCount:row.actualPayCount
-//		});
+	function payLedger(){
 		var selecteds = $("#ledger_confirm_table").datagrid("getSelections");
 		var selectedids = [];
 		for(var i =0; i< selecteds.length; i++){
 			selectedids.push(selecteds[i].id);
 		}
 
-		var tmpitems = $('#ledger_list').datagrid('getRows');
-		var tmpitems2 = [];
-		for(var i =0; i< tmpitems.length; i++){
-			if($.inArray(tmpitems[i].id,selectedids)>-1){
-				tmpitems[i].payStatus="<font color='#00fa9a'>支付成功</font>";
+//		var tmpitems = $('#ledger_list').datagrid('getRows');
+//		var tmpitems2 = [];
+//		for(var i =0; i< tmpitems.length; i++){
+//			if($.inArray(tmpitems[i].id,selectedids)>-1){
+//				tmpitems[i].payStatus="<font color='#00fa9a'>支付成功</font>";
+//			}
+//
+//			tmpitems2.push(tmpitems[i]);
+//		}
+//		$("#ledger_confirm").dialog("close");
+//		clearGrid("ledger_list");
+//		for(var i =0; i< tmpitems2.length; i++){
+//			$('#ledger_list').datagrid('appendRow', tmpitems2[i]);
+//		}
+		var geturl = "/api/v1/payLedger?selectedids="+selectedids;
+		$.ajax({
+			url: geturl,
+			type: 'POST',
+			data:{
+				selectedids:selectedids
+			},
+			contentType: 'application/json',
+			success: function (data) {
+				searchLedger();
+			},
+			error: function () {
+				alert('An error has occured!! :-(')
 			}
-
-			tmpitems2.push(tmpitems[i]);
-		}
+		})
 		$("#ledger_confirm").dialog("close");
-		clearGrid("ledger_list");
-		for(var i =0; i< tmpitems2.length; i++){
-			$('#ledger_list').datagrid('appendRow', tmpitems2[i]);
-		}
+
+
+
 
 
 
@@ -277,9 +305,9 @@
 						<td style="width: 8%;">支付状态：</td>
 						<td style="width: 17%;"><select type="text" id="payStatus" name="payStatus" style="width: 80%" >
 							<option value="">所有状态</option>
-							<option value="支付成功">支付成功</option>
-							<option value="未支付">未支付</option>
-							<option value="支付失败">支付失败</option>
+							<option value="SUCCESSFULPAID">支付成功</option>
+							<option value="UNPAID">未支付</option>
+							<option value="FAILEDPAID">支付失败</option>
 						</select></td>
 						<td style="width: 8%;">计划支付时间：</td>
 						<td  style="width: 20%;"><input type="text" id="planPayDateStart" name="planPayDateStart"  style="width: 84%" class="easyui-datebox"/>-<input type="text" id="planPayDateEnd" name="planPayDateEnd" style="width: 84%" class="easyui-datebox"/></td>
@@ -392,7 +420,7 @@
 						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总计</a><input type="text" id="total" size="5" disabled="true"/><a>元</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中：</a><input type="text" id="selected_total_number" size="3" disabled="true"/><a>&nbsp;&nbsp;&nbsp;条</a>
 						<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选中台账合计</a><input type="text" id="selected_total" size="5" disabled="true"/><a>元</a>
-						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="addLedger()">保存台账</a>
+						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="payLedger()">保存台账</a>
 
 					</div>
 

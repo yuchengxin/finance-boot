@@ -3,12 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<title>进货单据查询</title>
-	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/default/easyui.css"></link>
-	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/icon.css"></link>
+	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/default/easyui.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.3.3/themes/icon.css"/>
 	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
 	<script type="text/javascript" src="/static/jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
 	<script type="text/javascript" src="/static/js/date.js"></script>
+	<script type="text/javascript" src="/static/js/basicFun.js"></script>
 	<script type="text/javascript">
 		function formatSupplier(val,row){
 			return val.name;
@@ -76,25 +77,40 @@
 				contentType: 'application/json',
 				success: function (data) {
 					var calRes = "";
-						for(var i = 0; i<data.periodSumPayments.length;i++) {
-							calRes +="第"+	data.periodSumPayments[i].periodInfo.period + "个租赁期（" +data.periodSumPayments[i].periodInfo.duration+"年）   从" +
-									getMoth(data.periodSumPayments[i].rentStartPayTime)+"到" + getMoth(data.periodSumPayments[i].rentEndPayTime)+
-									"    合计"+data.periodSumPayments[i].months + "个自然月，每12个月为一周期，"+
-									"每周期前11个月每月应支付"+ data.periodSumPayments[i].elevenMonthAmount +"元 " +
-									"   第12个月应支付"+data.periodSumPayments[i].lastMonthAmount+"元 " +
-									"   总计"+fmoney(data.periodSumPayments[i].periodTotal,0)+"元\n"
+					var firstMonth = "";
+//						for(var i = 0; i<data.periodSumPayments.length;i++) {
+//							calRes +="第"+	data.periodSumPayments[i].periodInfo.period + "个租赁期（" +data.periodSumPayments[i].periodInfo.duration+"年）   从" +
+//									getMoth(data.periodSumPayments[i].rentStartPayTime)+"到" + getMoth(data.periodSumPayments[i].rentEndPayTime)+
+//									"    合计"+data.periodSumPayments[i].months + "个自然月，每12个月为一周期，"+
+//									"每周期前11个月每月应支付"+ data.periodSumPayments[i].elevenMonthAmount +"元 " +
+//									"   第12个月应支付"+data.periodSumPayments[i].lastMonthAmount+"元 " +
+//									"   总计"+fmoney(data.periodSumPayments[i].periodTotal,0)+"元\n"
+//						}
+//					calRes += "总租赁期总结支付"+ data.total +"元"
+
+					var j = 0;
+					for(var i = 0; i<data.length;i++) {
+						data[i].planPayDate = getMonth(data[i].planPayDate);
+						switch (data[i].rentMonthMode){
+							case "FIRSTMONTH":
+									++j;
+								firstMonth+="第1期首月税后返租金额："+data[i].planPayCountPost + "返租日期:"+data[i].planPayDate + "\n"
+								calRes += "第"+ j +"期税后平均每月支付"+data[i+1].planPayCountPost + "  返租日期从"+data[i].planPayDate+""
+								break;
+							case "EXTENDMONTH":
+									++j;
+								firstMonth+="第"+ j +"期首月税后返租金额："+data[i].planPayCountPost + "返租日期:"+data[i].planPayDate + "\n";
+								calRes += "到"+data[i].planPayDate+"\n"+"第"+ j +"期税后平均每月支付"+data[i+1].planPayCountPost + "  返租日期从"+getMonth(data[i+1].planPayDate)+""
+								break;
+							case "LASTMONTH":
+								firstMonth+="最后一期末月税后返租金额："+data[i].planPayCountPost + "返租日期:"+data[i].planPayDate + "\n";
+								calRes += "到"+data[i].planPayDate+"\n";
+								break;
 						}
-					calRes += "总租赁期总结支付"+ data.total +"元"
-					document.getElementById('calRes').value=calRes;
-						for(var i = 0; i<data.result.length;i++) {
-							$('#dg2').datagrid('appendRow', {
-								period:data.result[i].calDtail.period,
-								duration:data.result[i].calDtail.duration,
-								proportion:data.result[i].calDtail.proportion,
-								date:getMoth(data.result[i].date),
-								amount:data.result[i].amount
-							});
-						}
+
+						$('#dg2').datagrid('appendRow', data[i]);
+					}
+					document.getElementById('calRes').value=(calRes + firstMonth);
 
 				},
 				error: function () {
@@ -103,18 +119,7 @@
 			})
 		}
 
-		function getMoth(str){
-			var oDate = new Date(str),
-					oYear = oDate.getFullYear(),
-					oMonth = oDate.getMonth()+1,
-					oDay = oDate.getDate(),
-					oHours = oDate.getHours(),
-					oMinutes = oDate.getMinutes(),
-					oSeconds = oDate.getSeconds();
-//			oTime =oYear+"-"+oMonth+"-"+oDay+" "+oHours+":"+oMinutes+":"+oSeconds;//最后拼接时间
-			oTime =oYear+"-"+oMonth+"-"+oDay;//最后拼接时间
-			return oTime;
-		};
+
 	</script>
 </head>
 <body class="easyui-layout" style="margin: 1px">
@@ -172,11 +177,12 @@
 		   fitColumns="true"  rownumbers="true" singleSelect="true">
 		<thead>
 		<tr>
-			<th field="period" width="40" align="center">期数</th>
-			<th hidden="true" field="duration" width="40" align="center">本期持续时间（年）</th>
-			<th field="proportion" width="40" align="center">系数</th>
-			<th field="date" width="50" align="center" >返租日期</th>
-			<th field="amount" width="50" align="center" >金额(元)</th>
+			<th field="planPayDate" width="40" align="center">计划返租日期</th>
+			<th field="planPayCountPre" width="40" align="center">税前金额(元)</th>
+			<th field="planPayCountPost" width="40" align="center">税后金额(元)</th>
+			<th hidden="false" field="calFormula" width="40" align="center">calFormula</th>
+			<th hidden="false" field="taxRate" width="40" align="center">taxRate</th>
+			<th field="rentMonthMode" width="40" align="center">rentMonthMode</th>
 		</tr>
 		</thead>
 	</table>

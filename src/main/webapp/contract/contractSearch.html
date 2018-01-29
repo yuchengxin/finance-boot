@@ -15,7 +15,7 @@
 <script type="text/javascript">
 
 	$(function(){
-		searchContract();
+//		searchContract();
 //		openAddContract();
 
 
@@ -185,29 +185,38 @@
 		})
 	}
 	function searchContract(){
+		var tableObj = document.getElementById("contract_detail");
+		tableObj.innerHTML="";
 //		clearGrid("dg");
 		var geturl = "/api/v1/contracts?test=test";
-//		if($("#filterStartTime").datebox("getValue")!=""){
-//			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
+		if($("#filterStartTime").datebox("getValue")!=""){
+			geturl+="&filterStartTime="+dateToLong($("#filterStartTime").datebox("getValue"));
+		}
+		if($("#filterEndTime").datebox("getValue")!=""){
+			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
+		}
+		if($("#contractVersion").val()!=""){
+			geturl+="&contractVersion="+$("#contractVersion").val();
+		}
+//		if($("#buildingStartSize").val()!=""){
+//			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
 //		}
-//		if($("#filterEndTime").datebox("getValue")!=""){
-//			geturl+="&filterEndTime="+dateToLong($("#filterEndTime").datebox("getValue"));
+//		if($("#buildingEndSize").val()!=""){
+//			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
 //		}
-//		if($("#contractVersion").val()!=""){
-//			geturl+="&contractVersion="+$("#contractVersion").val();
-//		}
-////		if($("#buildingStartSize").val()!=""){
-////			geturl+="&buildingStartSize="+$("#buildingStartSize").val();
-////		}
-////		if($("#buildingEndSize").val()!=""){
-////			geturl+="&buildingEndSize="+$("#buildingEndSize").val();
-////		}
-//		if($("#signMode").val()!=""){
-//			geturl+="&signMode="+$("#signMode").val();
-//		}
-//		if($("#contractStatus").val()!=""){
-//			geturl+="&contractStatus="+$("#contractStatus").val();
-//		}
+		if($("#signMode").val()!=""){
+			geturl+="&signMode="+$("#signMode").val();
+		}
+		if($("#contractStatus").val()!=""){
+			geturl+="&contractStatus="+$("#contractStatus").val();
+		}
+		if($("#beneficiaryName").val()!=""){
+			geturl+="&beneficiaryName="+$("#beneficiaryName").val();
+		}
+		if($("#beneficiaryPhone").val()!=""){
+			geturl+="&beneficiaryPhone="+$("#beneficiaryPhone").val();
+		}
+
 
 		$.ajax({
 			url: geturl,
@@ -216,7 +225,7 @@
 			success: function (data) {
 
 				if (Object.keys(data).length > 0) {
-					var tableObj = document.getElementById("contract_detail");
+
 //					var tableObj = $("#contract_detail");
 					tableObj.innerHTML="";
 
@@ -635,7 +644,7 @@
 					</select></td>
 
 					<td>受益人电话:</td>
-					<td><input type="text" id="benefitPhone" name="benefitPhone" style="width: 90%"/></td>
+					<td><input type="text" id="beneficiaryPhone" name="beneficiaryPhone" style="width: 90%"/></td>
 					<td align="center" ></td>
 
 				</tr>
@@ -643,7 +652,7 @@
 					<td>合同编号:</td>
 					<td><input type="text" id="contractNo" name="contractNo" style="width: 80%"/></td>
 					<td>受益人姓名:</td>
-					<td><input type="text" id="benefitName" name="benefitName" style="width: 70%"/></td>
+					<td><input type="text" id="beneficiaryName" name="beneficiaryName" style="width: 70%"/></td>
 
 					<td style="width: 30%;" colspan="3">
 						<a href="javascript:searchContract()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
@@ -661,13 +670,16 @@
 <div id="contract_detail" region="center" title="" style='overflow:scroll;'>
 
 
-<div>
-	<div class='easyui-accordion' data-options='multiple:true' style='width:1080px;heightl:100px;padding:10px; border: none;'>
-	<div title='Language' style='overflow:visible;padding:10px;'>
-		<p>A programming language is a formal language designed to communicate instructions to a machine, particularly a computer. Programming languages can be used to create programs that control the behavior of a machine and/or to express algorithms precisely.</p>
-		</div>
-	</div>
-</div>
+<!--<div>-->
+	<!--<div class='easyui-accordion' data-options='multiple:true' style='width:1080px;heightl:100px;padding:10px; border: none;'>-->
+	<!--<div title='合同编号：NO01     签约日期：2015-8-24     受益人：张三(1399xxxx297)    预计总返租金额：3445648.69元' style='overflow:visible;padding:10px;'>-->
+		<!--<p>共3期，预计支付3445648.69元</p>-->
+		<!--<p>已支付至第2期第4个自然月（2018-1)</p>-->
+		<!--<p>已支付****元</p>-->
+		<!--<p>还剩余****元</p>-->
+		<!--</div>-->
+	<!--</div>-->
+<!--</div>-->
 
 </div>
 

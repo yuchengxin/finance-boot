@@ -147,12 +147,56 @@
 
     <select id="getLedgerWithFilter" resultType="map">
       select * FROM (select * from finance_basic_ledger WHERE 1=1
+        <if test="payStatus != null">
+            and payStatus = #{payStatus,javaType=PayStatus,typeHandler=PayStatusHandler}
+        </if>
         <if test="contractNo !=null">
             and  contractNo = #{contractNo}
         </if>
 
+
+        <if test="planPayDateStart != null">
+            and planPayDate &gt;= #{planPayDateStart,typeHandler=TimestampLongHandler}
+        </if>
+        <if test="planPayDateEnd != null">
+            and planPayDate &lt;= #{planPayDateEnd,typeHandler=TimestampLongHandler}
+        </if>
+        <if test="actualPayDateStart != null">
+            and actualPayDate &gt;= #{actualPayDateStart,typeHandler=TimestampLongHandler}
+        </if>
+        <if test="actualPayDateEnd != null">
+            and actualPayDate &lt;= #{actualPayDateEnd,typeHandler=TimestampLongHandler}
+        </if>
+
+        <if test="benefitName!=null or benefitPhone!=null or benefitBankAccount!=null">
+            and beneficiaryId IN
+            (
+            select id from finance_merchants where 1=1
+            <if test="benefitBankAccount !=null">
+                and  bankAccount = #{benefitBankAccount}
+            </if>
+            <if test="benefitPhone !=null">
+                and  merchantPhone = #{benefitPhone}
+            </if>
+            <if test="benefitName !=null">
+                <bind name="namepattern" value="'%' + _parameter.benefitName + '%'"></bind>
+                and  merchantName like #{namepattern}
+            </if>
+            )
+        </if>
+
+
       ) AS l LEFT JOIN finance_contract c on l.contractNo=c.contractNo LEFT JOIN finance_merchants m ON c.beneficiary=m.id;
     </select>
+
+    <update id="payLedger" parameterType="java.util.List">
+        update finance_basic_ledger set payStatus = 2 where id in (
+        <foreach collection="list" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+
+        )
+    </update>
 
     <resultMap id="BasicLedgerMap" type="BasicLedger">
         <id property="id" column="id"/>

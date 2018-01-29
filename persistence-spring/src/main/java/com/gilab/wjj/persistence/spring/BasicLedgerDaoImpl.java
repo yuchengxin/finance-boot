@@ -3,6 +3,7 @@ package com.gilab.wjj.persistence.spring;
 import com.gilab.wjj.persistence.dao.BasicLedgerDao;
 import com.gilab.wjj.persistence.mapper.BasicLedgerMapper;
 import com.gilab.wjj.persistence.model.BasicLedger;
+import com.gilab.wjj.persistence.model.PayStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -67,7 +68,13 @@ public class BasicLedgerDaoImpl implements BasicLedgerDao {
     }
 
     @Override
-    public List<HashMap> getLedgerWithFilter(String contractNo) {
-        return mapper.getLedgerWithFilter(contractNo);
+    public List<HashMap> getLedgerWithFilter(PayStatus payStatus,String contractNo,String benefitName,String benefitPhone,String buildingInfo,String benefitBankAccount,
+                                             Long planPayDateStart,Long planPayDateEnd,Long actualPayDateStart,Long actualPayDateEnd) {
+        return mapper.getLedgerWithFilter(payStatus,contractNo,benefitName,benefitPhone,buildingInfo,benefitBankAccount,planPayDateStart,planPayDateEnd,actualPayDateStart,actualPayDateEnd);
+    }
+
+    @Override
+    public void payLedger(List<Long> selectedidList) {
+        mapper.payLedger(selectedidList);
     }
 }
