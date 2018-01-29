@@ -20,19 +20,6 @@
 		$(document).ready(function(){
 			$("#s_bPurchaseDate").datebox("setValue",genLastMonthDayStr()); // 设置上个月日期
 			$("#s_ePurchaseDate").datebox("setValue",genTodayStr()); // 设置当前日期
-
-
-			$('#dg').datagrid({
-				onClickRow: function(index,row){
-					$("#dg2").datagrid({
-						url:'/admin/purchaseList/listGoods',
-						queryParams:{
-							purchaseListId:row.id
-						}
-					});
-				}
-			});
-
 		});
 
 		function formatTotal(val,row){

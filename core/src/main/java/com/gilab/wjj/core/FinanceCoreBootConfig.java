@@ -14,6 +14,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication(scanBasePackages = { "com.gilab.wjj" })
 @EnableTransactionManagement
-@EnableScheduling
+//@EnableScheduling
 public class FinanceCoreBootConfig {
 }
